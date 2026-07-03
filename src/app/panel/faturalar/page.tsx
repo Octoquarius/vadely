@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { faturaSil } from "../actions";
 import { FaturaForm } from "./fatura-form";
@@ -36,7 +37,15 @@ export default async function FaturalarSayfasi() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold text-zinc-900">Faturalar</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold text-zinc-900">Faturalar</h1>
+        <Link
+          href="/panel/faturalar/ice-aktar"
+          className="rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100"
+        >
+          ⬆ CSV ile içe aktar
+        </Link>
+      </div>
 
       <FaturaForm musteriler={musteriler ?? []} />
 
