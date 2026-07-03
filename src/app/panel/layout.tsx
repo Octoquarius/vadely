@@ -42,6 +42,9 @@ export default async function PanelYerlesimi({
               <Link href="/panel/faturalar" className="hover:text-zinc-900">
                 Faturalar
               </Link>
+              <Link href="/panel/odemeler" className="hover:text-zinc-900">
+                Ödemeler
+              </Link>
             </nav>
           </div>
           <div className="flex items-center gap-3 text-sm">
