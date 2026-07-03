@@ -1,0 +1,74 @@
+"use client";
+
+import Link from "next/link";
+import { useActionState } from "react";
+import { girisYap, type AuthDurum } from "../actions";
+
+const baslangic: AuthDurum = {};
+
+export default function GirisSayfasi() {
+  const [durum, eylem, bekliyor] = useActionState(girisYap, baslangic);
+
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
+      <div className="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-8 shadow-sm">
+        <h1 className="text-xl font-semibold text-zinc-900">
+          Tahsilo&apos;ya giriş yap
+        </h1>
+        <p className="mt-1 text-sm text-zinc-500">
+          Alacaklarınız sizi bekliyor.
+        </p>
+
+        <form action={eylem} className="mt-6 space-y-4">
+          <div>
+            <label htmlFor="eposta" className="block text-sm font-medium text-zinc-700">
+              E-posta
+            </label>
+            <input
+              id="eposta"
+              name="eposta"
+              type="email"
+              required
+              autoComplete="email"
+              className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-zinc-500 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label htmlFor="sifre" className="block text-sm font-medium text-zinc-700">
+              Şifre
+            </label>
+            <input
+              id="sifre"
+              name="sifre"
+              type="password"
+              required
+              autoComplete="current-password"
+              className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-zinc-500 focus:outline-none"
+            />
+          </div>
+
+          {durum.hata && (
+            <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+              {durum.hata}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={bekliyor}
+            className="w-full rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+          >
+            {bekliyor ? "Giriş yapılıyor…" : "Giriş yap"}
+          </button>
+        </form>
+
+        <p className="mt-4 text-center text-sm text-zinc-500">
+          Hesabınız yok mu?{" "}
+          <Link href="/kayit" className="font-medium text-zinc-900 underline">
+            Kayıt olun
+          </Link>
+        </p>
+      </div>
+    </main>
+  );
+}
