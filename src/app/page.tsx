@@ -5,7 +5,7 @@ export default function AnaSayfa() {
     <div className="flex min-h-screen flex-col bg-zinc-50">
       <header className="border-b border-zinc-200 bg-white">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <span className="text-lg font-bold text-zinc-900">Tahsilo</span>
+          <span className="text-lg font-bold text-zinc-900">Vadely</span>
           <nav className="flex items-center gap-3 text-sm">
             <Link
               href="/giris"
@@ -31,7 +31,7 @@ export default function AnaSayfa() {
             <span className="text-emerald-600">paranızı biz toplayalım.</span>
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-lg text-zinc-600">
-            Tahsilo, e-faturalarınızı takip eder, müşterilerinize nazik ama
+            Vadely, e-faturalarınızı takip eder, müşterilerinize nazik ama
             tutarlı ödeme hatırlatmaları gönderir ve alacaklarınızın ne zaman
             tahsil edileceğini önceden gösterir.
           </p>

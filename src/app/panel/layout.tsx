@@ -30,7 +30,7 @@ export default async function PanelYerlesimi({
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-8">
             <Link href="/panel" className="text-lg font-bold text-zinc-900">
-              Tahsilo
+              Vadely
             </Link>
             <nav className="flex gap-4 text-sm text-zinc-600">
               <Link href="/panel" className="hover:text-zinc-900">

@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tahsilo — Otomatik Alacak Tahsilatı",
+  title: "Vadely — Otomatik Alacak Tahsilatı",
   description:
     "KOBİ'ler için yapay zekâ destekli otomatik alacak tahsilatı ve nakit akışı tahminleme.",
 };
