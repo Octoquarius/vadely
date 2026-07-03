@@ -43,7 +43,7 @@ export default async function FaturalarSayfasi() {
           href="/panel/faturalar/ice-aktar"
           className="rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100"
         >
-          ⬆ CSV ile içe aktar
+          ⬆ Fatura içe aktar (XML/CSV)
         </Link>
       </div>
 

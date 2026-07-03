@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { IceAktarSihirbazi } from "./ice-aktar-form";
+import { IceAktarSekmeleri } from "./sekmeler";
 
 export default function IceAktarSayfasi() {
   return (
@@ -12,15 +12,15 @@ export default function IceAktarSayfasi() {
           ← Faturalar
         </Link>
         <h1 className="mt-1 text-2xl font-semibold text-zinc-900">
-          CSV ile fatura içe aktar
+          Fatura içe aktar
         </h1>
         <p className="mt-1 text-sm text-zinc-500">
-          Ön muhasebe programınızdan veya e-fatura portalınızdan aldığınız CSV
-          dökümünü yükleyin; müşterileri otomatik oluşturur, mükerrer
-          faturaları atlarız.
+          e-Fatura/e-Arşiv XML dosyalarınızı veya ön muhasebe programınızdan
+          aldığınız CSV dökümünü yükleyin; müşterileri otomatik oluşturur,
+          mükerrer faturaları atlarız.
         </p>
       </div>
-      <IceAktarSihirbazi />
+      <IceAktarSekmeleri />
     </div>
   );
 }
