@@ -435,7 +435,7 @@ function FaturaKarti() {
       <p className="mt-1 text-sm text-murekkep-2">Yıldız Metal San. A.Ş.</p>
 
       {/* Vade zaman çizgisi */}
-      <div className="relative mt-10 mb-2 h-0.5 rounded bg-cizgi">
+      <div className="relative mt-8 mb-11 h-0.5 rounded bg-cizgi">
         <div
           className="lp-cizgi-dolgu absolute inset-y-0 left-0 w-full rounded"
           style={{
@@ -471,7 +471,7 @@ function Nokta({
     <div className="relative flex flex-col items-center">
       <span className={`h-3.5 w-3.5 rounded-full ${nokta}`} />
       <span
-        className={`absolute top-6 whitespace-nowrap text-center text-xs font-medium ${
+        className={`absolute top-5 whitespace-nowrap text-center text-xs font-medium ${
           durum === "tahsil" ? "text-altin" : "text-murekkep-2"
         }`}
       >
