@@ -31,8 +31,14 @@ export default async function GenelBakis() {
   const supabase = await createClient();
   const bugun = new Date().toISOString().slice(0, 10);
 
-  const [acikSorgu, kapanmaSorgu, hatirlatmaSorgu, musteriSayisi] =
-    await Promise.all([
+  const [
+    acikSorgu,
+    kapanmaSorgu,
+    hatirlatmaSorgu,
+    musteriSayisi,
+    faturaSayisi,
+    hatirlatmaSayisi,
+  ] = await Promise.all([
       supabase
         .from("faturalar")
         .select(
@@ -49,6 +55,10 @@ export default async function GenelBakis() {
         .select("fatura_id, gonderilen_zaman")
         .not("gonderilen_zaman", "is", null),
       supabase.from("musteriler").select("id", { count: "exact", head: true }),
+      supabase.from("faturalar").select("id", { count: "exact", head: true }),
+      supabase
+        .from("hatirlatmalar")
+        .select("id", { count: "exact", head: true }),
     ]);
 
   const acikFaturalar: AcikFatura[] = (acikSorgu.data ?? []).map((fatura) => ({
@@ -134,9 +144,82 @@ export default async function GenelBakis() {
     },
   ];
 
+  const adimlar = [
+    {
+      etiket: "Müşterinizi ekleyin",
+      aciklama: "Elle girin ya da içe aktarmayla otomatik oluşsun",
+      link: "/panel/musteriler",
+      tamam: (musteriSayisi.count ?? 0) > 0,
+    },
+    {
+      etiket: "Faturalarınızı yükleyin",
+      aciklama: "e-Fatura XML veya CSV dökümünüzü içe aktarın",
+      link: "/panel/faturalar/ice-aktar",
+      tamam: (faturaSayisi.count ?? 0) > 0,
+    },
+    {
+      etiket: "Hatırlatma planınızı üretin",
+      aciklama: "Kadansı gözden geçirin, 'Planı şimdi üret' deyin",
+      link: "/panel/hatirlatmalar",
+      tamam: (hatirlatmaSayisi.count ?? 0) > 0,
+    },
+    {
+      etiket: "İlk hatırlatmanızı gönderin",
+      aciklama: "Önizleyin, e-posta ya da WhatsApp ile iletin",
+      link: "/panel/hatirlatmalar",
+      tamam: hatirlatmalar.length > 0,
+    },
+  ];
+  const kurulumBitti = adimlar.every((adim) => adim.tamam);
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold text-zinc-900">Genel Bakış</h1>
+
+      {!kurulumBitti && (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50/40 p-5">
+          <h2 className="text-sm font-semibold text-zinc-900">
+            Kuruluma devam edin (
+            {adimlar.filter((adim) => adim.tamam).length}/{adimlar.length})
+          </h2>
+          <div className="mt-3 grid gap-2 md:grid-cols-2">
+            {adimlar.map((adim) => (
+              <Link
+                key={adim.etiket}
+                href={adim.link}
+                className={`flex items-start gap-3 rounded-lg border bg-white p-3 text-sm ${
+                  adim.tamam
+                    ? "border-zinc-200 opacity-60"
+                    : "border-emerald-300 hover:bg-emerald-50"
+                }`}
+              >
+                <span
+                  className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                    adim.tamam
+                      ? "bg-emerald-600 text-white"
+                      : "border-2 border-zinc-300 text-transparent"
+                  }`}
+                >
+                  ✓
+                </span>
+                <span>
+                  <span
+                    className={`font-medium ${
+                      adim.tamam
+                        ? "text-zinc-500 line-through"
+                        : "text-zinc-900"
+                    }`}
+                  >
+                    {adim.etiket}
+                  </span>
+                  <br />
+                  <span className="text-zinc-500">{adim.aciklama}</span>
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {kartlar.map((kart) => (
@@ -327,20 +410,6 @@ export default async function GenelBakis() {
         </div>
       </div>
 
-      {(musteriSayisi.count ?? 0) === 0 && (
-        <div className="rounded-xl border border-dashed border-zinc-300 bg-white p-8 text-center">
-          <h2 className="text-lg font-medium text-zinc-900">Hoş geldiniz! 👋</h2>
-          <p className="mt-2 text-sm text-zinc-500">
-            Başlamak için önce bir müşteri ekleyin, sonra faturalarını girin.
-          </p>
-          <Link
-            href="/panel/musteriler"
-            className="mt-4 inline-block rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
-          >
-            İlk müşterini ekle
-          </Link>
-        </div>
-      )}
     </div>
   );
 }
