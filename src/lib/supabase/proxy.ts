@@ -9,6 +9,8 @@ const KORUMASIZ_YOLLAR = [
   "/pilot",
   "/gizlilik",
   "/kullanim-kosullari",
+  // Oturumla değil svix imzasıyla doğrulanır; /api/veri-indir korumalı kalır.
+  "/api/webhooks",
 ];
 
 export async function updateSession(request: NextRequest) {
