@@ -58,7 +58,7 @@ export default async function PilotBasvurulari() {
                     {b.ad_soyad} ·{" "}
                     <a
                       href={`mailto:${b.eposta}`}
-                      className="text-indigo-600 underline"
+                      className="text-altin underline"
                     >
                       {b.eposta}
                     </a>

@@ -23,6 +23,52 @@
   /* Durum renkleri — vurgudan ayrı, semantik */
   --color-tahsil: #1e7a57; /* tahsil edildi, akan nakit */
   --color-gecikme: #c0532b; /* vadesi geçti, dikkat */
+
+  /* --- Tailwind varsayılan paletini markaya bağla ---
+     Mevcut panel/auth/yönetim sayfaları zinc/emerald/green/amber utility'leri
+     kullanıyor; bunları marka renklerine yeniden tanımlayınca tümü tek yerden
+     markaya geçer. (Landing yalnızca marka token'ları kullanır, etkilenmez.) */
+
+  /* zinc → çam-tonlu nötr rampa */
+  --color-zinc-50: #f1efe8;
+  --color-zinc-100: #eae7dd;
+  --color-zinc-200: #e4e1d6;
+  --color-zinc-300: #cbd0c9;
+  --color-zinc-400: #98a69d;
+  --color-zinc-500: #6b7a72;
+  --color-zinc-600: #52625a;
+  --color-zinc-700: #43574f;
+  --color-zinc-800: #1d3832;
+  --color-zinc-900: #0c2b26;
+  --color-zinc-950: #081f1b;
+
+  /* emerald → olgun altın */
+  --color-emerald-50: #faf3e0;
+  --color-emerald-100: #f2e6c4;
+  --color-emerald-200: #e9d49c;
+  --color-emerald-300: #e0bd6a;
+  --color-emerald-400: #e3a93a;
+  --color-emerald-500: #c89020;
+  --color-emerald-600: #a8760f;
+  --color-emerald-700: #8a6109;
+  --color-emerald-800: #6e4d08;
+  --color-emerald-900: #5a3f0a;
+
+  /* green → tahsil (olumlu / tahsil edildi) */
+  --color-green-50: #e8f3ed;
+  --color-green-100: #d1e8da;
+  --color-green-500: #1e7a57;
+  --color-green-600: #1a6b4c;
+  --color-green-700: #155840;
+  --color-green-800: #114634;
+
+  /* amber → gecikme (uyarı / vadesi geçti) */
+  --color-amber-50: #f7e9e1;
+  --color-amber-100: #f0d7ca;
+  --color-amber-500: #c0532b;
+  --color-amber-600: #ab4a26;
+  --color-amber-700: #8f3d20;
+  --color-amber-800: #74331b;
 }
 
 /* next/font değişkenlerini Tailwind font utility'lerine bağla (inline: kullanım

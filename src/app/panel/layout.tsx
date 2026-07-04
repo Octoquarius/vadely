@@ -66,7 +66,7 @@ export default async function PanelYerlesimi({
             {yonetici && (
               <Link
                 href="/yonetim"
-                className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 hover:bg-indigo-100"
+                className="rounded-full bg-altin/10 px-3 py-1 text-xs font-medium text-altin hover:bg-altin/20"
               >
                 Yönetim
               </Link>

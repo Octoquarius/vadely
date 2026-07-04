@@ -26,7 +26,7 @@ export default async function YonetimYerlesimi({
           <div className="flex items-center gap-8">
             <Link href="/yonetim" className="flex items-center gap-2 font-bold">
               Vadely
-              <span className="rounded-full bg-indigo-500/20 px-2 py-0.5 text-xs font-medium text-indigo-300">
+              <span className="rounded-full bg-altin-parlak/20 px-2 py-0.5 text-xs font-medium text-altin-parlak">
                 Yönetim
               </span>
             </Link>

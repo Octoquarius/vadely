@@ -5,7 +5,7 @@ import { FaturaForm } from "./fatura-form";
 
 const DURUM_ETIKETLERI: Record<string, { etiket: string; sinif: string }> = {
   acik: { etiket: "Açık", sinif: "bg-amber-50 text-amber-700" },
-  kismi: { etiket: "Kısmi", sinif: "bg-blue-50 text-blue-700" },
+  kismi: { etiket: "Kısmi", sinif: "bg-altin/10 text-altin" },
   kapali: { etiket: "Kapalı", sinif: "bg-green-50 text-green-700" },
   itilafli: { etiket: "İtilaflı", sinif: "bg-red-50 text-red-700" },
 };
