@@ -43,6 +43,14 @@ export async function kayitOl(
     return { hata: "Şifre en az 8 karakter olmalı." };
   }
 
+  // KVKK açık rızası: tarayıcı onay kutusu atlanabildiği için sunucuda da
+  // zorunlu tutulur ve rıza zamanı denetlenebilir bir kayıt olarak saklanır.
+  if (!formData.get("kvkk_onay")) {
+    return {
+      hata: "Kullanım Koşulları ve KVKK Aydınlatma Metni'ni onaylamalısınız.",
+    };
+  }
+
   const { error } = await supabase.auth.signUp({
     email: String(formData.get("eposta") ?? ""),
     password: sifre,
@@ -51,6 +59,8 @@ export async function kayitOl(
       data: {
         sirket_adi: String(formData.get("sirket_adi") ?? ""),
         ad_soyad: String(formData.get("ad_soyad") ?? ""),
+        kvkk_onayi_verildi: true,
+        kvkk_onay_zamani: new Date().toISOString(),
       },
     },
   });

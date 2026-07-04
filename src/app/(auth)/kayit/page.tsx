@@ -74,7 +74,13 @@ export default function KayitSayfasi() {
           </div>
 
           <label className="flex items-start gap-2 text-xs text-zinc-600">
-            <input type="checkbox" required className="mt-0.5" />
+            <input
+              type="checkbox"
+              name="kvkk_onay"
+              value="evet"
+              required
+              className="mt-0.5"
+            />
             <span>
               <a
                 href="/kullanim-kosullari"
