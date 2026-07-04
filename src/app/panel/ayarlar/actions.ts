@@ -1,9 +1,28 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 export type IslemDurum = { hata?: string; mesaj?: string };
+
+export async function hesapSil(
+  _onceki: IslemDurum,
+  formData: FormData
+): Promise<IslemDurum> {
+  if (String(formData.get("onay") ?? "") !== "SIL") {
+    return { hata: 'Onay için "SIL" yazmalısınız.' };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("hesabimi_sil");
+  if (error) {
+    return { hata: error.message || "Hesap silinemedi." };
+  }
+
+  await supabase.auth.signOut();
+  redirect("/");
+}
 
 export async function ayarKaydet(
   _onceki: IslemDurum,

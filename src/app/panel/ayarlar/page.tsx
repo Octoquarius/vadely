@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { AyarFormu } from "./ayar-formu";
+import { TehlikeBolgesi } from "./tehlike-bolgesi";
 
 export default async function AyarlarSayfasi() {
   const supabase = await createClient();
@@ -27,6 +28,7 @@ export default async function AyarlarSayfasi() {
         gonderimModu={hesap?.gonderim_modu ?? "onayli"}
         duzenleyebilir={profil?.rol === "sahip"}
       />
+      <TehlikeBolgesi sahipMi={profil?.rol === "sahip"} />
     </div>
   );
 }

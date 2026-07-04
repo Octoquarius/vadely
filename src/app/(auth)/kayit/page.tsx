@@ -73,6 +73,24 @@ export default function KayitSayfasi() {
             />
           </div>
 
+          <label className="flex items-start gap-2 text-xs text-zinc-600">
+            <input type="checkbox" required className="mt-0.5" />
+            <span>
+              <a
+                href="/kullanim-kosullari"
+                target="_blank"
+                className="underline"
+              >
+                Kullanım Koşulları
+              </a>
+              &apos;nı ve{" "}
+              <a href="/gizlilik" target="_blank" className="underline">
+                KVKK Aydınlatma Metni
+              </a>
+              &apos;ni okudum, kabul ediyorum.
+            </span>
+          </label>
+
           {durum.hata && (
             <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
               {durum.hata}
