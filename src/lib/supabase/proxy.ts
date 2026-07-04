@@ -5,6 +5,7 @@ const KORUMASIZ_YOLLAR = [
   "/",
   "/giris",
   "/kayit",
+  "/sifremi-unuttum",
   "/auth",
   "/pilot",
   "/gizlilik",

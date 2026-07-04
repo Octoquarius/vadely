@@ -83,3 +83,56 @@ export async function cikisYap() {
   await supabase.auth.signOut();
   redirect("/giris");
 }
+
+export async function sifreSifirlaIste(
+  _onceki: AuthDurum,
+  formData: FormData
+): Promise<AuthDurum> {
+  const supabase = await createClient();
+  const headerList = await headers();
+  const origin = headerList.get("origin") ?? "http://localhost:3000";
+
+  const eposta = String(formData.get("eposta") ?? "").trim();
+  if (!eposta.includes("@")) {
+    return { hata: "Geçerli bir e-posta adresi girin." };
+  }
+
+  // Kurtarma bağlantısı /auth/callback'e gelir, oradan /sifre-yenile'ye
+  // yönlenir (kurtarma oturumu kurulmuş olur).
+  await supabase.auth.resetPasswordForEmail(eposta, {
+    redirectTo: `${origin}/auth/callback?next=/sifre-yenile`,
+  });
+
+  // Kullanıcı numaralandırmasını (enumeration) önlemek için her zaman aynı
+  // yanıt verilir — e-posta kayıtlı olsun olmasın.
+  return {
+    mesaj:
+      "Bu e-posta kayıtlıysa şifre sıfırlama bağlantısı gönderildi. Gelen kutunuzu (ve spam klasörünü) kontrol edin.",
+  };
+}
+
+export async function sifreGuncelle(
+  _onceki: AuthDurum,
+  formData: FormData
+): Promise<AuthDurum> {
+  const sifre = String(formData.get("sifre") ?? "");
+  const sifreTekrar = String(formData.get("sifre_tekrar") ?? "");
+
+  if (sifre.length < 8) {
+    return { hata: "Şifre en az 8 karakter olmalı." };
+  }
+  if (sifre !== sifreTekrar) {
+    return { hata: "Şifreler eşleşmiyor." };
+  }
+
+  const supabase = await createClient();
+  // Kurtarma oturumu gerektirir; bağlantı olmadan gelen istek yetkisizdir.
+  const { error } = await supabase.auth.updateUser({ password: sifre });
+  if (error) {
+    return {
+      hata: "Şifre güncellenemedi. Bağlantının süresi dolmuş olabilir; sıfırlamayı tekrar isteyin.",
+    };
+  }
+
+  redirect("/panel");
+}
