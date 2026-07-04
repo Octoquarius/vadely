@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
-export type IslemDurum = { hata?: string };
+export type IslemDurum = { hata?: string; mesaj?: string };
 
 export async function musteriEkle(
   _onceki: IslemDurum,
@@ -27,14 +27,85 @@ export async function musteriEkle(
   return {};
 }
 
-export async function musteriSil(formData: FormData) {
+export async function musteriGuncelle(
+  _onceki: IslemDurum,
+  formData: FormData
+): Promise<IslemDurum> {
+  const supabase = await createClient();
+
+  const id = String(formData.get("id") ?? "");
+  const unvan = String(formData.get("unvan") ?? "").trim();
+  if (!id) return { hata: "Müşteri bulunamadı." };
+  if (!unvan) return { hata: "Unvan zorunludur." };
+
+  const { data, error } = await supabase
+    .from("musteriler")
+    .update({
+      unvan,
+      vkn: String(formData.get("vkn") ?? "").trim() || null,
+      eposta: String(formData.get("eposta") ?? "").trim() || null,
+      telefon: String(formData.get("telefon") ?? "").trim() || null,
+    })
+    .eq("id", id)
+    .select("id");
+
+  if (error || !data || data.length === 0) {
+    return { hata: "Müşteri güncellenemedi. Yetkinizi kontrol edin." };
+  }
+
+  revalidatePath("/panel/musteriler");
+  return { mesaj: "Müşteri güncellendi." };
+}
+
+// Müşteriyi ve tüm bağlı kayıtlarını (faturalar, ödemeler, eşleşmeler,
+// hatırlatmalar) siler. FK sırasına dikkat: önce alt kayıtlar. RLS bu
+// tablolarda silmeye izin verir (ornekVeriTemizle ile aynı yol).
+export async function musteriSil(
+  _onceki: IslemDurum,
+  formData: FormData
+): Promise<IslemDurum> {
   const supabase = await createClient();
   const id = String(formData.get("id") ?? "");
-  if (id) {
-    // Faturası olan müşteri FK (restrict) nedeniyle silinemez; sessizce yoksayılır.
-    await supabase.from("musteriler").delete().eq("id", id);
-    revalidatePath("/panel/musteriler");
+  if (!id) return { hata: "Müşteri bulunamadı." };
+
+  const { data: faturalar } = await supabase
+    .from("faturalar")
+    .select("id")
+    .eq("musteri_id", id);
+  const faturaIdleri = (faturalar ?? []).map((f) => f.id);
+
+  const { data: odemeler } = await supabase
+    .from("odemeler")
+    .select("id")
+    .eq("musteri_id", id);
+  const odemeIdleri = (odemeler ?? []).map((o) => o.id);
+
+  if (faturaIdleri.length > 0) {
+    await supabase
+      .from("fatura_odeme_eslesmeleri")
+      .delete()
+      .in("fatura_id", faturaIdleri);
   }
+  if (odemeIdleri.length > 0) {
+    await supabase
+      .from("fatura_odeme_eslesmeleri")
+      .delete()
+      .in("odeme_id", odemeIdleri);
+  }
+  await supabase.from("hatirlatmalar").delete().eq("musteri_id", id);
+  if (faturaIdleri.length > 0) {
+    await supabase.from("faturalar").delete().in("id", faturaIdleri);
+  }
+  await supabase.from("odemeler").delete().eq("musteri_id", id);
+
+  const { error } = await supabase.from("musteriler").delete().eq("id", id);
+  if (error) return { hata: "Müşteri silinemedi. Yetkinizi kontrol edin." };
+
+  revalidatePath("/panel/musteriler");
+  revalidatePath("/panel");
+  revalidatePath("/panel/faturalar");
+  revalidatePath("/panel/odemeler");
+  return { mesaj: "Müşteri ve bağlı kayıtları silindi." };
 }
 
 export async function faturaEkle(
@@ -81,14 +152,103 @@ export async function faturaEkle(
   return {};
 }
 
-export async function faturaSil(formData: FormData) {
+export async function faturaGuncelle(
+  _onceki: IslemDurum,
+  formData: FormData
+): Promise<IslemDurum> {
+  const supabase = await createClient();
+
+  const id = String(formData.get("id") ?? "");
+  const faturaNo = String(formData.get("fatura_no") ?? "").trim();
+  const faturaTarihi = String(formData.get("fatura_tarihi") ?? "");
+  const vadeTarihi = String(formData.get("vade_tarihi") ?? "");
+  const tutar = Number(formData.get("tutar"));
+
+  if (!id) return { hata: "Fatura bulunamadı." };
+  if (!faturaNo || !faturaTarihi || !vadeTarihi) {
+    return { hata: "Tüm zorunlu alanları doldurun." };
+  }
+  if (!Number.isFinite(tutar) || tutar <= 0) {
+    return { hata: "Tutar sıfırdan büyük olmalı." };
+  }
+  if (vadeTarihi < faturaTarihi) {
+    return { hata: "Vade tarihi fatura tarihinden önce olamaz." };
+  }
+
+  // Tutar değişince kalan bakiye ve durumu, eşleşmiş (tahsil edilmiş) tutara
+  // göre yeniden hesapla; itilaflı durumu koru.
+  const { data: mevcut } = await supabase
+    .from("faturalar")
+    .select("durum")
+    .eq("id", id)
+    .single();
+  const { data: eslesmeler } = await supabase
+    .from("fatura_odeme_eslesmeleri")
+    .select("tutar")
+    .eq("fatura_id", id);
+  const tahsil = (eslesmeler ?? []).reduce((t, e) => t + Number(e.tutar), 0);
+  const yeniKalan = Math.round((tutar - tahsil) * 100) / 100;
+  if (yeniKalan < 0) {
+    return {
+      hata: `Tutar, tahsil edilen tutardan (${tahsil.toLocaleString("tr-TR")} ₺) küçük olamaz.`,
+    };
+  }
+  const durum =
+    mevcut?.durum === "itilafli"
+      ? "itilafli"
+      : yeniKalan <= 0
+        ? "kapali"
+        : tahsil > 0
+          ? "kismi"
+          : "acik";
+
+  const { data, error } = await supabase
+    .from("faturalar")
+    .update({
+      fatura_no: faturaNo,
+      fatura_tarihi: faturaTarihi,
+      vade_tarihi: vadeTarihi,
+      tutar,
+      kalan_bakiye: yeniKalan,
+      durum,
+    })
+    .eq("id", id)
+    .select("id");
+
+  if (error) {
+    if (error.code === "23505") {
+      return { hata: "Bu fatura numarası zaten kayıtlı." };
+    }
+    return { hata: "Fatura güncellenemedi. Yetkinizi kontrol edin." };
+  }
+  if (!data || data.length === 0) {
+    return { hata: "Fatura güncellenemedi. Yetkinizi kontrol edin." };
+  }
+
+  revalidatePath("/panel/faturalar");
+  revalidatePath("/panel");
+  return { mesaj: "Fatura güncellendi." };
+}
+
+// Faturayı ve bağlı kayıtlarını (eşleşmeler, hatırlatmalar) siler.
+export async function faturaSil(
+  _onceki: IslemDurum,
+  formData: FormData
+): Promise<IslemDurum> {
   const supabase = await createClient();
   const id = String(formData.get("id") ?? "");
-  if (id) {
-    await supabase.from("faturalar").delete().eq("id", id);
-    revalidatePath("/panel/faturalar");
-    revalidatePath("/panel");
-  }
+  if (!id) return { hata: "Fatura bulunamadı." };
+
+  await supabase.from("fatura_odeme_eslesmeleri").delete().eq("fatura_id", id);
+  await supabase.from("hatirlatmalar").delete().eq("fatura_id", id);
+
+  const { error } = await supabase.from("faturalar").delete().eq("id", id);
+  if (error) return { hata: "Fatura silinemedi. Yetkinizi kontrol edin." };
+
+  revalidatePath("/panel/faturalar");
+  revalidatePath("/panel");
+  revalidatePath("/panel/odemeler");
+  return { mesaj: "Fatura silindi." };
 }
 
 // ---- Örnek veri (ürünü boş hesapla keşfetmek için) ----

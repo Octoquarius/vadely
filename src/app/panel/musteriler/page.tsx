@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import { musteriSil } from "../actions";
 import { MusteriForm } from "./musteri-form";
+import { MusteriSatiri } from "./musteri-satiri";
 
 export default async function MusterilerSayfasi() {
   const supabase = await createClient();
@@ -29,29 +29,7 @@ export default async function MusterilerSayfasi() {
           </thead>
           <tbody>
             {(musteriler ?? []).map((musteri) => (
-              <tr key={musteri.id} className="border-b border-zinc-100">
-                <td className="px-4 py-3 font-medium text-zinc-900">
-                  {musteri.unvan}
-                </td>
-                <td className="px-4 py-3 text-zinc-600">{musteri.vkn ?? "—"}</td>
-                <td className="px-4 py-3 text-zinc-600">
-                  {musteri.eposta ?? "—"}
-                </td>
-                <td className="px-4 py-3 text-zinc-600">
-                  {musteri.telefon ?? "—"}
-                </td>
-                <td className="px-4 py-3 text-right">
-                  <form action={musteriSil}>
-                    <input type="hidden" name="id" value={musteri.id} />
-                    <button
-                      type="submit"
-                      className="text-sm text-red-600 hover:underline"
-                    >
-                      Sil
-                    </button>
-                  </form>
-                </td>
-              </tr>
+              <MusteriSatiri key={musteri.id} musteri={musteri} />
             ))}
             {(musteriler ?? []).length === 0 && (
               <tr>

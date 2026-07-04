@@ -1,29 +1,10 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { faturaSil } from "../actions";
 import { FaturaForm } from "./fatura-form";
-
-const DURUM_ETIKETLERI: Record<string, { etiket: string; sinif: string }> = {
-  acik: { etiket: "Açık", sinif: "bg-amber-50 text-amber-700" },
-  kismi: { etiket: "Kısmi", sinif: "bg-altin/10 text-altin" },
-  kapali: { etiket: "Kapalı", sinif: "bg-green-50 text-green-700" },
-  itilafli: { etiket: "İtilaflı", sinif: "bg-red-50 text-red-700" },
-};
-
-function paraFormat(tutar: number) {
-  return new Intl.NumberFormat("tr-TR", {
-    style: "currency",
-    currency: "TRY",
-  }).format(tutar);
-}
-
-function tarihFormat(tarih: string) {
-  return new Date(tarih).toLocaleDateString("tr-TR");
-}
+import { FaturaSatiri } from "./fatura-satiri";
 
 export default async function FaturalarSayfasi() {
   const supabase = await createClient();
-  const bugun = new Date().toISOString().slice(0, 10);
 
   const [{ data: faturalar }, { data: musteriler }] = await Promise.all([
     supabase
@@ -63,56 +44,23 @@ export default async function FaturalarSayfasi() {
             </tr>
           </thead>
           <tbody>
-            {(faturalar ?? []).map((fatura) => {
-              const durumBilgi =
-                DURUM_ETIKETLERI[fatura.durum] ?? DURUM_ETIKETLERI.acik;
-              const gecikti =
-                fatura.vade_tarihi < bugun &&
-                (fatura.durum === "acik" || fatura.durum === "kismi");
-              return (
-                <tr key={fatura.id} className="border-b border-zinc-100">
-                  <td className="px-4 py-3 font-medium text-zinc-900">
-                    {fatura.fatura_no}
-                  </td>
-                  <td className="px-4 py-3 text-zinc-600">
-                    {(fatura.musteriler as unknown as { unvan: string } | null)
-                      ?.unvan ?? "—"}
-                  </td>
-                  <td
-                    className={`px-4 py-3 ${
-                      gecikti ? "font-medium text-red-600" : "text-zinc-600"
-                    }`}
-                  >
-                    {tarihFormat(fatura.vade_tarihi)}
-                    {gecikti && " ⚠"}
-                  </td>
-                  <td className="px-4 py-3 text-zinc-600">
-                    {paraFormat(Number(fatura.tutar))}
-                  </td>
-                  <td className="px-4 py-3 text-zinc-600">
-                    {paraFormat(Number(fatura.kalan_bakiye))}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${durumBilgi.sinif}`}
-                    >
-                      {durumBilgi.etiket}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <form action={faturaSil}>
-                      <input type="hidden" name="id" value={fatura.id} />
-                      <button
-                        type="submit"
-                        className="text-sm text-red-600 hover:underline"
-                      >
-                        Sil
-                      </button>
-                    </form>
-                  </td>
-                </tr>
-              );
-            })}
+            {(faturalar ?? []).map((fatura) => (
+              <FaturaSatiri
+                key={fatura.id}
+                fatura={{
+                  id: fatura.id,
+                  fatura_no: fatura.fatura_no,
+                  fatura_tarihi: fatura.fatura_tarihi,
+                  vade_tarihi: fatura.vade_tarihi,
+                  tutar: Number(fatura.tutar),
+                  kalan_bakiye: Number(fatura.kalan_bakiye),
+                  durum: fatura.durum,
+                  musteri_unvan:
+                    (fatura.musteriler as unknown as { unvan: string } | null)
+                      ?.unvan ?? "—",
+                }}
+              />
+            ))}
             {(faturalar ?? []).length === 0 && (
               <tr>
                 <td colSpan={7} className="px-4 py-8 text-center text-zinc-500">
