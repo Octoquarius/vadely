@@ -29,6 +29,18 @@ function imzaDogrula(
   return false;
 }
 
+// Yeniden oynatma (replay) penceresi: svix zaman damgası ±5 dk dışındaysa
+// imza geçerli olsa bile reddedilir (yakalanmış bir isteğin tekrar
+// gönderilmesini engeller).
+const AZAMI_SAPMA_SN = 5 * 60;
+
+function zamanDamgasiGecerli(zamanDamgasi: string): boolean {
+  const damga = Number(zamanDamgasi);
+  if (!Number.isFinite(damga)) return false;
+  const simdi = Math.floor(Date.now() / 1000);
+  return Math.abs(simdi - damga) <= AZAMI_SAPMA_SN;
+}
+
 const OLAY_ESLEME: Record<string, string> = {
   "email.opened": "acildi",
   "email.clicked": "tiklandi",
@@ -50,6 +62,7 @@ export async function POST(request: Request) {
     !mesajId ||
     !zamanDamgasi ||
     !imza ||
+    !zamanDamgasiGecerli(zamanDamgasi) ||
     !imzaDogrula(gizliAnahtar, mesajId, zamanDamgasi, govde, imza)
   ) {
     return NextResponse.json({ hata: "gecersiz imza" }, { status: 401 });

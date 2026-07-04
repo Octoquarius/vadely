@@ -39,6 +39,27 @@ function tarihFormat(iso: string): string {
   });
 }
 
+// Müşteri unvanı / fatura no gibi kullanıcı verileri HTML gövdeye gömülmeden
+// önce kaçırılır (bozuk render / enjeksiyon önlenir). Düz metin sürümü
+// paragraflardan etiket sökerek üretildiği için orada varlıklar geri çözülür.
+function htmlKac(deger: string): string {
+  return deger
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function htmlCoz(metin: string): string {
+  return metin
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, "&");
+}
+
 function htmlSar(girdi: SablonGirdisi, paragraflar: string[]): string {
   const satirlar = paragraflar
     .map(
@@ -55,7 +76,7 @@ function htmlSar(girdi: SablonGirdisi, paragraflar: string[]): string {
     <table style="width:100%;margin:8px 0 20px 0;border-collapse:collapse;font-size:14px;color:#27272a;">
       <tr>
         <td style="padding:6px 0;color:#71717a;">Fatura no</td>
-        <td style="padding:6px 0;text-align:right;font-weight:bold;">${girdi.faturaNo}</td>
+        <td style="padding:6px 0;text-align:right;font-weight:bold;">${htmlKac(girdi.faturaNo)}</td>
       </tr>
       <tr>
         <td style="padding:6px 0;color:#71717a;">Fatura tarihi</td>
@@ -71,7 +92,7 @@ function htmlSar(girdi: SablonGirdisi, paragraflar: string[]): string {
       </tr>
     </table>
     <p style="margin:0 0 4px 0;font-size:15px;color:#27272a;">Saygılarımızla,</p>
-    <p style="margin:0;font-size:15px;font-weight:bold;color:#27272a;">${girdi.gonderenUnvan}</p>
+    <p style="margin:0;font-size:15px;font-weight:bold;color:#27272a;">${htmlKac(girdi.gonderenUnvan)}</p>
     <p style="margin:24px 0 0 0;font-size:12px;color:#a1a1aa;">Ödemenizi yaptıysanız lütfen bu e-postayı dikkate almayın.</p>
   </div>
 </body>
@@ -80,7 +101,7 @@ function htmlSar(girdi: SablonGirdisi, paragraflar: string[]): string {
 
 function metinYap(girdi: SablonGirdisi, paragraflar: string[]): string {
   return [
-    ...paragraflar.map((p) => p.replace(/<[^>]+>/g, "")),
+    ...paragraflar.map((p) => htmlCoz(p.replace(/<[^>]+>/g, ""))),
     "",
     `Fatura no: ${girdi.faturaNo}`,
     `Fatura tarihi: ${tarihFormat(girdi.faturaTarihi)}`,
@@ -100,8 +121,8 @@ const SABLONLAR: Record<string, SablonUretici> = {
   on_hatirlatma: (girdi) => {
     const kalanGun = -girdi.gecikmeGunu;
     const paragraflar = [
-      `Sayın <strong>${girdi.musteriUnvan}</strong> yetkilisi,`,
-      `${girdi.faturaNo} numaralı faturamızın vadesi ${
+      `Sayın <strong>${htmlKac(girdi.musteriUnvan)}</strong> yetkilisi,`,
+      `${htmlKac(girdi.faturaNo)} numaralı faturamızın vadesi ${
         kalanGun > 0 ? `<strong>${kalanGun} gün sonra</strong>` : "yakında"
       } (${tarihFormat(girdi.vadeTarihi)}) doluyor. Planlamanıza yardımcı olması için kısa bir hatırlatma iletmek istedik.`,
       `Ödemenizi şimdiden planladıysanız harika — bu e-postayı gönül rahatlığıyla yok sayabilirsiniz.`,
@@ -115,8 +136,8 @@ const SABLONLAR: Record<string, SablonUretici> = {
 
   vade_gunu: (girdi) => {
     const paragraflar = [
-      `Sayın <strong>${girdi.musteriUnvan}</strong> yetkilisi,`,
-      `${girdi.faturaNo} numaralı faturamızın vadesi <strong>bugün</strong> (${tarihFormat(girdi.vadeTarihi)}) doluyor. Aşağıda fatura özetini bulabilirsiniz.`,
+      `Sayın <strong>${htmlKac(girdi.musteriUnvan)}</strong> yetkilisi,`,
+      `${htmlKac(girdi.faturaNo)} numaralı faturamızın vadesi <strong>bugün</strong> (${tarihFormat(girdi.vadeTarihi)}) doluyor. Aşağıda fatura özetini bulabilirsiniz.`,
       `Ödemeniz bugün içinde yapılacaksa ayrıca bir işlem yapmanıza gerek yok. Herhangi bir sorunuz varsa bu e-postayı yanıtlamanız yeterli.`,
     ];
     return {
@@ -128,8 +149,8 @@ const SABLONLAR: Record<string, SablonUretici> = {
 
   nazik_gecikme: (girdi) => {
     const paragraflar = [
-      `Sayın <strong>${girdi.musteriUnvan}</strong> yetkilisi,`,
-      `${girdi.faturaNo} numaralı faturamızın vadesi ${tarihFormat(girdi.vadeTarihi)} tarihinde doldu; kayıtlarımıza göre ödeme henüz bize ulaşmadı. Gözden kaçmış olabileceğini düşünerek nazikçe hatırlatmak istedik.`,
+      `Sayın <strong>${htmlKac(girdi.musteriUnvan)}</strong> yetkilisi,`,
+      `${htmlKac(girdi.faturaNo)} numaralı faturamızın vadesi ${tarihFormat(girdi.vadeTarihi)} tarihinde doldu; kayıtlarımıza göre ödeme henüz bize ulaşmadı. Gözden kaçmış olabileceğini düşünerek nazikçe hatırlatmak istedik.`,
       `Ödemeyi son günlerde yaptıysanız teşekkür ederiz — kayıtlarımıza yansıması birkaç gün sürebilir. Bir aksilik ya da sorunuz varsa bu e-postayı yanıtlamanız yeterli; birlikte çözüm bulalım.`,
     ];
     return {
@@ -141,8 +162,8 @@ const SABLONLAR: Record<string, SablonUretici> = {
 
   kararli_gecikme: (girdi) => {
     const paragraflar = [
-      `Sayın <strong>${girdi.musteriUnvan}</strong> yetkilisi,`,
-      `${girdi.faturaNo} numaralı faturamızın vadesi <strong>${girdi.gecikmeGunu} gün önce</strong> (${tarihFormat(girdi.vadeTarihi)}) doldu ve ödeme kayıtlarımıza hâlâ ulaşmadı. Konuyu önemle dikkatinize sunuyoruz.`,
+      `Sayın <strong>${htmlKac(girdi.musteriUnvan)}</strong> yetkilisi,`,
+      `${htmlKac(girdi.faturaNo)} numaralı faturamızın vadesi <strong>${girdi.gecikmeGunu} gün önce</strong> (${tarihFormat(girdi.vadeTarihi)}) doldu ve ödeme kayıtlarımıza hâlâ ulaşmadı. Konuyu önemle dikkatinize sunuyoruz.`,
       `Ödemenin en geç birkaç iş günü içinde yapılmasını rica ediyoruz. Ödeme planında bir zorluk yaşıyorsanız, birlikte bir çözüm bulmak için bu e-postayı yanıtlamanızı memnuniyetle karşılarız.`,
       `İş birliğiniz için şimdiden teşekkür ederiz.`,
     ];

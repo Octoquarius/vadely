@@ -181,6 +181,19 @@ function basligiNormallestir(baslik: string): string {
     .replace(/ç/g, "c");
 }
 
+// Tahmin sırası: "Vade Tarihi" gibi bir kolonun fatura_tarihi'nin jenerik
+// "tarih" ipucuna kapılmaması için vade_tarihi, fatura_tarihi'nden önce
+// denenir (fatura_tarihi'nin "fatura tarih" özel ipucu yine öncelik alır).
+const TAHMIN_SIRASI: AlanAnahtari[] = [
+  "musteri_unvan",
+  "fatura_no",
+  "vkn",
+  "eposta",
+  "tutar",
+  "vade_tarihi",
+  "fatura_tarihi",
+];
+
 /** Başlık adlarından alan → kolon indeksi tahmini üretir. */
 export function kolonlariTahminEt(
   basliklar: string[]
@@ -189,13 +202,13 @@ export function kolonlariTahminEt(
   const sonuc: Partial<Record<AlanAnahtari, number>> = {};
   const kullanilan = new Set<number>();
 
-  for (const alan of ESLENEBILIR_ALANLAR) {
-    for (const ipucu of BASLIK_IPUCLARI[alan.anahtar]) {
+  for (const anahtar of TAHMIN_SIRASI) {
+    for (const ipucu of BASLIK_IPUCLARI[anahtar]) {
       const indeks = normaller.findIndex(
         (b, i) => !kullanilan.has(i) && b.includes(ipucu)
       );
       if (indeks !== -1) {
-        sonuc[alan.anahtar] = indeks;
+        sonuc[anahtar] = indeks;
         kullanilan.add(indeks);
         break;
       }
