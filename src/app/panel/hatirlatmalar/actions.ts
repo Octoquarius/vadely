@@ -217,6 +217,34 @@ export async function planUret(
   };
 }
 
+export async function whatsappGonderildiIsaretle(
+  _onceki: IslemDurum,
+  formData: FormData
+): Promise<IslemDurum> {
+  const id = String(formData.get("id") ?? "");
+  if (!id) return { hata: "Hatırlatma bulunamadı." };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("hatirlatmalar")
+    .update({
+      kanal: "whatsapp",
+      durum: "gonderildi",
+      gonderilen_zaman: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .eq("durum", "planlandi")
+    .select("id");
+
+  if (error || !data || data.length === 0) {
+    return { hata: "İşaretlenemedi (zaten gönderilmiş olabilir)." };
+  }
+
+  revalidatePath("/panel/hatirlatmalar");
+  revalidatePath(`/panel/hatirlatmalar/${id}`);
+  return { mesaj: "WhatsApp'tan gönderildi olarak işaretlendi." };
+}
+
 export async function hatirlatmaIptal(formData: FormData) {
   const supabase = await createClient();
   const id = String(formData.get("id") ?? "");

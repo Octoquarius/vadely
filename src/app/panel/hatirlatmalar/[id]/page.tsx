@@ -6,7 +6,13 @@ import {
   HATIRLATMA_DURUMLARI,
   SABLON_ETIKETLERI,
 } from "@/lib/sabitler";
+import {
+  telefonNormallestir,
+  waLinkUret,
+  whatsappMesajUret,
+} from "@/lib/whatsapp";
 import { TekGonderDugmesi } from "./gonder-dugmesi";
+import { WhatsappKarti } from "./whatsapp-karti";
 
 function gecikmeGunuHesapla(vadeTarihi: string): number {
   const vade = new Date(`${vadeTarihi}T00:00:00Z`).getTime();
@@ -28,7 +34,7 @@ export default async function HatirlatmaOnizleme({
     supabase
       .from("hatirlatmalar")
       .select(
-        "id, sablon_kodu, durum, hata, planlanan_zaman, gonderilen_zaman, faturalar ( fatura_no, fatura_tarihi, vade_tarihi, kalan_bakiye, para_birimi ), musteriler ( unvan, eposta )"
+        "id, sablon_kodu, durum, hata, planlanan_zaman, gonderilen_zaman, faturalar ( fatura_no, fatura_tarihi, vade_tarihi, kalan_bakiye, para_birimi ), musteriler ( unvan, eposta, telefon, whatsapp )"
       )
       .eq("id", id)
       .single(),
@@ -47,11 +53,13 @@ export default async function HatirlatmaOnizleme({
   const musteri = hatirlatma.musteriler as unknown as {
     unvan: string;
     eposta: string | null;
+    telefon: string | null;
+    whatsapp: string | null;
   } | null;
 
   if (!fatura || !musteri) notFound();
 
-  const icerik = sablonUret(hatirlatma.sablon_kodu ?? "nazik_gecikme", {
+  const sablonGirdisi = {
     gonderenUnvan: hesap?.ad ?? "Şirketimiz",
     musteriUnvan: musteri.unvan,
     faturaNo: fatura.fatura_no,
@@ -60,7 +68,21 @@ export default async function HatirlatmaOnizleme({
     kalanBakiye: Number(fatura.kalan_bakiye),
     paraBirimi: fatura.para_birimi,
     gecikmeGunu: gecikmeGunuHesapla(fatura.vade_tarihi),
-  });
+  };
+
+  const icerik = sablonUret(
+    hatirlatma.sablon_kodu ?? "nazik_gecikme",
+    sablonGirdisi
+  );
+
+  const waMesaj = whatsappMesajUret(
+    hatirlatma.sablon_kodu ?? "nazik_gecikme",
+    sablonGirdisi
+  );
+  const waNumara = telefonNormallestir(
+    musteri.whatsapp ?? musteri.telefon ?? ""
+  );
+  const waLink = waNumara ? waLinkUret(waNumara, waMesaj) : null;
 
   const durumBilgi =
     HATIRLATMA_DURUMLARI[hatirlatma.durum] ?? HATIRLATMA_DURUMLARI.planlandi;
@@ -112,6 +134,13 @@ export default async function HatirlatmaOnizleme({
         sandbox=""
         title="E-posta önizlemesi"
         className="h-[560px] w-full rounded-xl border border-zinc-200 bg-white"
+      />
+
+      <WhatsappKarti
+        hatirlatmaId={hatirlatma.id}
+        mesaj={waMesaj}
+        waLink={waLink}
+        planlandi={hatirlatma.durum === "planlandi"}
       />
     </div>
   );
