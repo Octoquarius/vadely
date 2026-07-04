@@ -31,6 +31,8 @@ export default async function PanelYerlesimi({
   const denemede = hesap?.paket === "deneme";
   const kalanGun = hesap ? denemeKalanGun(hesap.created_at) : 0;
 
+  const { data: yonetici } = await supabase.rpc("yonetici_miyim");
+
   return (
     <div className="min-h-screen bg-zinc-50">
       <header className="border-b border-zinc-200 bg-white">
@@ -61,6 +63,14 @@ export default async function PanelYerlesimi({
             </nav>
           </div>
           <div className="flex items-center gap-3 text-sm">
+            {yonetici && (
+              <Link
+                href="/yonetim"
+                className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 hover:bg-indigo-100"
+              >
+                Yönetim
+              </Link>
+            )}
             {denemede && (
               <Link
                 href="/panel/paket"
