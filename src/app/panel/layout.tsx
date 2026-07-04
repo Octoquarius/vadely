@@ -48,10 +48,19 @@ export default async function PanelYerlesimi({
               <Link href="/panel/hatirlatmalar" className="hover:text-zinc-900">
                 Hatırlatmalar
               </Link>
+              <Link href="/panel/gunluk" className="hover:text-zinc-900">
+                Günlük
+              </Link>
             </nav>
           </div>
           <div className="flex items-center gap-3 text-sm">
-            <span className="text-zinc-500">{hesapAdi}</span>
+            <Link
+              href="/panel/ayarlar"
+              className="text-zinc-500 hover:text-zinc-900"
+              title="Ayarlar"
+            >
+              {hesapAdi} ⚙
+            </Link>
             <form action={cikisYap}>
               <button
                 type="submit"

@@ -25,6 +25,17 @@ export const HATIRLATMA_DURUMLARI: Record<
   iptal: { etiket: "İptal", sinif: "bg-zinc-100 text-zinc-500" },
 };
 
+export const OLAY_ETIKETLERI: Record<string, string> = {
+  hatirlatma_planlandi: "Hatırlatma planlandı",
+  hatirlatma_gonderildi: "Hatırlatma gönderildi",
+  hatirlatma_acildi: "E-posta açıldı",
+  hatirlatma_tiklandi: "E-postadaki bağlantı tıklandı",
+  hatirlatma_yanitlandi: "Müşteri yanıtladı",
+  hatirlatma_iptal: "Hatırlatma iptal edildi",
+  eslesme_eklendi: "Ödeme faturayla eşleştirildi",
+  eslesme_kaldirildi: "Ödeme eşleşmesi kaldırıldı",
+};
+
 /** Gün farkını insan diline çevirir: -3 -> "vadeden 3 gün önce" */
 export function gunFarkiEtiketi(gunFarki: number): string {
   if (gunFarki < 0) return `Vadeden ${-gunFarki} gün önce`;
