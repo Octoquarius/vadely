@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { denemeKalanGun } from "@/lib/paketler";
 import { cikisYap } from "@/app/(auth)/actions";
+import { VadelyMark } from "@/components/marka";
 
 export default async function PanelYerlesimi({
   children,
@@ -38,8 +39,12 @@ export default async function PanelYerlesimi({
       <header className="border-b border-zinc-200 bg-white">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-8">
-            <Link href="/panel" className="text-lg font-bold text-zinc-900">
-              Vadely
+            <Link
+              href="/panel"
+              className="flex items-center gap-2 text-murekkep"
+            >
+              <VadelyMark size={22} />
+              <span className="font-display text-lg font-semibold">vadely</span>
             </Link>
             <nav className="flex gap-4 text-sm text-zinc-600">
               <Link href="/panel" className="hover:text-zinc-900">

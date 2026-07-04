@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { cikisYap } from "@/app/(auth)/actions";
+import { VadelyMark } from "@/components/marka";
 
 // Platform yönetim paneli: yalnızca platform_yoneticileri tablosundaki
 // kullanıcılara açık. Yetki kontrolü hem burada (yönlendirme) hem de veriyi
@@ -24,8 +25,12 @@ export default async function YonetimYerlesimi({
       <header className="border-b border-zinc-800 bg-zinc-900 text-zinc-100">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-8">
-            <Link href="/yonetim" className="flex items-center gap-2 font-bold">
-              Vadely
+            <Link
+              href="/yonetim"
+              className="flex items-center gap-2.5 text-zinc-100"
+            >
+              <VadelyMark size={22} />
+              <span className="font-display text-lg font-semibold">vadely</span>
               <span className="rounded-full bg-altin-parlak/20 px-2 py-0.5 text-xs font-medium text-altin-parlak">
                 Yönetim
               </span>

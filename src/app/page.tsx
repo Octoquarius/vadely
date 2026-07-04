@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PAKETLER } from "@/lib/paketler";
+import { VadelyMark } from "@/components/marka";
 
 const NASIL = [
   {
@@ -89,21 +90,6 @@ const SSS = [
   },
 ];
 
-function Isaret({ boyut = 34 }: { boyut?: number }) {
-  return (
-    <svg width={boyut} height={boyut} viewBox="0 0 60 60" fill="none" aria-hidden>
-      <path
-        d="M12 30 L25 43 L40 20"
-        stroke="currentColor"
-        strokeWidth="5.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="45.5" cy="17.5" r="9.5" fill="var(--color-altin-parlak)" />
-    </svg>
-  );
-}
-
 export default function AnaSayfa() {
   return (
     <div className="min-h-screen bg-kagit">
@@ -124,7 +110,7 @@ export default function AnaSayfa() {
       <header className="sticky top-0 z-20 border-b border-cizgi bg-kagit/85 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5">
           <Link href="/" className="flex items-center gap-2.5 text-murekkep">
-            <Isaret boyut={26} />
+            <VadelyMark size={26} />
             <span className="font-display text-[22px] font-semibold tracking-tight">
               vadely<span className="text-altin">.</span>
             </span>
@@ -409,7 +395,7 @@ export default function AnaSayfa() {
       <footer className="bg-kagit">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-8 text-sm text-sis">
           <span className="flex items-center gap-2 text-murekkep">
-            <Isaret boyut={20} />
+            <VadelyMark size={20} />
             <span className="font-display font-semibold">vadely</span>
           </span>
           <span className="font-mono text-xs">© 2026 Vadely</span>
