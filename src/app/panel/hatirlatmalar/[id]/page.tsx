@@ -6,6 +6,7 @@ import {
   HATIRLATMA_DURUMLARI,
   SABLON_ETIKETLERI,
 } from "@/lib/sabitler";
+import { ozellikAcikMi } from "@/lib/paketler";
 import {
   telefonNormallestir,
   waLinkUret,
@@ -38,7 +39,7 @@ export default async function HatirlatmaOnizleme({
       )
       .eq("id", id)
       .single(),
-    supabase.from("hesaplar").select("ad").single(),
+    supabase.from("hesaplar").select("ad, paket, created_at").single(),
   ]);
 
   if (!hatirlatma) notFound();
@@ -136,12 +137,30 @@ export default async function HatirlatmaOnizleme({
         className="h-[560px] w-full rounded-xl border border-zinc-200 bg-white"
       />
 
-      <WhatsappKarti
-        hatirlatmaId={hatirlatma.id}
-        mesaj={waMesaj}
-        waLink={waLink}
-        planlandi={hatirlatma.durum === "planlandi"}
-      />
+      {hesap &&
+      ozellikAcikMi(hesap.paket, hesap.created_at, "whatsapp") ? (
+        <WhatsappKarti
+          hatirlatmaId={hatirlatma.id}
+          mesaj={waMesaj}
+          waLink={waLink}
+          planlandi={hatirlatma.durum === "planlandi"}
+        />
+      ) : (
+        <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-4">
+          <h2 className="text-sm font-semibold text-zinc-900">
+            💬 WhatsApp ile gönder
+          </h2>
+          <p className="mt-1 text-sm text-zinc-500">
+            WhatsApp hatırlatmaları <strong>Profesyonel</strong> pakette.{" "}
+            <Link
+              href="/panel/paket"
+              className="font-medium text-zinc-900 underline"
+            >
+              Paketleri görün
+            </Link>
+          </p>
+        </div>
+      )}
     </div>
   );
 }

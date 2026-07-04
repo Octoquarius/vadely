@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { denemeKalanGun } from "@/lib/paketler";
 import { cikisYap } from "@/app/(auth)/actions";
 
 export default async function PanelYerlesimi({
@@ -17,12 +18,18 @@ export default async function PanelYerlesimi({
 
   const { data: profil } = await supabase
     .from("kullanici_profilleri")
-    .select("ad_soyad, rol, hesaplar ( ad )")
+    .select("ad_soyad, rol, hesaplar ( ad, paket, created_at )")
     .eq("id", data.claims.sub)
     .single();
 
-  const hesapAdi =
-    (profil?.hesaplar as unknown as { ad: string } | null)?.ad ?? "Hesabım";
+  const hesap = profil?.hesaplar as unknown as {
+    ad: string;
+    paket: string;
+    created_at: string;
+  } | null;
+  const hesapAdi = hesap?.ad ?? "Hesabım";
+  const denemede = hesap?.paket === "deneme";
+  const kalanGun = hesap ? denemeKalanGun(hesap.created_at) : 0;
 
   return (
     <div className="min-h-screen bg-zinc-50">
@@ -54,6 +61,20 @@ export default async function PanelYerlesimi({
             </nav>
           </div>
           <div className="flex items-center gap-3 text-sm">
+            {denemede && (
+              <Link
+                href="/panel/paket"
+                className={`rounded-full px-3 py-1 text-xs font-medium ${
+                  kalanGun > 0
+                    ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                    : "bg-amber-50 text-amber-700 hover:bg-amber-100"
+                }`}
+              >
+                {kalanGun > 0
+                  ? `Deneme: ${kalanGun} gün kaldı`
+                  : "Deneme bitti — paket seçin"}
+              </Link>
+            )}
             <Link
               href="/panel/ayarlar"
               className="text-zinc-500 hover:text-zinc-900"
