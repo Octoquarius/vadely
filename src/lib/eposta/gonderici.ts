@@ -41,6 +41,20 @@ class ResendGonderici implements EpostaGonderici {
 
       if (!cevap.ok) {
         const govde = await cevap.text();
+        // Resend test modu: doğrulanmamış alan adı / onboarding@resend.dev ile
+        // yalnızca hesap sahibinin e-postasına gönderilebilir.
+        if (
+          cevap.status === 403 &&
+          /verify a domain|testing emails|own email/i.test(govde)
+        ) {
+          return {
+            tamam: false,
+            hata:
+              "Resend test modunda: yalnızca kendi e-postanıza gönderim yapılabiliyor. " +
+              "Müşterilere göndermek için resend.com/domains adresinde bir alan adı doğrulayın " +
+              "ve MAIL_FROM'u o alan adına ait bir adresle güncelleyin.",
+          };
+        }
         return {
           tamam: false,
           hata: `Resend ${cevap.status}: ${govde.slice(0, 300)}`,
