@@ -7,6 +7,7 @@ import {
 } from "@/lib/sabitler";
 import { hatirlatmaIptal } from "./actions";
 import { PlanUretDugmesi } from "./plan-uret-dugmesi";
+import { BekleyenleriGonderDugmesi } from "./gonder-dugmesi";
 
 function zamanFormat(zaman: string) {
   return new Date(zaman).toLocaleString("tr-TR", {
@@ -58,13 +59,15 @@ export default async function HatirlatmalarSayfasi() {
             ⚙ Kadans ayarları
           </Link>
           <PlanUretDugmesi />
+          <BekleyenleriGonderDugmesi />
         </div>
       </div>
 
       <p className="text-sm text-zinc-500">
-        Plan her sabah 08:00&apos;de otomatik üretilir. Açık faturalarınız
-        kadans kurallarınıza göre hatırlatmaya bağlanır; gönderim (e-posta)
-        bir sonraki adımda devreye girecek.
+        Plan her sabah 08:00&apos;de otomatik üretilir; açık faturalarınız
+        kadans kurallarınıza bağlanır. Zamanı gelen hatırlatmaları
+        &quot;Bekleyenleri gönder&quot; ile e-postayla iletebilir, göndermeden
+        önce &quot;Önizle&quot; ile metni görebilirsiniz.
       </p>
 
       {epostasizSayisi > 0 && (
@@ -119,15 +122,23 @@ export default async function HatirlatmalarSayfasi() {
                     {KANAL_ETIKETLERI[hatirlatma.kanal] ?? hatirlatma.kanal}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <form action={hatirlatmaIptal}>
-                      <input type="hidden" name="id" value={hatirlatma.id} />
-                      <button
-                        type="submit"
-                        className="text-sm text-red-600 hover:underline"
+                    <div className="flex items-center justify-end gap-3">
+                      <Link
+                        href={`/panel/hatirlatmalar/${hatirlatma.id}`}
+                        className="text-sm font-medium text-zinc-900 underline"
                       >
-                        İptal et
-                      </button>
-                    </form>
+                        Önizle
+                      </Link>
+                      <form action={hatirlatmaIptal}>
+                        <input type="hidden" name="id" value={hatirlatma.id} />
+                        <button
+                          type="submit"
+                          className="text-sm text-red-600 hover:underline"
+                        >
+                          İptal et
+                        </button>
+                      </form>
+                    </div>
                   </td>
                 </tr>
               ))}
