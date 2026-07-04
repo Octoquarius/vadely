@@ -1,7 +1,15 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const KORUMASIZ_YOLLAR = ["/", "/giris", "/kayit", "/auth"];
+const KORUMASIZ_YOLLAR = [
+  "/",
+  "/giris",
+  "/kayit",
+  "/auth",
+  "/pilot",
+  "/gizlilik",
+  "/kullanim-kosullari",
+];
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });

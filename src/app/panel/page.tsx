@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { ornekVeriTemizle, ornekVeriYukle } from "./actions";
 import {
   aylikDsoSerisi,
   gerceklesenDso,
@@ -38,6 +39,7 @@ export default async function GenelBakis() {
     musteriSayisi,
     faturaSayisi,
     hatirlatmaSayisi,
+    ornekVeriSayisi,
   ] = await Promise.all([
       supabase
         .from("faturalar")
@@ -59,6 +61,10 @@ export default async function GenelBakis() {
       supabase
         .from("hatirlatmalar")
         .select("id", { count: "exact", head: true }),
+      supabase
+        .from("musteriler")
+        .select("id", { count: "exact", head: true })
+        .eq("notlar", "ornek-veri"),
     ]);
 
   const acikFaturalar: AcikFatura[] = (acikSorgu.data ?? []).map((fatura) => ({
@@ -171,10 +177,28 @@ export default async function GenelBakis() {
     },
   ];
   const kurulumBitti = adimlar.every((adim) => adim.tamam);
+  const ornekVeriVar = (ornekVeriSayisi.count ?? 0) > 0;
 
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold text-zinc-900">Genel Bakış</h1>
+
+      {ornekVeriVar && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          <span>
+            <strong>Örnek veriler yüklü.</strong> Panoyu keşfettikten sonra
+            kendi verinizi yüklemeden önce temizleyin.
+          </span>
+          <form action={ornekVeriTemizle}>
+            <button
+              type="submit"
+              className="rounded-md border border-amber-300 bg-white px-3 py-1.5 font-medium text-amber-800 hover:bg-amber-100"
+            >
+              Örnek verileri temizle
+            </button>
+          </form>
+        </div>
+      )}
 
       {!kurulumBitti && (
         <div className="rounded-xl border border-emerald-200 bg-emerald-50/40 p-5">
@@ -218,6 +242,24 @@ export default async function GenelBakis() {
               </Link>
             ))}
           </div>
+          {!ornekVeriVar && (faturaSayisi.count ?? 0) === 0 && (
+            <form
+              action={ornekVeriYukle}
+              className="mt-3 flex flex-wrap items-center gap-2 text-sm text-zinc-600"
+            >
+              <span>Önce bir tur atmak mı istiyorsunuz?</span>
+              <button
+                type="submit"
+                className="rounded-md border border-zinc-300 bg-white px-3 py-1.5 font-medium text-zinc-700 hover:bg-zinc-50"
+              >
+                Örnek verilerle deneyin
+              </button>
+              <span className="text-xs text-zinc-400">
+                6 müşteri, 14 fatura ve ödemeleriyle dolu bir pano — tek tıkla
+                geri silinir.
+              </span>
+            </form>
+          )}
         </div>
       )}
 

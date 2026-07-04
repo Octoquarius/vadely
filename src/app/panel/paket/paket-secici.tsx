@@ -126,7 +126,7 @@ export function PaketSecici({
         </p>
       )}
       <p className="text-center text-xs text-zinc-400">
-        Fiyatlar USD'dir; tahsilat TL karşılığıyla yapılır. Mesajlaşma
+        Fiyatlar USD&apos;dir; tahsilat TL karşılığıyla yapılır. Mesajlaşma
         (SMS/WhatsApp) kullandıkça öde kontör modeliyle ayrıca ücretlendirilir.
       </p>
     </div>
