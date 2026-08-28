@@ -14,8 +14,8 @@ export async function paketSec(
   const paket = String(formData.get("paket") ?? "");
   const donem = String(formData.get("donem") ?? "aylik");
 
-  if (!GECERLI_PAKETLER.includes(paket)) return { hata: "Geçersiz paket." };
-  if (!["aylik", "yillik"].includes(donem)) return { hata: "Geçersiz dönem." };
+  if (!GECERLI_PAKETLER.includes(paket)) return { hata: "Invalid plan." };
+  if (!["aylik", "yillik"].includes(donem)) return { hata: "Invalid billing period." };
 
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -25,13 +25,13 @@ export async function paketSec(
 
   if (error || !data || data.length === 0) {
     return {
-      hata: "Paket seçilemedi. Bu işlemi yalnızca hesap sahibi yapabilir.",
+      hata: "Could not select plan. Only the account owner can do this.",
     };
   }
 
   revalidatePath("/panel", "layout");
   return {
     mesaj:
-      "Paket tercihiniz kaydedildi. Ödeme adımı, yayına geçişle birlikte e-postayla iletilecek.",
+      "Your plan preference has been saved. The payment step will be emailed to you once we go live.",
   };
 }

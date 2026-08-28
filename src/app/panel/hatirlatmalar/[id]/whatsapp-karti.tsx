@@ -28,18 +28,18 @@ export function WhatsappKarti({
       setKopyalandi(true);
       setTimeout(() => setKopyalandi(false), 2000);
     } catch {
-      // Pano erişimi engellenirse metin zaten görünür durumda; kullanıcı elle seçebilir.
+      // If clipboard access is blocked, the text is already visible; the user can select it manually.
     }
   }
 
   return (
     <div className="rounded-xl border border-emerald-200 bg-emerald-50/40 p-4">
       <h2 className="text-sm font-semibold text-zinc-900">
-        💬 WhatsApp ile gönder
+        💬 Send via WhatsApp
       </h2>
       <p className="mt-1 text-sm text-zinc-500">
-        Mesaj hazır: kopyalayın ya da WhatsApp&apos;ta açın, kendi
-        numaranızdan gönderin, sonra burada işaretleyin.
+        The message is ready: copy it or open it in WhatsApp, send it from
+        your own number, then mark it here.
       </p>
 
       <pre className="mt-3 whitespace-pre-wrap rounded-md border border-zinc-200 bg-white p-3 text-sm text-zinc-800">
@@ -51,7 +51,7 @@ export function WhatsappKarti({
           onClick={kopyala}
           className="rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100"
         >
-          {kopyalandi ? "✓ Kopyalandı" : "Mesajı kopyala"}
+          {kopyalandi ? "✓ Copied" : "Copy message"}
         </button>
         {waLink ? (
           <a
@@ -60,11 +60,11 @@ export function WhatsappKarti({
             rel="noopener noreferrer"
             className="rounded-md bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600"
           >
-            WhatsApp&apos;ta aç
+            Open in WhatsApp
           </a>
         ) : (
           <span className="text-sm text-amber-700">
-            Müşteri kartında geçerli bir telefon/WhatsApp numarası yok.
+            No valid phone/WhatsApp number on the customer record.
           </span>
         )}
         {planlandi && (
@@ -75,7 +75,7 @@ export function WhatsappKarti({
               disabled={bekliyor}
               className="rounded-md border border-emerald-300 bg-white px-4 py-2 text-sm font-medium text-emerald-800 hover:bg-emerald-50 disabled:opacity-50"
             >
-              {bekliyor ? "…" : "Gönderildi olarak işaretle"}
+              {bekliyor ? "…" : "Mark as sent"}
             </button>
           </form>
         )}

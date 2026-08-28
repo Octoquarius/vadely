@@ -1,15 +1,15 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-// E-posta onayı / şifre kurtarma sonrası Supabase buraya ?code=... ile
-// yönlendirir (PKCE akışı). ?next= ile hedef sayfa belirtilebilir (şifre
-// kurtarmada /sifre-yenile).
+// After email confirmation / password recovery, Supabase redirects here
+// with ?code=... (PKCE flow). The target page can be specified with ?next=
+// (/sifre-yenile for password recovery).
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
 
-  // Açık yönlendirme (open redirect) önlemek için yalnızca site içi,
-  // "//" ile başlamayan göreli yollar kabul edilir.
+  // To prevent open redirect, only in-site relative paths that don't
+  // start with "//" are accepted.
   const istenenHedef = searchParams.get("next") ?? "/panel";
   const hedef =
     istenenHedef.startsWith("/") && !istenenHedef.startsWith("//")

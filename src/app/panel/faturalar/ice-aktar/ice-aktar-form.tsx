@@ -38,7 +38,7 @@ export function IceAktarSihirbazi() {
     if (!dosya) return;
     if (/\.(xlsx|xls)$/i.test(dosya.name)) {
       setDosyaHatasi(
-        "Excel dosyaları henüz desteklenmiyor. Excel'de \"Farklı Kaydet → CSV\" ile kaydedip tekrar yükleyin."
+        "Excel files are not yet supported. In Excel, use \"Save As → CSV\" and upload again."
       );
       return;
     }
@@ -46,7 +46,7 @@ export function IceAktarSihirbazi() {
     const ayrisan = csvAyristir(metin);
     if (ayrisan.basliklar.length < 2 || ayrisan.satirlar.length === 0) {
       setDosyaHatasi(
-        "Dosya okunamadı ya da veri satırı yok. İlk satır kolon başlıkları olmalı."
+        "The file could not be read or has no data rows. The first row must be column headers."
       );
       return;
     }
@@ -63,7 +63,7 @@ export function IceAktarSihirbazi() {
     const vadeVar = eslesme.vade_tarihi !== undefined;
 
     tablo.satirlar.forEach((satir, i) => {
-      const satirNo = i + 2; // başlık 1. satır
+      const satirNo = i + 2; // header is row 1
       const oku = (alan: AlanAnahtari) =>
         eslesme[alan] !== undefined ? (satir[eslesme[alan]!] ?? "").trim() : "";
 
@@ -84,17 +84,17 @@ export function IceAktarSihirbazi() {
       }
 
       const sebepler: string[] = [];
-      if (!unvan) sebepler.push("müşteri unvanı boş");
-      if (!faturaNo) sebepler.push("fatura no boş");
-      if (!faturaTarihi) sebepler.push("fatura tarihi okunamadı");
-      if (vadeVar && !vadeTarihi) sebepler.push("vade tarihi okunamadı");
-      if (tutar === null || tutar <= 0) sebepler.push("tutar okunamadı");
+      if (!unvan) sebepler.push("customer name is empty");
+      if (!faturaNo) sebepler.push("invoice no is empty");
+      if (!faturaTarihi) sebepler.push("invoice date could not be read");
+      if (vadeVar && !vadeTarihi) sebepler.push("due date could not be read");
+      if (tutar === null || tutar <= 0) sebepler.push("amount could not be read");
       if (
         faturaTarihi &&
         vadeTarihi &&
         vadeTarihi < faturaTarihi
       )
-        sebepler.push("vade, fatura tarihinden önce");
+        sebepler.push("due date is before invoice date");
 
       if (sebepler.length > 0) {
         hatalar.push({ satirNo, sebep: sebepler.join(", ") });
@@ -130,18 +130,18 @@ export function IceAktarSihirbazi() {
     }
   }
 
-  // ---- Adım 1: Dosya seçimi ----
+  // ---- Step 1: File selection ----
   if (adim === "dosya") {
     return (
       <div className="rounded-xl border border-zinc-200 bg-white p-6">
         <h2 className="text-sm font-semibold text-zinc-900">
-          1. CSV dosyanızı seçin
+          1. Select your CSV file
         </h2>
         <p className="mt-2 text-sm text-zinc-500">
-          İlk satır kolon başlıkları olmalı. Noktalı virgül veya virgül
-          ayraçlı dosyalar, &quot;1.234,56&quot; sayılar ve
-          &quot;gg.aa.yyyy&quot; tarihler desteklenir. Excel kullanıyorsanız
-          önce &quot;Farklı Kaydet → CSV&quot; deyin.
+          The first row must be column headers. Semicolon- or comma-delimited
+          files, &quot;1,234.56&quot;-style numbers, and
+          &quot;dd.mm.yyyy&quot; dates are supported. If you're using Excel,
+          first do &quot;Save As → CSV&quot;.
         </p>
         <input
           type="file"
@@ -155,30 +155,30 @@ export function IceAktarSihirbazi() {
           </p>
         )}
         <p className="mt-4 text-sm text-zinc-500">
-          Elinizde hazır dosya yok mu?{" "}
+          Don't have a file ready?{" "}
           <a
             href="/fatura-import-sablonu.csv"
             download
             className="font-medium text-zinc-900 underline"
           >
-            Örnek şablonu indirin
+            Download the sample template
           </a>
-          , doldurun ve buraya yükleyin.
+          , fill it in, and upload it here.
         </p>
       </div>
     );
   }
 
-  // ---- Adım 2: Kolon eşleme + önizleme ----
+  // ---- Step 2: Column mapping + preview ----
   if (adim === "esleme" && tablo && dogrulama) {
     return (
       <div className="space-y-6">
         <div className="rounded-xl border border-zinc-200 bg-white p-6">
           <h2 className="text-sm font-semibold text-zinc-900">
-            2. Kolonları eşleyin
+            2. Map the columns
           </h2>
           <p className="mt-1 text-sm text-zinc-500">
-            Başlıklardan otomatik tahmin edildi; gerekirse düzeltin.
+            Guessed automatically from the headers; adjust if needed.
           </p>
           <div className="mt-4 grid gap-3 md:grid-cols-2">
             {ESLENEBILIR_ALANLAR.map((alan) => (
@@ -202,10 +202,10 @@ export function IceAktarSihirbazi() {
                   }
                   className="w-48 rounded-md border border-zinc-300 px-2 py-1.5 text-sm focus:border-zinc-500 focus:outline-none"
                 >
-                  <option value="">— Eşleme yok —</option>
+                  <option value="">— No mapping —</option>
                   {tablo.basliklar.map((baslik, i) => (
                     <option key={i} value={i}>
-                      {baslik || `Kolon ${i + 1}`}
+                      {baslik || `Column ${i + 1}`}
                     </option>
                   ))}
                 </select>
@@ -215,7 +215,7 @@ export function IceAktarSihirbazi() {
 
           {eslesme.vade_tarihi === undefined && (
             <div className="mt-4 flex items-center gap-2 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
-              <span>Vade kolonu eşlenmedi. Vade = fatura tarihi +</span>
+              <span>Due date column not mapped. Due date = invoice date +</span>
               <input
                 type="number"
                 min={0}
@@ -224,23 +224,23 @@ export function IceAktarSihirbazi() {
                 onChange={(e) => setVadeGunu(Number(e.target.value) || 0)}
                 className="w-16 rounded-md border border-amber-300 bg-white px-2 py-1 text-sm"
               />
-              <span>gün olarak hesaplanacak.</span>
+              <span>days.</span>
             </div>
           )}
 
           {zorunluEksikler.length > 0 && (
             <p className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
-              Zorunlu alanlar eşlenmedi:{" "}
+              Required fields not mapped:{" "}
               {zorunluEksikler.map((alan) => alan.etiket).join(", ")}
             </p>
           )}
         </div>
 
         <div className="rounded-xl border border-zinc-200 bg-white p-6">
-          <h2 className="text-sm font-semibold text-zinc-900">3. Önizleme</h2>
+          <h2 className="text-sm font-semibold text-zinc-900">3. Preview</h2>
           <div className="mt-3 flex flex-wrap gap-4 text-sm">
             <span className="rounded-full bg-green-50 px-3 py-1 font-medium text-green-700">
-              {dogrulama.gecerliler.length} geçerli satır
+              {dogrulama.gecerliler.length} valid rows
             </span>
             <span
               className={`rounded-full px-3 py-1 font-medium ${
@@ -249,7 +249,7 @@ export function IceAktarSihirbazi() {
                   : "bg-zinc-100 text-zinc-500"
               }`}
             >
-              {dogrulama.hatalar.length} hatalı satır (atlanacak)
+              {dogrulama.hatalar.length} rows with errors (will be skipped)
             </span>
           </div>
 
@@ -257,12 +257,12 @@ export function IceAktarSihirbazi() {
             <div className="mt-3 max-h-48 overflow-y-auto rounded-md border border-red-100 bg-red-50/50 p-3 text-sm text-red-700">
               {dogrulama.hatalar.slice(0, 50).map((hata) => (
                 <p key={hata.satirNo}>
-                  Satır {hata.satirNo}: {hata.sebep}
+                  Row {hata.satirNo}: {hata.sebep}
                 </p>
               ))}
               {dogrulama.hatalar.length > 50 && (
                 <p className="mt-1 font-medium">
-                  … ve {dogrulama.hatalar.length - 50} satır daha
+                  … and {dogrulama.hatalar.length - 50} more rows
                 </p>
               )}
             </div>
@@ -273,11 +273,11 @@ export function IceAktarSihirbazi() {
               <table className="w-full text-left text-sm">
                 <thead className="border-b border-zinc-200 text-zinc-500">
                   <tr>
-                    <th className="px-3 py-2 font-medium">Müşteri</th>
-                    <th className="px-3 py-2 font-medium">Fatura no</th>
-                    <th className="px-3 py-2 font-medium">Tarih</th>
-                    <th className="px-3 py-2 font-medium">Vade</th>
-                    <th className="px-3 py-2 font-medium">Tutar</th>
+                    <th className="px-3 py-2 font-medium">Customer</th>
+                    <th className="px-3 py-2 font-medium">Invoice no</th>
+                    <th className="px-3 py-2 font-medium">Date</th>
+                    <th className="px-3 py-2 font-medium">Due date</th>
+                    <th className="px-3 py-2 font-medium">Amount</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -299,7 +299,7 @@ export function IceAktarSihirbazi() {
               </table>
               {dogrulama.gecerliler.length > 5 && (
                 <p className="px-3 py-2 text-sm text-zinc-500">
-                  … ve {dogrulama.gecerliler.length - 5} satır daha
+                  … and {dogrulama.gecerliler.length - 5} more rows
                 </p>
               )}
             </div>
@@ -316,8 +316,8 @@ export function IceAktarSihirbazi() {
               className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
             >
               {gonderiliyor
-                ? "Aktarılıyor…"
-                : `${dogrulama.gecerliler.length} faturayı içe aktar`}
+                ? "Importing…"
+                : `Import ${dogrulama.gecerliler.length} invoices`}
             </button>
             <button
               onClick={() => {
@@ -327,7 +327,7 @@ export function IceAktarSihirbazi() {
               }}
               className="rounded-md border border-zinc-300 px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-100"
             >
-              Farklı dosya seç
+              Choose a different file
             </button>
           </div>
         </div>
@@ -335,12 +335,12 @@ export function IceAktarSihirbazi() {
     );
   }
 
-  // ---- Adım 3: Sonuç ----
+  // ---- Step 3: Result ----
   if (adim === "sonuc" && sonuc) {
     return (
       <div className="rounded-xl border border-zinc-200 bg-white p-6">
         <h2 className="text-sm font-semibold text-zinc-900">
-          İçe aktarma sonucu
+          Import result
         </h2>
         {sonuc.hata ? (
           <p className="mt-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
@@ -348,19 +348,19 @@ export function IceAktarSihirbazi() {
           </p>
         ) : (
           <p className="mt-3 rounded-md bg-green-50 px-3 py-2 text-sm text-green-700">
-            İçe aktarma tamamlandı. 🎉
+            Import complete. 🎉
           </p>
         )}
         <ul className="mt-4 space-y-1 text-sm text-zinc-700">
           <li>
-            ✅ Eklenen fatura: <strong>{sonuc.eklenen}</strong>
+            ✅ Invoices added: <strong>{sonuc.eklenen}</strong>
           </li>
           <li>
-            ⏭️ Atlanan (zaten kayıtlı / mükerrer):{" "}
+            ⏭️ Skipped (already recorded / duplicate):{" "}
             <strong>{sonuc.mukerrer}</strong>
           </li>
           <li>
-            👤 Otomatik oluşturulan müşteri:{" "}
+            👤 Customers created automatically:{" "}
             <strong>{sonuc.yeniMusteri}</strong>
           </li>
         </ul>
@@ -369,7 +369,7 @@ export function IceAktarSihirbazi() {
             href="/panel/faturalar"
             className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
           >
-            Faturalara dön
+            Back to invoices
           </Link>
           <button
             onClick={() => {
@@ -380,7 +380,7 @@ export function IceAktarSihirbazi() {
             }}
             className="rounded-md border border-zinc-300 px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-100"
           >
-            Yeni dosya aktar
+            Import another file
           </button>
         </div>
       </div>

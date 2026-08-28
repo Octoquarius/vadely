@@ -17,14 +17,14 @@ export function OdemeForm({
       action={eylem}
       className="rounded-xl border border-zinc-200 bg-white p-4"
     >
-      <h2 className="text-sm font-semibold text-zinc-900">Yeni ödeme</h2>
+      <h2 className="text-sm font-semibold text-zinc-900">New payment</h2>
       <div className="mt-3 grid gap-3 md:grid-cols-4">
         <select
           name="musteri_id"
           defaultValue=""
           className="rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-zinc-500 focus:outline-none"
         >
-          <option value="">Müşteri (isteğe bağlı)</option>
+          <option value="">Customer (optional)</option>
           {musteriler.map((musteri) => (
             <option key={musteri.id} value={musteri.id}>
               {musteri.unvan}
@@ -37,19 +37,19 @@ export function OdemeForm({
           step="0.01"
           min="0.01"
           required
-          placeholder="Tutar (TL) *"
+          placeholder="Amount (TL) *"
           className="rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-zinc-500 focus:outline-none"
         />
         <input
           name="odeme_tarihi"
           type="date"
           required
-          title="Ödeme tarihi"
+          title="Payment date"
           className="rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-zinc-500 focus:outline-none"
         />
         <input
           name="aciklama"
-          placeholder="Açıklama"
+          placeholder="Description"
           className="rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-zinc-500 focus:outline-none"
         />
       </div>
@@ -59,7 +59,7 @@ export function OdemeForm({
         disabled={bekliyor}
         className="mt-3 rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
       >
-        {bekliyor ? "Ekleniyor…" : "Ödeme ekle"}
+        {bekliyor ? "Adding…" : "Add payment"}
       </button>
     </form>
   );

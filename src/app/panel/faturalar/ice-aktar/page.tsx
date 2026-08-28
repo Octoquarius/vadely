@@ -9,15 +9,15 @@ export default function IceAktarSayfasi() {
           href="/panel/faturalar"
           className="text-sm text-zinc-500 hover:text-zinc-900"
         >
-          ← Faturalar
+          ← Invoices
         </Link>
         <h1 className="mt-1 text-2xl font-semibold text-zinc-900">
-          Fatura içe aktar
+          Import invoices
         </h1>
         <p className="mt-1 text-sm text-zinc-500">
-          e-Fatura/e-Arşiv XML dosyalarınızı veya ön muhasebe programınızdan
-          aldığınız CSV dökümünü yükleyin; müşterileri otomatik oluşturur,
-          mükerrer faturaları atlarız.
+          Upload your e-Fatura/e-Arşiv XML files or a CSV export from your
+          accounting software; we automatically create customers and skip
+          duplicate invoices.
         </p>
       </div>
       <IceAktarSekmeleri />

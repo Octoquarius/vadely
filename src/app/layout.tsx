@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { Fraunces, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
-// Marka tipografisi: Fraunces (başlık, sıcak/olgun serif),
-// IBM Plex Sans (gövde/arayüz), IBM Plex Mono (tutar/veri).
-// "latin-ext" alt kümesi Türkçe glifleri (İ ı Ğ ğ Ş ş Ç ç Ö ö Ü ü) kapsar.
+// Brand typography: Fraunces (heading, warm/mature serif),
+// IBM Plex Sans (body/interface), IBM Plex Mono (amount/data).
+// The "latin-ext" subset covers Turkish glyphs (İ ı Ğ ğ Ş ş Ç ç Ö ö Ü ü).
 const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin", "latin-ext"],
@@ -28,9 +28,9 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Vadely — Otomatik Alacak Tahsilatı",
+  title: "Vadely — Automated Receivables Collection",
   description:
-    "KOBİ'ler için yapay zekâ destekli otomatik alacak tahsilatı ve nakit akışı tahminleme.",
+    "AI-powered automated receivables collection and cash flow forecasting for SMEs.",
 };
 
 export default function RootLayout({
@@ -40,7 +40,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="tr"
+      lang="en"
       className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>

@@ -15,7 +15,7 @@ type PilotBasvuru = {
 };
 
 function tarih(iso: string): string {
-  return new Date(iso).toLocaleDateString("tr-TR", {
+  return new Date(iso).toLocaleDateString("en-GB", {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -33,16 +33,17 @@ export default async function PilotBasvurulari() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-semibold text-zinc-900">
-          Pilot Başvuruları ({basvurular.length})
+          Pilot Applications ({basvurular.length})
         </h1>
         <p className="mt-1 text-sm text-zinc-500">
-          Pazarlama sayfasındaki formdan gelen başvurular (en yeni önce).
+          Applications submitted via the form on the marketing page (newest
+          first).
         </p>
       </div>
 
       {basvurular.length === 0 ? (
         <div className="rounded-xl border border-zinc-200 bg-white px-4 py-12 text-center text-sm text-zinc-500">
-          Henüz başvuru yok.
+          No applications yet.
         </div>
       ) : (
         <div className="space-y-3">
@@ -72,12 +73,12 @@ export default async function PilotBasvurulari() {
               <div className="mt-2 flex flex-wrap gap-2 text-xs text-zinc-500">
                 {b.aylik_fatura_adedi && (
                   <span className="rounded-full bg-zinc-100 px-2 py-0.5">
-                    Aylık fatura: {b.aylik_fatura_adedi}
+                    Monthly invoices: {b.aylik_fatura_adedi}
                   </span>
                 )}
                 {b.kullanilan_yazilim && (
                   <span className="rounded-full bg-zinc-100 px-2 py-0.5">
-                    Yazılım: {b.kullanilan_yazilim}
+                    Software: {b.kullanilan_yazilim}
                   </span>
                 )}
               </div>

@@ -6,7 +6,7 @@ import { XmlIceAktar } from "./xml-ice-aktar";
 
 const SEKMELER = [
   { anahtar: "xml", etiket: "e-Fatura XML (UBL)" },
-  { anahtar: "csv", etiket: "CSV / Excel dökümü" },
+  { anahtar: "csv", etiket: "CSV / Excel export" },
 ] as const;
 
 type SekmeAnahtari = (typeof SEKMELER)[number]["anahtar"];

@@ -10,7 +10,7 @@ import { PlanUretDugmesi } from "./plan-uret-dugmesi";
 import { BekleyenleriGonderDugmesi } from "./gonder-dugmesi";
 
 function zamanFormat(zaman: string) {
-  return new Date(zaman).toLocaleString("tr-TR", {
+  return new Date(zaman).toLocaleString("en-GB", {
     dateStyle: "short",
     timeStyle: "short",
   });
@@ -50,13 +50,13 @@ export default async function HatirlatmalarSayfasi() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-zinc-900">Hatırlatmalar</h1>
+        <h1 className="text-2xl font-semibold text-zinc-900">Reminders</h1>
         <div className="flex items-center gap-3">
           <Link
             href="/panel/hatirlatmalar/kadans"
             className="rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100"
           >
-            ⚙ Kadans ayarları
+            ⚙ Cadence settings
           </Link>
           <PlanUretDugmesi />
           <BekleyenleriGonderDugmesi />
@@ -64,36 +64,37 @@ export default async function HatirlatmalarSayfasi() {
       </div>
 
       <p className="text-sm text-zinc-500">
-        Plan her sabah 08:00&apos;de otomatik üretilir; açık faturalarınız
-        kadans kurallarınıza bağlanır. Zamanı gelen hatırlatmaları
-        &quot;Bekleyenleri gönder&quot; ile e-postayla iletebilir, göndermeden
-        önce &quot;Önizle&quot; ile metni görebilirsiniz.
+        The plan is generated automatically every morning at 08:00; your open
+        invoices are linked to your cadence rules. Once a reminder&apos;s
+        time comes, you can send it by email with &quot;Send pending&quot;,
+        or view the text beforehand with &quot;Preview&quot;.
       </p>
 
       {epostasizSayisi > 0 && (
         <p className="rounded-md bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          {epostasizSayisi} bekleyen hatırlatmanın müşterisinde e-posta adresi
-          yok.{" "}
+          {epostasizSayisi} pending reminder{epostasizSayisi === 1 ? "" : "s"}{" "}
+          {epostasizSayisi === 1 ? "has" : "have"} a customer with no email
+          address.{" "}
           <Link href="/panel/musteriler" className="font-medium underline">
-            Müşteri kartlarını tamamlayın
+            Complete the customer records
           </Link>{" "}
-          yoksa bu hatırlatmalar gönderilemez.
+          — otherwise these reminders can&apos;t be sent.
         </p>
       )}
 
       <section>
         <h2 className="text-sm font-semibold text-zinc-900">
-          Bekleyenler ({bekleyenler.length})
+          Pending ({bekleyenler.length})
         </h2>
         <div className="mt-2 overflow-x-auto rounded-xl border border-zinc-200 bg-white">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-zinc-200 text-zinc-500">
               <tr>
-                <th className="px-4 py-3 font-medium">Planlanan zaman</th>
-                <th className="px-4 py-3 font-medium">Fatura</th>
-                <th className="px-4 py-3 font-medium">Müşteri</th>
-                <th className="px-4 py-3 font-medium">Şablon</th>
-                <th className="px-4 py-3 font-medium">Kanal</th>
+                <th className="px-4 py-3 font-medium">Scheduled time</th>
+                <th className="px-4 py-3 font-medium">Invoice</th>
+                <th className="px-4 py-3 font-medium">Customer</th>
+                <th className="px-4 py-3 font-medium">Template</th>
+                <th className="px-4 py-3 font-medium">Channel</th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
@@ -110,7 +111,7 @@ export default async function HatirlatmalarSayfasi() {
                     {hatirlatma.musteriler?.unvan ?? "—"}
                     {!hatirlatma.musteriler?.eposta && (
                       <span className="ml-2 rounded-full bg-amber-50 px-2 py-0.5 text-xs text-amber-700">
-                        e-posta yok
+                        no email
                       </span>
                     )}
                   </td>
@@ -127,7 +128,7 @@ export default async function HatirlatmalarSayfasi() {
                         href={`/panel/hatirlatmalar/${hatirlatma.id}`}
                         className="text-sm font-medium text-zinc-900 underline"
                       >
-                        Önizle
+                        Preview
                       </Link>
                       <form action={hatirlatmaIptal}>
                         <input type="hidden" name="id" value={hatirlatma.id} />
@@ -135,7 +136,7 @@ export default async function HatirlatmalarSayfasi() {
                           type="submit"
                           className="text-sm text-red-600 hover:underline"
                         >
-                          İptal et
+                          Cancel
                         </button>
                       </form>
                     </div>
@@ -148,8 +149,8 @@ export default async function HatirlatmalarSayfasi() {
                     colSpan={6}
                     className="px-4 py-8 text-center text-zinc-500"
                   >
-                    Bekleyen hatırlatma yok. Açık faturanız varsa &quot;Planı
-                    şimdi üret&quot; ile oluşturabilirsiniz.
+                    No pending reminders. If you have open invoices, you can
+                    create one with &quot;Generate plan now&quot;.
                   </td>
                 </tr>
               )}
@@ -161,17 +162,17 @@ export default async function HatirlatmalarSayfasi() {
       {gecmis.length > 0 && (
         <section>
           <h2 className="text-sm font-semibold text-zinc-900">
-            Geçmiş ({gecmis.length})
+            History ({gecmis.length})
           </h2>
           <div className="mt-2 overflow-x-auto rounded-xl border border-zinc-200 bg-white">
             <table className="w-full text-left text-sm">
               <thead className="border-b border-zinc-200 text-zinc-500">
                 <tr>
-                  <th className="px-4 py-3 font-medium">Zaman</th>
-                  <th className="px-4 py-3 font-medium">Fatura</th>
-                  <th className="px-4 py-3 font-medium">Müşteri</th>
-                  <th className="px-4 py-3 font-medium">Şablon</th>
-                  <th className="px-4 py-3 font-medium">Durum</th>
+                  <th className="px-4 py-3 font-medium">Time</th>
+                  <th className="px-4 py-3 font-medium">Invoice</th>
+                  <th className="px-4 py-3 font-medium">Customer</th>
+                  <th className="px-4 py-3 font-medium">Template</th>
+                  <th className="px-4 py-3 font-medium">Status</th>
                 </tr>
               </thead>
               <tbody>

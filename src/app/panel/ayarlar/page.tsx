@@ -18,9 +18,9 @@ export default async function AyarlarSayfasi() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-zinc-900">Ayarlar</h1>
+        <h1 className="text-2xl font-semibold text-zinc-900">Settings</h1>
         <p className="mt-1 text-sm text-zinc-500">
-          Şirket bilgileri ve hatırlatma gönderim tercihi.
+          Company information and reminder sending preferences.
         </p>
       </div>
       <AyarFormu

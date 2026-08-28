@@ -24,16 +24,16 @@ export default async function PaketSayfasi() {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h1 className="text-2xl font-semibold text-zinc-900">Paketler</h1>
+        <h1 className="text-2xl font-semibold text-zinc-900">Plans</h1>
         <p className="mt-1 text-sm text-zinc-500">
-          Mevcut paketiniz:{" "}
+          Your current plan:{" "}
           <span className="font-medium text-zinc-900">
             {PAKET_ETIKETLERI[paket] ?? paket}
           </span>
           {paket === "deneme" &&
             (kalanGun > 0
-              ? ` — tüm özellikler açık, ${kalanGun} gün kaldı`
-              : " — deneme süresi doldu, Başlangıç kapsamında çalışıyorsunuz")}
+              ? ` — all features unlocked, ${kalanGun} days left`
+              : " — trial period ended, you're now on the Starter plan")}
         </p>
       </div>
       <PaketSecici

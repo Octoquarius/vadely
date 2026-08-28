@@ -32,7 +32,7 @@ export function PaketSecici({
                 : "text-zinc-600 hover:bg-zinc-100"
             }`}
           >
-            Aylık
+            Monthly
           </button>
           <button
             onClick={() => setDonem("yillik")}
@@ -42,7 +42,7 @@ export function PaketSecici({
                 : "text-zinc-600 hover:bg-zinc-100"
             }`}
           >
-            Yıllık <span className="text-emerald-500">(~2 ay bedava)</span>
+            Yearly <span className="text-emerald-500">(~2 months free)</span>
           </button>
         </div>
       </div>
@@ -72,7 +72,7 @@ export function PaketSecici({
             >
               {paket.one_cikan && (
                 <span className="mb-2 w-fit rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
-                  En çok tercih edilen
+                  Most popular
                 </span>
               )}
               <h3 className="text-lg font-semibold text-zinc-900">
@@ -85,7 +85,7 @@ export function PaketSecici({
                 </span>
                 <span className="text-sm text-zinc-500">
                   {" "}
-                  / {donem === "aylik" ? "ay" : "yıl"}
+                  / {donem === "aylik" ? "mo" : "yr"}
                 </span>
               </p>
               <ul className="mt-4 flex-1 space-y-2 text-sm text-zinc-600">
@@ -109,10 +109,10 @@ export function PaketSecici({
                   }`}
                 >
                   {seciliMi
-                    ? "Mevcut paketiniz"
+                    ? "Your current plan"
                     : bekliyor
-                      ? "Kaydediliyor…"
-                      : "Bu paketi seç"}
+                      ? "Saving…"
+                      : "Choose this plan"}
                 </button>
               </form>
             </div>
@@ -122,12 +122,12 @@ export function PaketSecici({
 
       {!secebilir && (
         <p className="text-center text-sm text-zinc-500">
-          Paket seçimini yalnızca hesap sahibi yapabilir.
+          Only the account owner can choose a plan.
         </p>
       )}
       <p className="text-center text-xs text-zinc-400">
-        Fiyatlar USD&apos;dir; tahsilat TL karşılığıyla yapılır. Mesajlaşma
-        (SMS/WhatsApp) kullandıkça öde kontör modeliyle ayrıca ücretlendirilir.
+        Prices are in USD; billing is charged in the TL equivalent. Messaging
+        (SMS/WhatsApp) is billed separately on a pay-as-you-go credit model.
       </p>
     </div>
   );

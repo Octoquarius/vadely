@@ -15,7 +15,7 @@ export function FaturaForm({
   if (musteriler.length === 0) {
     return (
       <div className="rounded-xl border border-dashed border-zinc-300 bg-white p-4 text-sm text-zinc-500">
-        Fatura ekleyebilmek için önce bir müşteri oluşturmalısınız.
+        You must create a customer before you can add an invoice.
       </div>
     );
   }
@@ -25,7 +25,7 @@ export function FaturaForm({
       action={eylem}
       className="rounded-xl border border-zinc-200 bg-white p-4"
     >
-      <h2 className="text-sm font-semibold text-zinc-900">Yeni fatura</h2>
+      <h2 className="text-sm font-semibold text-zinc-900">New invoice</h2>
       <div className="mt-3 grid gap-3 md:grid-cols-5">
         <select
           name="musteri_id"
@@ -34,7 +34,7 @@ export function FaturaForm({
           className="rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-zinc-500 focus:outline-none"
         >
           <option value="" disabled>
-            Müşteri seçin *
+            Select customer *
           </option>
           {musteriler.map((musteri) => (
             <option key={musteri.id} value={musteri.id}>
@@ -45,21 +45,21 @@ export function FaturaForm({
         <input
           name="fatura_no"
           required
-          placeholder="Fatura no *"
+          placeholder="Invoice no *"
           className="rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-zinc-500 focus:outline-none"
         />
         <input
           name="fatura_tarihi"
           type="date"
           required
-          title="Fatura tarihi"
+          title="Invoice date"
           className="rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-zinc-500 focus:outline-none"
         />
         <input
           name="vade_tarihi"
           type="date"
           required
-          title="Vade tarihi"
+          title="Due date"
           className="rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-zinc-500 focus:outline-none"
         />
         <input
@@ -68,7 +68,7 @@ export function FaturaForm({
           step="0.01"
           min="0.01"
           required
-          placeholder="Tutar (TL) *"
+          placeholder="Amount (TL) *"
           className="rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-zinc-500 focus:outline-none"
         />
       </div>
@@ -80,7 +80,7 @@ export function FaturaForm({
         disabled={bekliyor}
         className="mt-3 rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
       >
-        {bekliyor ? "Ekleniyor…" : "Fatura ekle"}
+        {bekliyor ? "Adding…" : "Add invoice"}
       </button>
     </form>
   );

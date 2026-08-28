@@ -12,9 +12,9 @@ export default function SifremiUnuttumSayfasi() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
       <div className="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-8 shadow-sm">
-        <h1 className="text-xl font-semibold text-zinc-900">Şifremi unuttum</h1>
+        <h1 className="text-xl font-semibold text-zinc-900">Forgot my password</h1>
         <p className="mt-1 text-sm text-zinc-500">
-          E-posta adresinizi girin, sıfırlama bağlantısı gönderelim.
+          Enter your email address and we&apos;ll send you a reset link.
         </p>
 
         <form action={eylem} className="mt-6 space-y-4">
@@ -23,7 +23,7 @@ export default function SifremiUnuttumSayfasi() {
               htmlFor="eposta"
               className="block text-sm font-medium text-zinc-700"
             >
-              E-posta
+              Email
             </label>
             <input
               id="eposta"
@@ -51,13 +51,13 @@ export default function SifremiUnuttumSayfasi() {
             disabled={bekliyor}
             className="w-full rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
           >
-            {bekliyor ? "Gönderiliyor…" : "Sıfırlama bağlantısı gönder"}
+            {bekliyor ? "Sending…" : "Send reset link"}
           </button>
         </form>
 
         <p className="mt-4 text-center text-sm text-zinc-500">
           <Link href="/giris" className="font-medium text-zinc-900 underline">
-            Girişe dön
+            Back to login
           </Link>
         </p>
       </div>

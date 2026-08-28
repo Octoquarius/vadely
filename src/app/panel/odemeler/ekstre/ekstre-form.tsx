@@ -16,9 +16,9 @@ import {
 } from "../actions";
 
 const ALANLAR = [
-  { anahtar: "tarih", etiket: "İşlem tarihi", zorunlu: true },
-  { anahtar: "tutar", etiket: "Tutar", zorunlu: true },
-  { anahtar: "aciklama", etiket: "Açıklama", zorunlu: false },
+  { anahtar: "tarih", etiket: "Transaction date", zorunlu: true },
+  { anahtar: "tutar", etiket: "Amount", zorunlu: true },
+  { anahtar: "aciklama", etiket: "Description", zorunlu: false },
 ] as const;
 
 type Alan = (typeof ALANLAR)[number]["anahtar"];
@@ -74,7 +74,7 @@ export function EkstreForm() {
     const ayrisan = csvAyristir(metin);
     if (ayrisan.basliklar.length < 2 || ayrisan.satirlar.length === 0) {
       setDosyaHatasi(
-        "Dosya okunamadı ya da veri satırı yok. İlk satır kolon başlıkları olmalı."
+        "The file could not be read or has no data rows. The first row must be column headers."
       );
       return;
     }
@@ -101,7 +101,7 @@ export function EkstreForm() {
       if (tarih === null || tutar === null) {
         hatali++;
       } else if (tutar <= 0) {
-        gidenVeyaSifir++; // giden (negatif) hareketler alacak takibine girmez
+        gidenVeyaSifir++; // outgoing (negative) transactions are not included in receivables tracking
       } else {
         gecerliler.push({ odeme_tarihi: tarih, tutar, aciklama });
       }
@@ -123,18 +123,18 @@ export function EkstreForm() {
     return (
       <div className="rounded-xl border border-zinc-200 bg-white p-6">
         <p className="rounded-md bg-green-50 px-3 py-2 text-sm text-green-700">
-          Ekstre aktarıldı: <strong>{sonuc.eklenen}</strong> ödeme eklendi,{" "}
-          <strong>{sonuc.mukerrer}</strong> mükerrer satır atlandı.
+          Statement imported: <strong>{sonuc.eklenen}</strong> payments added,{" "}
+          <strong>{sonuc.mukerrer}</strong> duplicate rows skipped.
         </p>
         <p className="mt-3 text-sm text-zinc-500">
-          Şimdi ödemeleri açık faturalarla eşleştirin.
+          Now match the payments with open invoices.
         </p>
         <div className="mt-4 flex gap-3">
           <Link
             href="/panel/odemeler"
             className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
           >
-            Ödemelere dön
+            Back to payments
           </Link>
           <button
             onClick={() => {
@@ -143,7 +143,7 @@ export function EkstreForm() {
             }}
             className="rounded-md border border-zinc-300 px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-100"
           >
-            Yeni ekstre yükle
+            Upload new statement
           </button>
         </div>
       </div>
@@ -154,12 +154,12 @@ export function EkstreForm() {
     <div className="space-y-6">
       <div className="rounded-xl border border-zinc-200 bg-white p-6">
         <h2 className="text-sm font-semibold text-zinc-900">
-          Ekstre dosyasını seçin (CSV)
+          Select statement file (CSV)
         </h2>
         <p className="mt-2 text-sm text-zinc-500">
-          İnternet bankacılığınızdan hesap hareketlerini CSV olarak indirin.
-          Yalnızca <strong>gelen</strong> (pozitif) tutarlar ödeme olarak
-          aktarılır; giden hareketler atlanır.
+          Download your account transactions as CSV from your online banking.
+          Only <strong>incoming</strong> (positive) amounts are imported as
+          payments; outgoing transactions are skipped.
         </p>
         <input
           type="file"
@@ -177,7 +177,7 @@ export function EkstreForm() {
       {tablo && (
         <div className="rounded-xl border border-zinc-200 bg-white p-6">
           <h2 className="text-sm font-semibold text-zinc-900">
-            Kolonları eşleyin
+            Map the columns
           </h2>
           <div className="mt-4 grid gap-3 md:grid-cols-3">
             {ALANLAR.map((alan) => (
@@ -201,10 +201,10 @@ export function EkstreForm() {
                   }
                   className="w-44 rounded-md border border-zinc-300 px-2 py-1.5 text-sm focus:border-zinc-500 focus:outline-none"
                 >
-                  <option value="">— Eşleme yok —</option>
+                  <option value="">— No mapping —</option>
                   {tablo.basliklar.map((baslik, i) => (
                     <option key={i} value={i}>
-                      {baslik || `Kolon ${i + 1}`}
+                      {baslik || `Column ${i + 1}`}
                     </option>
                   ))}
                 </select>
@@ -216,10 +216,10 @@ export function EkstreForm() {
             <>
               <div className="mt-4 flex flex-wrap gap-3 text-sm">
                 <span className="rounded-full bg-green-50 px-3 py-1 font-medium text-green-700">
-                  {dogrulama.gecerliler.length} gelen ödeme
+                  {dogrulama.gecerliler.length} incoming payments
                 </span>
                 <span className="rounded-full bg-zinc-100 px-3 py-1 font-medium text-zinc-600">
-                  {dogrulama.gidenVeyaSifir} giden/sıfır hareket (atlanır)
+                  {dogrulama.gidenVeyaSifir} outgoing/zero transactions (skipped)
                 </span>
                 <span
                   className={`rounded-full px-3 py-1 font-medium ${
@@ -228,7 +228,7 @@ export function EkstreForm() {
                       : "bg-zinc-100 text-zinc-500"
                   }`}
                 >
-                  {dogrulama.hatali} okunamayan satır
+                  {dogrulama.hatali} unreadable rows
                 </span>
               </div>
 
@@ -244,8 +244,8 @@ export function EkstreForm() {
                 className="mt-4 rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
               >
                 {gonderiliyor
-                  ? "Aktarılıyor…"
-                  : `${dogrulama.gecerliler.length} ödemeyi aktar`}
+                  ? "Importing…"
+                  : `Import ${dogrulama.gecerliler.length} payments`}
               </button>
             </>
           )}

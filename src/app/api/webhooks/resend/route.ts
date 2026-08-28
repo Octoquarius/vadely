@@ -2,9 +2,9 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-// Resend webhook'u (svix imza şeması): e-posta açılma/tıklanma/bounce
-// olaylarını hatırlatma durumlarına işler. RESEND_WEBHOOK_SECRET tanımlı
-// değilse uç nokta kapalıdır.
+// Resend webhook (svix signature scheme): processes email
+// opened/clicked/bounced events into reminder statuses. If
+// RESEND_WEBHOOK_SECRET is not defined, the endpoint is disabled.
 
 function imzaDogrula(
   gizliAnahtar: string,
@@ -18,7 +18,8 @@ function imzaDogrula(
     .update(`${mesajId}.${zamanDamgasi}.${govde}`)
     .digest("base64");
 
-  // Başlık "v1,imza1 v1,imza2" biçiminde birden çok imza içerebilir
+  // The header may contain multiple signatures in the form
+  // "v1,signature1 v1,signature2"
   for (const parca of imzaBasligi.split(" ")) {
     const [, imza] = parca.split(",");
     if (!imza) continue;
@@ -29,9 +30,9 @@ function imzaDogrula(
   return false;
 }
 
-// Yeniden oynatma (replay) penceresi: svix zaman damgası ±5 dk dışındaysa
-// imza geçerli olsa bile reddedilir (yakalanmış bir isteğin tekrar
-// gönderilmesini engeller).
+// Replay window: if the svix timestamp is outside ±5 minutes, the request
+// is rejected even if the signature is valid (prevents a captured request
+// from being replayed).
 const AZAMI_SAPMA_SN = 5 * 60;
 
 function zamanDamgasiGecerli(zamanDamgasi: string): boolean {
@@ -50,7 +51,7 @@ const OLAY_ESLEME: Record<string, string> = {
 export async function POST(request: Request) {
   const gizliAnahtar = process.env.RESEND_WEBHOOK_SECRET;
   if (!gizliAnahtar) {
-    return NextResponse.json({ hata: "yapilandirilmamis" }, { status: 503 });
+    return NextResponse.json({ hata: "not configured" }, { status: 503 });
   }
 
   const govde = await request.text();
@@ -65,14 +66,14 @@ export async function POST(request: Request) {
     !zamanDamgasiGecerli(zamanDamgasi) ||
     !imzaDogrula(gizliAnahtar, mesajId, zamanDamgasi, govde, imza)
   ) {
-    return NextResponse.json({ hata: "gecersiz imza" }, { status: 401 });
+    return NextResponse.json({ hata: "invalid signature" }, { status: 401 });
   }
 
   let yuk: { type?: string; data?: { email_id?: string } };
   try {
     yuk = JSON.parse(govde);
   } catch {
-    return NextResponse.json({ hata: "gecersiz govde" }, { status: 400 });
+    return NextResponse.json({ hata: "invalid body" }, { status: 400 });
   }
 
   const olay = OLAY_ESLEME[yuk.type ?? ""];

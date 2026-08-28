@@ -1,12 +1,13 @@
-// WhatsApp kopyala-gönder fallback yardımcıları.
-// Onaylı WhatsApp Business API (BSP) entegrasyonu v1'de gelecek; o zamana
-// dek hazır mesaj + wa.me linkiyle kullanıcı kendi telefonundan gönderir.
+// WhatsApp copy-and-send fallback helpers.
+// A pre-approved WhatsApp Business API (BSP) integration is coming in v1;
+// until then, the user sends a ready-made message from their own phone via
+// a wa.me link.
 
 import type { SablonGirdisi } from "@/lib/eposta/sablonlar";
 
 /**
- * Türk telefon numarasını wa.me biçimine (ülke kodlu, yalnız rakam) çevirir.
- * "0532 123 45 67" -> "905321234567"; çevrilemiyorsa null.
+ * Converts a Turkish phone number into wa.me format (country code, digits
+ * only). "0532 123 45 67" -> "905321234567"; null if it can't be converted.
  */
 export function telefonNormallestir(ham: string): string | null {
   const rakamlar = ham.replace(/\D/g, "");
@@ -20,7 +21,7 @@ export function telefonNormallestir(ham: string): string | null {
   } else if (rakamlar.startsWith("5") && rakamlar.length === 10) {
     sonuc = `90${rakamlar}`;
   } else if (rakamlar.length >= 11 && rakamlar.length <= 15) {
-    sonuc = rakamlar; // yabancı numara: olduğu gibi
+    sonuc = rakamlar; // foreign number: leave as-is
   } else {
     return null;
   }
@@ -43,31 +44,31 @@ function paraFormat(tutar: number, paraBirimi: string): string {
 }
 
 function tarihFormat(iso: string): string {
-  return new Date(`${iso}T00:00:00`).toLocaleDateString("tr-TR", {
+  return new Date(`${iso}T00:00:00`).toLocaleDateString("en-GB", {
     day: "numeric",
     month: "long",
     year: "numeric",
   });
 }
 
-/** E-posta şablonlarının kısa, samimi WhatsApp karşılıkları. */
+/** Short, friendly WhatsApp counterparts of the email templates. */
 export function whatsappMesajUret(
   sablonKodu: string,
   girdi: SablonGirdisi
 ): string {
   const tutar = paraFormat(girdi.kalanBakiye, girdi.paraBirimi);
   const vade = tarihFormat(girdi.vadeTarihi);
-  const imza = `İyi çalışmalar dileriz.\n${girdi.gonderenUnvan}`;
+  const imza = `Best regards,\n${girdi.gonderenUnvan}`;
 
   switch (sablonKodu) {
     case "on_hatirlatma":
-      return `Merhaba, ${girdi.musteriUnvan} yetkilisine notumuzdur:\n\n${girdi.faturaNo} numaralı faturamızın (${tutar}) vadesi ${vade} tarihinde doluyor. Planlamanız için kısa bir hatırlatma iletmek istedik. 🙂\n\n${imza}`;
+      return `Hello, a note for ${girdi.musteriUnvan}:\n\nOur invoice ${girdi.faturaNo} (${tutar}) is due on ${vade}. We wanted to send a quick heads-up so you can plan ahead. 🙂\n\n${imza}`;
     case "vade_gunu":
-      return `Merhaba, ${girdi.musteriUnvan} yetkilisine notumuzdur:\n\n${girdi.faturaNo} numaralı faturamızın (${tutar}) vadesi bugün (${vade}) doluyor. Ödemeniz planlandıysa ayrıca işlem gerekmez.\n\n${imza}`;
+      return `Hello, a note for ${girdi.musteriUnvan}:\n\nOur invoice ${girdi.faturaNo} (${tutar}) is due today (${vade}). If your payment is already scheduled, no further action is needed.\n\n${imza}`;
     case "kararli_gecikme":
-      return `Merhaba, ${girdi.musteriUnvan} yetkilisi,\n\n${girdi.faturaNo} numaralı faturamızın (${tutar}) vadesi ${girdi.gecikmeGunu} gün önce (${vade}) doldu ve ödeme kayıtlarımıza ulaşmadı. Ödemenin birkaç iş günü içinde yapılmasını rica ederiz; bir zorluk varsa birlikte çözüm bulmaktan memnuniyet duyarız.\n\n${imza}`;
+      return `Hello, to ${girdi.musteriUnvan},\n\nOur invoice ${girdi.faturaNo} (${tutar}) was due ${girdi.gecikmeGunu} days ago (${vade}) and we haven't yet received the payment. Please arrange payment within the next few business days; if there's an issue, we're happy to work out a solution together.\n\n${imza}`;
     case "nazik_gecikme":
     default:
-      return `Merhaba, ${girdi.musteriUnvan} yetkilisine notumuzdur:\n\n${girdi.faturaNo} numaralı faturamızın (${tutar}) vadesi ${vade} tarihinde doldu; ödeme henüz kayıtlarımıza yansımadı. Gözden kaçmış olabilir diye nazikçe hatırlatmak istedik. Ödediyseniz lütfen dikkate almayın. 🙏\n\n${imza}`;
+      return `Hello, a note for ${girdi.musteriUnvan}:\n\nOur invoice ${girdi.faturaNo} (${tutar}) was due on ${vade}, and we haven't seen the payment come through yet. It may simply have slipped by, so we wanted to send a gentle reminder. If you've already paid, please disregard this message. 🙏\n\n${imza}`;
   }
 }

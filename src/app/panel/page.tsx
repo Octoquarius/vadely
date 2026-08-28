@@ -22,7 +22,7 @@ function paraFormat(tutar: number) {
 }
 
 function ayEtiketi(ay: string) {
-  return new Date(`${ay}-01T00:00:00`).toLocaleDateString("tr-TR", {
+  return new Date(`${ay}-01T00:00:00`).toLocaleDateString("en-GB", {
     month: "short",
     year: "2-digit",
   });
@@ -128,50 +128,50 @@ export default async function GenelBakis() {
   const enBuyukDso = Math.max(...dsoSerisi.map((n) => n.dso), 1);
 
   const kartlar = [
-    { baslik: "Açık alacak", deger: paraFormat(acikToplam) },
+    { baslik: "Open receivables", deger: paraFormat(acikToplam) },
     {
-      baslik: "Vadesi geçmiş",
+      baslik: "Past due",
       deger: paraFormat(gecikenToplam),
       vurgu: gecikenToplam > 0 ? ("kirmizi" as const) : undefined,
     },
     {
-      baslik: "Gerçekleşen DSO (son 90 gün)",
-      deger: dso === null ? "—" : `${dso} gün`,
-      dipnot: dso === null ? "Henüz kapanan fatura yok" : "Tutar ağırlıklı",
+      baslik: "Realized DSO (last 90 days)",
+      deger: dso === null ? "—" : `${dso} days`,
+      dipnot: dso === null ? "No closed invoices yet" : "Amount-weighted",
     },
     {
-      baslik: "Hatırlatma sonrası tahsilat",
+      baslik: "Collections after reminder",
       deger: paraFormat(nakit.toplam),
       dipnot:
         nakit.faturaAdedi > 0
-          ? `${nakit.faturaAdedi} faturada, gönderimi izleyen 30 günde`
-          : "Henüz hatırlatma sonrası tahsilat yok",
+          ? `${nakit.faturaAdedi} invoices, within 30 days of sending`
+          : "No collections after a reminder yet",
       vurgu: nakit.toplam > 0 ? ("yesil" as const) : undefined,
     },
   ];
 
   const adimlar = [
     {
-      etiket: "Müşterinizi ekleyin",
-      aciklama: "Elle girin ya da içe aktarmayla otomatik oluşsun",
+      etiket: "Add your customers",
+      aciklama: "Enter manually or let import create them automatically",
       link: "/panel/musteriler",
       tamam: (musteriSayisi.count ?? 0) > 0,
     },
     {
-      etiket: "Faturalarınızı yükleyin",
-      aciklama: "e-Fatura XML veya CSV dökümünüzü içe aktarın",
+      etiket: "Upload your invoices",
+      aciklama: "Import your e-Invoice XML or CSV export",
       link: "/panel/faturalar/ice-aktar",
       tamam: (faturaSayisi.count ?? 0) > 0,
     },
     {
-      etiket: "Hatırlatma planınızı üretin",
-      aciklama: "Kadansı gözden geçirin, 'Planı şimdi üret' deyin",
+      etiket: "Generate your reminder plan",
+      aciklama: "Review the cadence, then click 'Generate plan now'",
       link: "/panel/hatirlatmalar",
       tamam: (hatirlatmaSayisi.count ?? 0) > 0,
     },
     {
-      etiket: "İlk hatırlatmanızı gönderin",
-      aciklama: "Önizleyin, e-posta ya da WhatsApp ile iletin",
+      etiket: "Send your first reminder",
+      aciklama: "Preview it, then deliver by email or WhatsApp",
       link: "/panel/hatirlatmalar",
       tamam: hatirlatmalar.length > 0,
     },
@@ -181,20 +181,20 @@ export default async function GenelBakis() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold text-zinc-900">Genel Bakış</h1>
+      <h1 className="text-2xl font-semibold text-zinc-900">Overview</h1>
 
       {ornekVeriVar && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
           <span>
-            <strong>Örnek veriler yüklü.</strong> Panoyu keşfettikten sonra
-            kendi verinizi yüklemeden önce temizleyin.
+            <strong>Sample data is loaded.</strong> After exploring the
+            dashboard, clear it before uploading your own data.
           </span>
           <form action={ornekVeriTemizle}>
             <button
               type="submit"
               className="rounded-md border border-amber-300 bg-white px-3 py-1.5 font-medium text-amber-800 hover:bg-amber-100"
             >
-              Örnek verileri temizle
+              Clear sample data
             </button>
           </form>
         </div>
@@ -203,7 +203,7 @@ export default async function GenelBakis() {
       {!kurulumBitti && (
         <div className="rounded-xl border border-emerald-200 bg-emerald-50/40 p-5">
           <h2 className="text-sm font-semibold text-zinc-900">
-            Kuruluma devam edin (
+            Continue setup (
             {adimlar.filter((adim) => adim.tamam).length}/{adimlar.length})
           </h2>
           <div className="mt-3 grid gap-2 md:grid-cols-2">
@@ -247,16 +247,16 @@ export default async function GenelBakis() {
               action={ornekVeriYukle}
               className="mt-3 flex flex-wrap items-center gap-2 text-sm text-zinc-600"
             >
-              <span>Önce bir tur atmak mı istiyorsunuz?</span>
+              <span>Want to take a look around first?</span>
               <button
                 type="submit"
                 className="rounded-md border border-zinc-300 bg-white px-3 py-1.5 font-medium text-zinc-700 hover:bg-zinc-50"
               >
-                Örnek verilerle deneyin
+                Try it with sample data
               </button>
               <span className="text-xs text-zinc-400">
-                6 müşteri, 14 fatura ve ödemeleriyle dolu bir pano — tek tıkla
-                geri silinir.
+                A dashboard filled with 6 customers, 14 invoices and their
+                payments — removed again with a single click.
               </span>
             </form>
           )}
@@ -289,17 +289,17 @@ export default async function GenelBakis() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        {/* Alacak yaşlandırma */}
+        {/* Receivables aging */}
         <div className="rounded-xl border border-zinc-200 bg-white p-5">
           <h2 className="text-sm font-semibold text-zinc-900">
-            Alacak yaşlandırma
+            Receivables aging
           </h2>
           <p className="mt-0.5 text-xs text-zinc-500">
-            Açık bakiye, vade gecikmesine göre
+            Open balance, by days past due
           </p>
           <div className="mt-4 space-y-3">
             {kovalar.map((kova) => (
-              <div key={kova.etiket} title={`${kova.adet} fatura`}>
+              <div key={kova.etiket} title={`${kova.adet} invoices`}>
                 <div className="flex items-baseline justify-between text-sm">
                   <span className="text-zinc-600">{kova.etiket}</span>
                   <span className="font-medium text-zinc-900">
@@ -322,13 +322,13 @@ export default async function GenelBakis() {
           </div>
         </div>
 
-        {/* Aylık DSO trendi */}
+        {/* Monthly DSO trend */}
         <div className="rounded-xl border border-zinc-200 bg-white p-5">
           <h2 className="text-sm font-semibold text-zinc-900">
-            Aylık gerçekleşen DSO
+            Monthly realized DSO
           </h2>
           <p className="mt-0.5 text-xs text-zinc-500">
-            Kapanan faturaların tutar ağırlıklı tahsil süresi (gün)
+            Amount-weighted collection time for closed invoices (days)
           </p>
           <div className="mt-4 space-y-3">
             {dsoSerisi.map((nokta) => (
@@ -336,14 +336,14 @@ export default async function GenelBakis() {
                 key={nokta.ay}
                 title={
                   nokta.adet > 0
-                    ? `${nokta.adet} fatura kapandı`
-                    : "Kapanan fatura yok"
+                    ? `${nokta.adet} invoices closed`
+                    : "No invoices closed"
                 }
               >
                 <div className="flex items-baseline justify-between text-sm">
                   <span className="text-zinc-600">{ayEtiketi(nokta.ay)}</span>
                   <span className="font-medium text-zinc-900">
-                    {nokta.adet > 0 ? `${nokta.dso} gün` : "—"}
+                    {nokta.adet > 0 ? `${nokta.dso} days` : "—"}
                   </span>
                 </div>
                 <div className="mt-1 h-2.5 w-full rounded-full bg-zinc-100">
@@ -364,18 +364,18 @@ export default async function GenelBakis() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        {/* En riskli faturalar */}
+        {/* Highest-risk invoices */}
         <div className="rounded-xl border border-zinc-200 bg-white p-5">
           <h2 className="text-sm font-semibold text-zinc-900">
-            En riskli 10 fatura
+            Top 10 riskiest invoices
           </h2>
           <table className="mt-3 w-full text-left text-sm">
             <thead className="text-zinc-500">
               <tr>
-                <th className="py-1.5 font-medium">Fatura</th>
-                <th className="py-1.5 font-medium">Müşteri</th>
-                <th className="py-1.5 text-right font-medium">Kalan</th>
-                <th className="py-1.5 text-right font-medium">Gecikme</th>
+                <th className="py-1.5 font-medium">Invoice</th>
+                <th className="py-1.5 font-medium">Customer</th>
+                <th className="py-1.5 text-right font-medium">Remaining</th>
+                <th className="py-1.5 text-right font-medium">Overdue</th>
               </tr>
             </thead>
             <tbody>
@@ -391,14 +391,14 @@ export default async function GenelBakis() {
                     {paraFormat(fatura.kalan_bakiye)}
                   </td>
                   <td className="py-2 text-right font-medium text-red-600">
-                    {fatura.gecikme} gün
+                    {fatura.gecikme} days
                   </td>
                 </tr>
               ))}
               {enRiskliFaturalar.length === 0 && (
                 <tr>
                   <td colSpan={4} className="py-6 text-center text-zinc-500">
-                    Vadesi geçmiş fatura yok. 🎉
+                    No overdue invoices. 🎉
                   </td>
                 </tr>
               )}
@@ -406,18 +406,18 @@ export default async function GenelBakis() {
           </table>
         </div>
 
-        {/* En riskli müşteriler */}
+        {/* Highest-risk customers */}
         <div className="rounded-xl border border-zinc-200 bg-white p-5">
           <h2 className="text-sm font-semibold text-zinc-900">
-            En riskli 10 müşteri
+            Top 10 riskiest customers
           </h2>
           <table className="mt-3 w-full text-left text-sm">
             <thead className="text-zinc-500">
               <tr>
-                <th className="py-1.5 font-medium">Müşteri</th>
-                <th className="py-1.5 text-right font-medium">Açık bakiye</th>
-                <th className="py-1.5 text-right font-medium">Fatura</th>
-                <th className="py-1.5 text-right font-medium">En uzun gecikme</th>
+                <th className="py-1.5 font-medium">Customer</th>
+                <th className="py-1.5 text-right font-medium">Open balance</th>
+                <th className="py-1.5 text-right font-medium">Invoices</th>
+                <th className="py-1.5 text-right font-medium">Longest overdue</th>
               </tr>
             </thead>
             <tbody>
@@ -436,14 +436,14 @@ export default async function GenelBakis() {
                     {musteri.faturaAdedi}
                   </td>
                   <td className="py-2 text-right font-medium text-red-600">
-                    {musteri.enUzunGecikme} gün
+                    {musteri.enUzunGecikme} days
                   </td>
                 </tr>
               ))}
               {enRiskliMusteriler.length === 0 && (
                 <tr>
                   <td colSpan={4} className="py-6 text-center text-zinc-500">
-                    Geciken müşteri yok. 🎉
+                    No customers past due. 🎉
                   </td>
                 </tr>
               )}

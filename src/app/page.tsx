@@ -4,89 +4,89 @@ import { VadelyMark } from "@/components/marka";
 
 const NASIL = [
   {
-    baslik: "Faturalarınızı yükleyin",
+    baslik: "Upload your invoices",
     aciklama:
-      "e-Fatura XML veya CSV dökümünüzü sürükleyin; müşterileriniz otomatik oluşur.",
+      "Drag in your e-Invoice XML or CSV export — your customers are created automatically.",
   },
   {
-    baslik: "Kadansınızı kurun",
+    baslik: "Set your cadence",
     aciklama:
-      "Vadeden üç gün önce mi, yedi gün sonra mı? Tonu ve zamanlamayı siz seçin — ya da hazır planı kullanın.",
+      "Three days before the due date, or seven days after? You choose the tone and timing — or just use a ready-made plan.",
   },
   {
-    baslik: "Tahsilatı izleyin",
+    baslik: "Track collections",
     aciklama:
-      "Hatırlatmalar gider, ödemeler eşleşir, tahsilat panonuz her gün güncellenir.",
+      "Reminders go out, payments get matched, and your collections dashboard updates every day.",
   },
 ];
 
 const OZELLIKLER: { baslik: string; aciklama: string; cizim: React.ReactNode }[] =
   [
     {
-      baslik: "Otomatik hatırlatma kadansı",
+      baslik: "Automatic reminder cadence",
       aciklama:
-        "Vadeden önce nazikçe, vadede net, gecikince kararlı. Siz kural koyarsınız, Vadely takip eder.",
+        "Gentle before the due date, clear on the due date, firm once it's overdue. You set the rules, Vadely follows through.",
       cizim: (
         <path d="M12 7v5l3 2M12 3a9 9 0 100 18 9 9 0 000-18z" />
       ),
     },
     {
-      baslik: "e-Fatura & CSV içe aktarma",
+      baslik: "e-Invoice & CSV import",
       aciklama:
-        "Entegratör portalınızdan indirdiğiniz UBL XML'leri ya da ön muhasebe dökümünüzü dakikalar içinde yükleyin.",
+        "Upload the UBL XML files from your e-invoice integrator portal, or your bookkeeping software's export, in minutes.",
       cizim: <path d="M12 3v11m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" />,
     },
     {
-      baslik: "İlişkiyi bozmayan şablonlar",
+      baslik: "Templates that protect the relationship",
       aciklama:
-        "Tehdit yok, utandırma yok. Nazik ama tutarlı; her mesajı göndermeden önce onaylayabilirsiniz.",
+        "No threats, no shaming. Polite but consistent — and you can approve every message before it goes out.",
       cizim: <path d="M4 5h16v11H8l-4 4V5z" />,
     },
     {
-      baslik: "Tahsilat panosu",
+      baslik: "Collections dashboard",
       aciklama:
-        "Ortalama tahsil süreniz, alacak yaşlandırması ve en riskli müşteriler tek ekranda.",
+        "Your average collection time, receivables aging, and highest-risk customers, all on one screen.",
       cizim: <path d="M4 20V4m0 16h16M8 16v-4m4 4V8m4 8v-6" />,
     },
     {
-      baslik: "Banka ekstresi eşleştirme",
+      baslik: "Bank statement matching",
       aciklama:
-        "Gelen ödemeleri yükleyin, hangi faturayı kapattığını iki tıkla işaretleyin; hatırlatmalar kendiliğinden durur.",
+        "Upload incoming payments, mark which invoice they close in two clicks, and reminders stop automatically.",
       cizim: <path d="M3 10l9-6 9 6M5 10v9h14v-9M9 19v-5h6v5" />,
     },
     {
-      baslik: "WhatsApp desteği",
+      baslik: "WhatsApp support",
       aciklama:
-        "Türkiye'de tahsilatın gerçek kanalı. Hazır mesajı tek dokunuşla WhatsApp'tan iletin.",
+        "The real channel for collections in Turkey. Send the ready-made message via WhatsApp with a single tap.",
       cizim: <path d="M4 20l1.5-4A8 8 0 1112 20a8 8 0 01-4-1L4 20z" />,
     },
   ];
 
 const SSS = [
   {
-    soru: "Muhasebe programımı değiştirmem gerekiyor mu?",
+    soru: "Do I need to switch accounting software?",
     yanit:
-      "Hayır. Vadely; Paraşüt, Logo ya da Mikro gibi araçlarınızın yerine geçmez, onların ürettiği fatura verisinin üzerine bir tahsilat katmanı ekler. Faturanızı istediğiniz yerde kesin, parasını Vadely toplasın.",
+      "No. Vadely doesn't replace tools like Paraşüt, Logo, or Mikro — it adds a collections layer on top of the invoice data they produce. Issue your invoices wherever you like; let Vadely collect the money.",
   },
   {
-    soru: "Müşterilerim rahatsız olmaz mı?",
+    soru: "Won't this annoy my customers?",
     yanit:
-      "Şablonlarımız ilişkiyi bozmadan tahsilat ilkesiyle yazıldı: nazik, profesyonel, her zaman çözüm kapısı açık. Üstelik varsayılan modda hiçbir mesaj siz onaylamadan gönderilmez.",
+      "Our templates are written on the principle of collecting without damaging the relationship: polite, professional, and always leaving the door open for a resolution. And by default, no message goes out without your approval.",
   },
   {
-    soru: "Kurulum ne kadar sürer?",
+    soru: "How long does setup take?",
     yanit:
-      "Kayıt olun, fatura dökümünüzü (XML veya CSV) yükleyin, hatırlatma planınızı üretin. İlk panonuzu beş dakikada görürsünüz; banka ya da GİB API bağlantısı gerekmez.",
+      "Sign up, upload your invoice export (XML or CSV), and generate your reminder plan. You'll see your first dashboard within five minutes — no bank or GİB (Turkish Revenue Administration) API connection required.",
   },
   {
-    soru: "Verilerim güvende mi?",
+    soru: "Is my data safe?",
     yanit:
-      "Veriler şifreli iletişimle taşınır, hesaplar birbirinden veritabanı seviyesinde yalıtılmıştır. KVKK gereği verinizi tek tıkla indirebilir veya kalıcı olarak silebilirsiniz.",
+      "Data is transmitted over encrypted connections, and accounts are isolated from one another at the database level. Under KVKK (Turkey's Personal Data Protection Law), you can download or permanently delete your data with a single click.",
   },
   {
-    soru: "Fiyatlar neden dolar cinsinden?",
+    soru: "Why are prices in dollars?",
     yanit:
-      "Altyapı maliyetlerimiz dövize endeksli olduğu için fiyat listesi USD'dir; tahsilat güncel kurdan TL karşılığıyla yapılır. Yıllık ödemede yaklaşık iki ay bedavadır.",
+      "Our infrastructure costs are pegged to foreign currency, so our price list is in USD; billing is charged in TRY at the current exchange rate. Paying annually gets you roughly two months free.",
   },
 ];
 
@@ -116,20 +116,20 @@ export default function AnaSayfa() {
             </span>
           </Link>
           <nav className="hidden items-center gap-1 text-sm text-murekkep-2 md:flex">
-            <a href="#nasil" className="rounded-md px-3 py-2 hover:bg-kart">Nasıl çalışır</a>
-            <a href="#fiyat" className="rounded-md px-3 py-2 hover:bg-kart">Fiyatlandırma</a>
-            <a href="#sss" className="rounded-md px-3 py-2 hover:bg-kart">SSS</a>
-            <Link href="/pilot" className="rounded-md px-3 py-2 hover:bg-kart">Pilot programı</Link>
+            <a href="#nasil" className="rounded-md px-3 py-2 hover:bg-kart">How it works</a>
+            <a href="#fiyat" className="rounded-md px-3 py-2 hover:bg-kart">Pricing</a>
+            <a href="#sss" className="rounded-md px-3 py-2 hover:bg-kart">FAQ</a>
+            <Link href="/pilot" className="rounded-md px-3 py-2 hover:bg-kart">Pilot program</Link>
           </nav>
           <div className="flex items-center gap-2 text-sm">
             <Link href="/giris" className="rounded-lg px-3 py-2 font-medium text-murekkep hover:bg-kart">
-              Giriş yap
+              Log in
             </Link>
             <Link
               href="/kayit"
               className="rounded-lg bg-murekkep px-4 py-2 font-medium text-kagit transition-colors hover:bg-[#123a33]"
             >
-              Ücretsiz başla
+              Start for free
             </Link>
           </div>
         </div>
@@ -140,37 +140,38 @@ export default function AnaSayfa() {
         <div>
           <p className="lp-in flex items-center gap-2.5 font-mono text-xs font-medium uppercase tracking-[.18em] text-altin">
             <span className="h-px w-6 bg-altin" />
-            e-Fatura çağında tahsilat
+            Collections for the e-invoice era
           </p>
           <h1 className="lp-in lp-d1 mt-6 font-display text-[clamp(38px,6vw,62px)] font-semibold leading-[1.05] tracking-[-.02em] text-murekkep text-balance">
-            Faturanızı siz kesin,{" "}
-            <span className="italic text-altin">paranızı biz toplayalım.</span>
+            You issue the invoice,{" "}
+            <span className="italic text-altin">we&apos;ll collect the money.</span>
           </h1>
           <p className="lp-in lp-d2 mt-6 max-w-xl text-lg leading-relaxed text-murekkep-2">
-            Vadely e-faturalarınızı takip eder, müşterilerinize nazik ama tutarlı
-            ödeme hatırlatmaları gönderir ve alacaklarınızı tek panoda toplar.
-            Muhasebe programınıza rakip değil, tamamlayıcısıdır.
+            Vadely tracks your e-invoices, sends your customers polite but
+            consistent payment reminders, and brings your receivables together
+            in one dashboard. It&apos;s not a competitor to your accounting
+            software — it&apos;s a companion to it.
           </p>
           <div className="lp-in lp-d3 mt-8 flex flex-wrap gap-3">
             <Link
               href="/kayit"
               className="rounded-xl bg-murekkep px-6 py-3.5 text-sm font-semibold text-kagit transition-colors hover:bg-[#123a33]"
             >
-              14 gün ücretsiz deneyin
+              Try it free for 14 days
             </Link>
             <Link
               href="/giris"
               className="rounded-xl border border-cizgi bg-kart px-6 py-3.5 text-sm font-semibold text-murekkep transition-colors hover:border-murekkep-2"
             >
-              Giriş yap
+              Log in
             </Link>
           </div>
           <p className="lp-in lp-d4 mt-4 font-mono text-xs text-sis">
-            Kredi kartı gerekmez · 5 dakikada kurulum
+            No credit card required · Set up in 5 minutes
           </p>
         </div>
 
-        {/* Signature: olgunlaşan fatura */}
+        {/* Signature: invoice maturing */}
         <div className="lp-in lp-d2 relative">
           <div
             aria-hidden
@@ -180,13 +181,13 @@ export default function AnaSayfa() {
         </div>
       </section>
 
-      {/* İSTATİSTİK BANDI (koyu çam) */}
+      {/* STATS BAND (dark pine) */}
       <section className="bg-murekkep text-kagit">
         <div className="mx-auto grid max-w-6xl gap-8 px-5 py-14 sm:grid-cols-3">
           {[
-            ["75 gün", "Türkiye imalatında ortalama alacak tahsil süresi", "TCMB, 2024"],
-            ["3'te 2", "B2B faturaların gecikmeli ödenme oranı", "Atradius, 2025"],
-            ["%82", "KOBİ başarısızlıklarında kötü nakit akışının payı", "—"],
+            ["75 days", "Average receivables collection time in Turkish manufacturing", "CBRT, 2024"],
+            ["2 in 3", "Share of B2B invoices paid late", "Atradius, 2025"],
+            ["82%", "Share of SME failures attributed to poor cash flow", "—"],
           ].map(([buyuk, alt, kaynak]) => (
             <div key={alt} className="border-t border-white/15 pt-5">
               <p className="font-mono text-4xl font-semibold tracking-tight text-altin-parlak">
@@ -201,14 +202,14 @@ export default function AnaSayfa() {
         </div>
       </section>
 
-      {/* NASIL ÇALIŞIR — gerçek bir sıra, bu yüzden numaralı */}
+      {/* HOW IT WORKS — a real sequence, hence numbered */}
       <section id="nasil" className="mx-auto max-w-6xl px-5 py-20">
         <div className="max-w-2xl">
           <p className="font-mono text-xs font-medium uppercase tracking-[.18em] text-altin">
-            Nasıl çalışır
+            How it works
           </p>
           <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-murekkep sm:text-4xl">
-            Üç adımda ilk panonuz
+            Your first dashboard in three steps
           </h2>
         </div>
         <ol className="mt-10 grid gap-5 md:grid-cols-3">
@@ -228,15 +229,15 @@ export default function AnaSayfa() {
         </ol>
       </section>
 
-      {/* ÖZELLİKLER */}
+      {/* FEATURES */}
       <section className="border-y border-cizgi bg-kart/60">
         <div className="mx-auto max-w-6xl px-5 py-20">
           <div className="max-w-2xl">
             <p className="font-mono text-xs font-medium uppercase tracking-[.18em] text-altin">
-              Özellikler
+              Features
             </p>
             <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-murekkep sm:text-4xl">
-              Tahsilat için ihtiyacınız olan her şey
+              Everything you need for collections
             </h2>
           </div>
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -266,17 +267,17 @@ export default function AnaSayfa() {
         </div>
       </section>
 
-      {/* FİYATLANDIRMA */}
+      {/* PRICING */}
       <section id="fiyat" className="mx-auto max-w-6xl px-5 py-20">
         <div className="mx-auto max-w-2xl text-center">
           <p className="font-mono text-xs font-medium uppercase tracking-[.18em] text-altin">
-            Fiyatlandırma
+            Pricing
           </p>
           <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-murekkep sm:text-4xl text-balance">
-            Basit, öngörülebilir fiyatlandırma
+            Simple, predictable pricing
           </h2>
           <p className="mt-3 text-sm text-murekkep-2">
-            14 gün ücretsiz deneme · Yıllık ödemede ~2 ay bedava · İstediğiniz an iptal
+            14-day free trial · ~2 months free when billed annually · Cancel anytime
           </p>
         </div>
         <div className="mt-12 grid items-start gap-5 md:grid-cols-3">
@@ -293,7 +294,7 @@ export default function AnaSayfa() {
               >
                 {one && (
                   <span className="mb-3 w-fit rounded-full bg-altin/12 px-3 py-1 font-mono text-[11px] font-medium uppercase tracking-wider text-altin">
-                    En çok tercih edilen
+                    Most popular
                   </span>
                 )}
                 <h3 className="font-display text-xl font-semibold text-murekkep">
@@ -304,9 +305,9 @@ export default function AnaSayfa() {
                   <span className="font-mono text-4xl font-semibold tracking-tight text-murekkep">
                     ${paket.aylikUsd}
                   </span>
-                  <span className="text-sm text-sis">/ ay</span>
+                  <span className="text-sm text-sis">/ mo</span>
                   <span className="ml-1 font-mono text-xs text-sis">
-                    (yıllık ${paket.yillikUsd})
+                    (annual ${paket.yillikUsd})
                   </span>
                 </p>
                 <ul className="mt-6 flex-1 space-y-2.5 text-sm text-murekkep-2">
@@ -325,23 +326,23 @@ export default function AnaSayfa() {
                       : "bg-murekkep text-kagit hover:bg-[#123a33]"
                   }`}
                 >
-                  Ücretsiz dene
+                  Try for free
                 </Link>
               </div>
             );
           })}
         </div>
         <p className="mx-auto mt-6 max-w-2xl text-center font-mono text-xs text-sis">
-          Fiyatlar USD'dir; tahsilat TL karşılığıyla yapılır. SMS/WhatsApp mesajları
-          kullandıkça öde kontör modeliyle ücretlendirilir.
+          Prices are in USD; billing is charged in TRY equivalent. SMS/WhatsApp
+          messages are billed on a pay-as-you-go credit model.
         </p>
       </section>
 
-      {/* SSS — native details, JS'siz */}
+      {/* FAQ — native details, no JS */}
       <section id="sss" className="border-t border-cizgi bg-kart/60">
         <div className="mx-auto max-w-3xl px-5 py-20">
           <h2 className="text-center font-display text-3xl font-semibold tracking-tight text-murekkep sm:text-4xl">
-            Sık sorulan sorular
+            Frequently asked questions
           </h2>
           <div className="mt-10 divide-y divide-cizgi border-y border-cizgi">
             {SSS.map((madde) => (
@@ -361,32 +362,33 @@ export default function AnaSayfa() {
         </div>
       </section>
 
-      {/* KAPANIŞ CTA — koyu çam */}
+      {/* CLOSING CTA — dark pine */}
       <section className="bg-murekkep">
         <div className="mx-auto max-w-4xl px-5 py-20 text-center">
           <h2 className="font-display text-3xl font-semibold tracking-tight text-kagit sm:text-[40px] text-balance">
-            Vadesi geçen her gün, paranızın maliyetidir.
+            Every day an invoice sits overdue costs you money.
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-kagit/70">
-            Türkiye'de ortalama tahsil süresi 75 gün. Sizinki kaç gün? Panonuz beş
-            dakikada hazır.
+            The average collection time in Turkey is 75 days. What&apos;s
+            yours? Your dashboard is ready in five minutes.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link
               href="/kayit"
               className="rounded-xl bg-altin px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#946609]"
             >
-              14 gün ücretsiz deneyin
+              Try it free for 14 days
             </Link>
             <Link
               href="/pilot"
               className="rounded-xl border border-white/25 px-6 py-3.5 text-sm font-semibold text-kagit transition-colors hover:bg-white/10"
             >
-              Pilot programına başvurun
+              Apply for the pilot program
             </Link>
           </div>
           <p className="mt-3 font-mono text-xs text-kagit/40">
-            Pilot programında sınırlı sayıda KOBİ ile ücretsiz, birebir çalışıyoruz.
+            In the pilot program, we work one-on-one, free of charge, with a
+            limited number of SMEs.
           </p>
         </div>
       </section>
@@ -400,9 +402,9 @@ export default function AnaSayfa() {
           </span>
           <span className="font-mono text-xs">© 2026 Vadely</span>
           <nav className="flex gap-5">
-            <Link href="/pilot" className="hover:text-murekkep">Pilot programı</Link>
-            <Link href="/gizlilik" className="hover:text-murekkep">KVKK Aydınlatma</Link>
-            <Link href="/kullanim-kosullari" className="hover:text-murekkep">Kullanım Koşulları</Link>
+            <Link href="/pilot" className="hover:text-murekkep">Pilot program</Link>
+            <Link href="/gizlilik" className="hover:text-murekkep">Privacy Notice</Link>
+            <Link href="/kullanim-kosullari" className="hover:text-murekkep">Terms of Use</Link>
           </nav>
         </div>
       </footer>
@@ -410,14 +412,14 @@ export default function AnaSayfa() {
   );
 }
 
-// Hero imza öğesi: bir faturanın olgunlaşarak tahsil edilmiş nakde dönüşü.
+// Hero signature element: an invoice maturing into collected cash.
 function FaturaKarti() {
   return (
     <div className="rounded-3xl border border-cizgi bg-kart p-6 shadow-[0_30px_60px_-30px_rgba(12,43,38,.35)] sm:p-8">
       <div className="flex items-start justify-between">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-[.16em] text-sis">
-            Fatura
+            Invoice
           </p>
           <p className="mt-1 font-mono text-sm font-medium text-murekkep">
             DEMO-2026-001
@@ -425,7 +427,7 @@ function FaturaKarti() {
         </div>
         <span className="inline-flex items-center gap-1.5 rounded-full bg-tahsil/10 px-3 py-1 text-xs font-semibold text-tahsil">
           <span className="lp-sikke inline-block h-1.5 w-1.5 rounded-full bg-tahsil" />
-          Tahsil edildi
+          Collected
         </span>
       </div>
 
@@ -434,7 +436,7 @@ function FaturaKarti() {
       </p>
       <p className="mt-1 text-sm text-murekkep-2">Yıldız Metal San. A.Ş.</p>
 
-      {/* Vade zaman çizgisi */}
+      {/* Due date timeline */}
       <div className="relative mt-8 mb-11 h-0.5 rounded bg-cizgi">
         <div
           className="lp-cizgi-dolgu absolute inset-y-0 left-0 w-full rounded"
@@ -443,9 +445,9 @@ function FaturaKarti() {
           }}
         />
         <div className="absolute inset-0 flex items-center justify-between">
-          <Nokta etiket="Kesildi" alt="12 Nis" />
-          <Nokta etiket="Vade" alt="12 May" durum="vade" />
-          <Nokta etiket="Tahsil" alt="₺84.500" durum="tahsil" />
+          <Nokta etiket="Issued" alt="12 Apr" />
+          <Nokta etiket="Due" alt="12 May" durum="vade" />
+          <Nokta etiket="Collected" alt="₺84,500" durum="tahsil" />
         </div>
       </div>
     </div>

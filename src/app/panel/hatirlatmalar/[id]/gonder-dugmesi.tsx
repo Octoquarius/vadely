@@ -23,7 +23,7 @@ export function TekGonderDugmesi({ hatirlatmaId }: { hatirlatmaId: string }) {
         disabled={bekliyor}
         className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
       >
-        {bekliyor ? "Gönderiliyor…" : "Şimdi gönder"}
+        {bekliyor ? "Sending…" : "Send now"}
       </button>
     </form>
   );

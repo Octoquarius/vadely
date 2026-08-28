@@ -12,7 +12,7 @@ export async function musteriEkle(
   const supabase = await createClient();
 
   const unvan = String(formData.get("unvan") ?? "").trim();
-  if (!unvan) return { hata: "Unvan zorunludur." };
+  if (!unvan) return { hata: "Company name is required." };
 
   const { error } = await supabase.from("musteriler").insert({
     unvan,
@@ -21,7 +21,7 @@ export async function musteriEkle(
     telefon: String(formData.get("telefon") ?? "").trim() || null,
   });
 
-  if (error) return { hata: "Müşteri eklenemedi. Yetkinizi kontrol edin." };
+  if (error) return { hata: "Could not add customer. Check your permissions." };
 
   revalidatePath("/panel/musteriler");
   return {};
@@ -35,8 +35,8 @@ export async function musteriGuncelle(
 
   const id = String(formData.get("id") ?? "");
   const unvan = String(formData.get("unvan") ?? "").trim();
-  if (!id) return { hata: "Müşteri bulunamadı." };
-  if (!unvan) return { hata: "Unvan zorunludur." };
+  if (!id) return { hata: "Customer not found." };
+  if (!unvan) return { hata: "Company name is required." };
 
   const { data, error } = await supabase
     .from("musteriler")
@@ -50,23 +50,23 @@ export async function musteriGuncelle(
     .select("id");
 
   if (error || !data || data.length === 0) {
-    return { hata: "Müşteri güncellenemedi. Yetkinizi kontrol edin." };
+    return { hata: "Could not update customer. Check your permissions." };
   }
 
   revalidatePath("/panel/musteriler");
-  return { mesaj: "Müşteri güncellendi." };
+  return { mesaj: "Customer updated." };
 }
 
-// Müşteriyi ve tüm bağlı kayıtlarını (faturalar, ödemeler, eşleşmeler,
-// hatırlatmalar) siler. FK sırasına dikkat: önce alt kayıtlar. RLS bu
-// tablolarda silmeye izin verir (ornekVeriTemizle ile aynı yol).
+// Deletes the customer and all linked records (invoices, payments, matches,
+// reminders). Watch the FK order: child records first. RLS allows deletion
+// on these tables (same path as ornekVeriTemizle).
 export async function musteriSil(
   _onceki: IslemDurum,
   formData: FormData
 ): Promise<IslemDurum> {
   const supabase = await createClient();
   const id = String(formData.get("id") ?? "");
-  if (!id) return { hata: "Müşteri bulunamadı." };
+  if (!id) return { hata: "Customer not found." };
 
   const { data: faturalar } = await supabase
     .from("faturalar")
@@ -99,13 +99,13 @@ export async function musteriSil(
   await supabase.from("odemeler").delete().eq("musteri_id", id);
 
   const { error } = await supabase.from("musteriler").delete().eq("id", id);
-  if (error) return { hata: "Müşteri silinemedi. Yetkinizi kontrol edin." };
+  if (error) return { hata: "Could not delete customer. Check your permissions." };
 
   revalidatePath("/panel/musteriler");
   revalidatePath("/panel");
   revalidatePath("/panel/faturalar");
   revalidatePath("/panel/odemeler");
-  return { mesaj: "Müşteri ve bağlı kayıtları silindi." };
+  return { mesaj: "Customer and linked records deleted." };
 }
 
 export async function faturaEkle(
@@ -121,13 +121,13 @@ export async function faturaEkle(
   const tutar = Number(formData.get("tutar"));
 
   if (!musteriId || !faturaNo || !faturaTarihi || !vadeTarihi) {
-    return { hata: "Tüm zorunlu alanları doldurun." };
+    return { hata: "Fill in all required fields." };
   }
   if (!Number.isFinite(tutar) || tutar <= 0) {
-    return { hata: "Tutar sıfırdan büyük olmalı." };
+    return { hata: "Amount must be greater than zero." };
   }
   if (vadeTarihi < faturaTarihi) {
-    return { hata: "Vade tarihi fatura tarihinden önce olamaz." };
+    return { hata: "Due date cannot be before the invoice date." };
   }
 
   const { error } = await supabase.from("faturalar").insert({
@@ -142,9 +142,9 @@ export async function faturaEkle(
 
   if (error) {
     if (error.code === "23505") {
-      return { hata: "Bu fatura numarası zaten kayıtlı." };
+      return { hata: "This invoice number is already registered." };
     }
-    return { hata: "Fatura eklenemedi. Yetkinizi kontrol edin." };
+    return { hata: "Could not add invoice. Check your permissions." };
   }
 
   revalidatePath("/panel/faturalar");
@@ -164,19 +164,19 @@ export async function faturaGuncelle(
   const vadeTarihi = String(formData.get("vade_tarihi") ?? "");
   const tutar = Number(formData.get("tutar"));
 
-  if (!id) return { hata: "Fatura bulunamadı." };
+  if (!id) return { hata: "Invoice not found." };
   if (!faturaNo || !faturaTarihi || !vadeTarihi) {
-    return { hata: "Tüm zorunlu alanları doldurun." };
+    return { hata: "Fill in all required fields." };
   }
   if (!Number.isFinite(tutar) || tutar <= 0) {
-    return { hata: "Tutar sıfırdan büyük olmalı." };
+    return { hata: "Amount must be greater than zero." };
   }
   if (vadeTarihi < faturaTarihi) {
-    return { hata: "Vade tarihi fatura tarihinden önce olamaz." };
+    return { hata: "Due date cannot be before the invoice date." };
   }
 
-  // Tutar değişince kalan bakiye ve durumu, eşleşmiş (tahsil edilmiş) tutara
-  // göre yeniden hesapla; itilaflı durumu koru.
+  // When the amount changes, recompute the remaining balance and status
+  // based on the amount already matched (collected); preserve disputed status.
   const { data: mevcut } = await supabase
     .from("faturalar")
     .select("durum")
@@ -190,7 +190,7 @@ export async function faturaGuncelle(
   const yeniKalan = Math.round((tutar - tahsil) * 100) / 100;
   if (yeniKalan < 0) {
     return {
-      hata: `Tutar, tahsil edilen tutardan (${tahsil.toLocaleString("tr-TR")} ₺) küçük olamaz.`,
+      hata: `Amount cannot be less than the amount already collected (${tahsil.toLocaleString("tr-TR")} ₺).`,
     };
   }
   const durum =
@@ -217,44 +217,44 @@ export async function faturaGuncelle(
 
   if (error) {
     if (error.code === "23505") {
-      return { hata: "Bu fatura numarası zaten kayıtlı." };
+      return { hata: "This invoice number is already registered." };
     }
-    return { hata: "Fatura güncellenemedi. Yetkinizi kontrol edin." };
+    return { hata: "Could not update invoice. Check your permissions." };
   }
   if (!data || data.length === 0) {
-    return { hata: "Fatura güncellenemedi. Yetkinizi kontrol edin." };
+    return { hata: "Could not update invoice. Check your permissions." };
   }
 
   revalidatePath("/panel/faturalar");
   revalidatePath("/panel");
-  return { mesaj: "Fatura güncellendi." };
+  return { mesaj: "Invoice updated." };
 }
 
-// Faturayı ve bağlı kayıtlarını (eşleşmeler, hatırlatmalar) siler.
+// Deletes the invoice and its linked records (matches, reminders).
 export async function faturaSil(
   _onceki: IslemDurum,
   formData: FormData
 ): Promise<IslemDurum> {
   const supabase = await createClient();
   const id = String(formData.get("id") ?? "");
-  if (!id) return { hata: "Fatura bulunamadı." };
+  if (!id) return { hata: "Invoice not found." };
 
   await supabase.from("fatura_odeme_eslesmeleri").delete().eq("fatura_id", id);
   await supabase.from("hatirlatmalar").delete().eq("fatura_id", id);
 
   const { error } = await supabase.from("faturalar").delete().eq("id", id);
-  if (error) return { hata: "Fatura silinemedi. Yetkinizi kontrol edin." };
+  if (error) return { hata: "Could not delete invoice. Check your permissions." };
 
   revalidatePath("/panel/faturalar");
   revalidatePath("/panel");
   revalidatePath("/panel/odemeler");
-  return { mesaj: "Fatura silindi." };
+  return { mesaj: "Invoice deleted." };
 }
 
-// ---- Örnek veri (ürünü boş hesapla keşfetmek için) ----
+// ---- Sample data (for exploring the product on an empty account) ----
 
-// "use server" dosyası yalnızca async fonksiyon export edebilir;
-// bu etiket panel sayfasında da aynı değerle ("ornek-veri") sorgulanır.
+// A "use server" file can only export async functions;
+// this tag is also queried on the panel page with the same value ("ornek-veri").
 const ORNEK_VERI_ETIKETI = "ornek-veri";
 
 function ornekSayfalariYenile() {
@@ -273,7 +273,7 @@ function ornekSayfalariYenile() {
 export async function ornekVeriYukle() {
   const supabase = await createClient();
 
-  // Zaten yüklüyse ikinci kez ekleme.
+  // Don't add it a second time if it's already loaded.
   const { data: mevcut } = await supabase
     .from("musteriler")
     .select("id")
@@ -290,16 +290,16 @@ export async function ornekVeriYukle() {
     .from("musteriler")
     .insert(
       [
-        "Yıldız Metal San. A.Ş.",
-        "Aksa Ambalaj Ltd. Şti.",
-        "Demirtaş Yapı Malzemeleri",
-        "Ege Gıda Dağıtım A.Ş.",
-        "Nova Tekstil Ltd. Şti.",
-        "Kardelen Ofis Sistemleri",
+        "Starlight Metal Industries Inc.",
+        "Apex Packaging Co.",
+        "Ironstone Building Supplies",
+        "Meridian Food Distribution Inc.",
+        "Nova Textiles Co.",
+        "Kardelen Office Systems",
       ].map((unvan, i) => ({
         unvan,
         vkn: `999000000${i + 1}`,
-        eposta: `muhasebe@ornek-musteri-${i + 1}.example`,
+        eposta: `accounting@sample-customer-${i + 1}.example`,
         izin_eposta: true,
         notlar: ORNEK_VERI_ETIKETI,
       }))
@@ -307,8 +307,8 @@ export async function ornekVeriYukle() {
     .select("id");
   if (musteriHata || !musteriler || musteriler.length !== 6) return;
 
-  // m: müşteri sırası; t/v: bugüne göre fatura/vade günü; o: ödeme günü (null = açık);
-  // h: gönderilmiş hatırlatma [gün, şablon]; kalan: kısmi ödemede kalan bakiye.
+  // m: customer index; t/v: invoice/due day relative to today; o: payment day (null = open);
+  // h: sent reminder [day, template]; kalan: remaining balance on a partial payment.
   const kayitlar: {
     m: number;
     no: string;
@@ -353,7 +353,7 @@ export async function ornekVeriYukle() {
 
   const faturaIdleri = new Map(faturalar.map((f) => [f.fatura_no, f.id]));
 
-  // Ödemeler + eşleştirme: bakiye/durum güncellemesini odeme_eslestir RPC'si yapar.
+  // Payments + matching: the odeme_eslestir RPC updates the balance/status.
   for (const kayit of kayitlar) {
     if (kayit.o === undefined) continue;
     const odemeTutari = kayit.odemeTutari ?? kayit.tutar;
@@ -364,7 +364,7 @@ export async function ornekVeriYukle() {
         tutar: odemeTutari,
         odeme_tarihi: gun(kayit.o),
         kaynak: "banka",
-        aciklama: `Havale — ${kayit.no}`,
+        aciklama: `Bank transfer — ${kayit.no}`,
       })
       .select("id")
       .single();

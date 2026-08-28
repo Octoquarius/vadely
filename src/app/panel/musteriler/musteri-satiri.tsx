@@ -25,8 +25,8 @@ export function MusteriSatiri({ musteri }: { musteri: Musteri }) {
   );
   const [silDurum, silEylem, siliniyor] = useActionState(musteriSil, bos);
 
-  // Başarılı güncellemede düzenleme modundan çık (render sırasında türetme —
-  // önceki render'daki mesajla karşılaştırarak).
+  // Exit edit mode on a successful update (derived during render —
+  // by comparing against the message from the previous render).
   const [sonMesaj, setSonMesaj] = useState<string | undefined>(undefined);
   if (guncelleDurum.mesaj !== sonMesaj) {
     setSonMesaj(guncelleDurum.mesaj);
@@ -43,26 +43,26 @@ export function MusteriSatiri({ musteri }: { musteri: Musteri }) {
               name="unvan"
               required
               defaultValue={musteri.unvan}
-              placeholder="Unvan *"
+              placeholder="Company name *"
               className={girdiSinif}
             />
             <input
               name="vkn"
               defaultValue={musteri.vkn ?? ""}
-              placeholder="VKN"
+              placeholder="Tax ID"
               className={girdiSinif}
             />
             <input
               name="eposta"
               type="email"
               defaultValue={musteri.eposta ?? ""}
-              placeholder="E-posta"
+              placeholder="Email"
               className={girdiSinif}
             />
             <input
               name="telefon"
               defaultValue={musteri.telefon ?? ""}
-              placeholder="Telefon"
+              placeholder="Phone"
               className={girdiSinif}
             />
             <button
@@ -70,14 +70,14 @@ export function MusteriSatiri({ musteri }: { musteri: Musteri }) {
               disabled={guncelleniyor}
               className="rounded-md bg-murekkep px-3 py-1.5 text-sm font-medium text-kagit hover:bg-[#123a33] disabled:opacity-50"
             >
-              {guncelleniyor ? "Kaydediliyor…" : "Kaydet"}
+              {guncelleniyor ? "Saving…" : "Save"}
             </button>
             <button
               type="button"
               onClick={() => setDuzenle(false)}
               className="px-2 py-1.5 text-sm text-murekkep-2 hover:text-murekkep"
             >
-              Vazgeç
+              Cancel
             </button>
             {guncelleDurum.hata && (
               <span className="text-sm text-gecikme">{guncelleDurum.hata}</span>
@@ -98,20 +98,20 @@ export function MusteriSatiri({ musteri }: { musteri: Musteri }) {
         {silOnay ? (
           <form action={silEylem} className="inline-flex items-center gap-2">
             <input type="hidden" name="id" value={musteri.id} />
-            <span className="text-xs text-murekkep-2">Emin misiniz?</span>
+            <span className="text-xs text-murekkep-2">Are you sure?</span>
             <button
               type="submit"
               disabled={siliniyor}
               className="text-sm font-medium text-gecikme hover:underline disabled:opacity-50"
             >
-              {siliniyor ? "Siliniyor…" : "Evet, sil"}
+              {siliniyor ? "Deleting…" : "Yes, delete"}
             </button>
             <button
               type="button"
               onClick={() => setSilOnay(false)}
               className="text-sm text-murekkep-2 hover:text-murekkep"
             >
-              Vazgeç
+              Cancel
             </button>
           </form>
         ) : (
@@ -121,14 +121,14 @@ export function MusteriSatiri({ musteri }: { musteri: Musteri }) {
               onClick={() => setDuzenle(true)}
               className="text-sm text-murekkep-2 hover:text-murekkep hover:underline"
             >
-              Düzenle
+              Edit
             </button>
             <button
               type="button"
               onClick={() => setSilOnay(true)}
               className="text-sm text-gecikme hover:underline"
             >
-              Sil
+              Delete
             </button>
           </div>
         )}

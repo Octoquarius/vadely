@@ -36,7 +36,7 @@ function tl(tutar: number): string {
 }
 
 function tarih(iso: string): string {
-  return new Date(iso).toLocaleDateString("tr-TR", {
+  return new Date(iso).toLocaleDateString("en-GB", {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -44,10 +44,10 @@ function tarih(iso: string): string {
 }
 
 const PAKET_ETIKET: Record<string, string> = {
-  deneme: "Deneme",
-  baslangic: "Başlangıç",
-  profesyonel: "Profesyonel",
-  isletme: "İşletme",
+  deneme: "Trial",
+  baslangic: "Starter",
+  profesyonel: "Professional",
+  isletme: "Business",
 };
 
 function IstatistikKarti({
@@ -83,42 +83,42 @@ export default async function YonetimGenelBakis() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-xl font-semibold text-zinc-900">Genel Bakış</h1>
+        <h1 className="text-xl font-semibold text-zinc-900">Overview</h1>
         <p className="mt-1 text-sm text-zinc-500">
-          Tüm kiracılar genelinde platform metrikleri.
+          Platform metrics across all tenants.
         </p>
       </div>
 
       {ozet && (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           <IstatistikKarti
-            baslik="Hesap"
+            baslik="Accounts"
             deger={String(ozet.hesap_sayisi)}
-            alt={`${ozet.kullanici_sayisi} kullanıcı`}
+            alt={`${ozet.kullanici_sayisi} users`}
           />
           <IstatistikKarti
-            baslik="Açık alacak"
+            baslik="Open receivables"
             deger={tl(ozet.acik_alacak_toplami)}
-            alt={`${ozet.acik_fatura_sayisi} açık fatura`}
+            alt={`${ozet.acik_fatura_sayisi} open invoices`}
           />
           <IstatistikKarti
-            baslik="Tahsil edilen"
+            baslik="Collected"
             deger={tl(ozet.tahsil_edilen_toplami)}
           />
           <IstatistikKarti
-            baslik="Müşteri"
+            baslik="Customers"
             deger={String(ozet.musteri_sayisi)}
           />
           <IstatistikKarti
-            baslik="Fatura"
+            baslik="Invoices"
             deger={String(ozet.fatura_sayisi)}
           />
           <IstatistikKarti
-            baslik="Gönderilen hatırlatma"
+            baslik="Reminders sent"
             deger={String(ozet.hatirlatma_gonderilen)}
           />
           <IstatistikKarti
-            baslik="Pilot başvuru"
+            baslik="Pilot applications"
             deger={String(ozet.pilot_basvuru_sayisi)}
           />
         </div>
@@ -127,20 +127,20 @@ export default async function YonetimGenelBakis() {
       <div className="rounded-xl border border-zinc-200 bg-white">
         <div className="border-b border-zinc-100 px-4 py-3">
           <h2 className="text-sm font-semibold text-zinc-900">
-            Hesaplar ({hesaplar.length})
+            Accounts ({hesaplar.length})
           </h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-zinc-100 text-left text-xs uppercase tracking-wide text-zinc-500">
-                <th className="px-4 py-2 font-medium">Şirket</th>
-                <th className="px-4 py-2 font-medium">Sahip</th>
-                <th className="px-4 py-2 font-medium">Paket</th>
-                <th className="px-4 py-2 text-right font-medium">Müşteri</th>
-                <th className="px-4 py-2 text-right font-medium">Fatura</th>
-                <th className="px-4 py-2 text-right font-medium">Açık alacak</th>
-                <th className="px-4 py-2 font-medium">Kayıt</th>
+                <th className="px-4 py-2 font-medium">Company</th>
+                <th className="px-4 py-2 font-medium">Owner</th>
+                <th className="px-4 py-2 font-medium">Plan</th>
+                <th className="px-4 py-2 text-right font-medium">Customers</th>
+                <th className="px-4 py-2 text-right font-medium">Invoices</th>
+                <th className="px-4 py-2 text-right font-medium">Open receivables</th>
+                <th className="px-4 py-2 font-medium">Signed up</th>
               </tr>
             </thead>
             <tbody>
@@ -178,7 +178,7 @@ export default async function YonetimGenelBakis() {
                     colSpan={7}
                     className="px-4 py-8 text-center text-sm text-zinc-500"
                   >
-                    Henüz hesap yok.
+                    No accounts yet.
                   </td>
                 </tr>
               )}

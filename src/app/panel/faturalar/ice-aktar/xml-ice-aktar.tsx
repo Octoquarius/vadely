@@ -41,7 +41,7 @@ export function XmlIceAktar() {
         yeniSonuclar.push({
           tamam: false,
           dosyaAdi: dosya.name,
-          hata: "ZIP arşivleri desteklenmiyor; içindeki XML dosyalarını çıkarıp seçin.",
+          hata: "ZIP archives are not supported; extract the XML files inside and select those.",
         });
         continue;
       }
@@ -66,7 +66,7 @@ export function XmlIceAktar() {
         yeniSonuclar.push({
           tamam: false,
           dosyaAdi: dosya.name,
-          hata: `${dosya.name}: dosya okunamadı.`,
+          hata: `${dosya.name}: the file could not be read.`,
         });
       }
     }
@@ -115,12 +115,12 @@ export function XmlIceAktar() {
     }
   }
 
-  // Aktarım tamamlandıysa sonuç ekranı
+  // Result screen once the import completes
   if (aktarim) {
     return (
       <div className="rounded-xl border border-zinc-200 bg-white p-6">
         <h2 className="text-sm font-semibold text-zinc-900">
-          İçe aktarma sonucu
+          Import result
         </h2>
         {aktarim.hata ? (
           <p className="mt-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
@@ -128,19 +128,19 @@ export function XmlIceAktar() {
           </p>
         ) : (
           <p className="mt-3 rounded-md bg-green-50 px-3 py-2 text-sm text-green-700">
-            İçe aktarma tamamlandı. 🎉
+            Import complete. 🎉
           </p>
         )}
         <ul className="mt-4 space-y-1 text-sm text-zinc-700">
           <li>
-            ✅ Eklenen fatura: <strong>{aktarim.eklenen}</strong>
+            ✅ Invoices added: <strong>{aktarim.eklenen}</strong>
           </li>
           <li>
-            ⏭️ Atlanan (zaten kayıtlı / mükerrer):{" "}
+            ⏭️ Skipped (already recorded / duplicate):{" "}
             <strong>{aktarim.mukerrer}</strong>
           </li>
           <li>
-            👤 Otomatik oluşturulan müşteri:{" "}
+            👤 Customers created automatically:{" "}
             <strong>{aktarim.yeniMusteri}</strong>
           </li>
         </ul>
@@ -149,7 +149,7 @@ export function XmlIceAktar() {
             href="/panel/faturalar"
             className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
           >
-            Faturalara dön
+            Back to invoices
           </Link>
           <button
             onClick={() => {
@@ -158,7 +158,7 @@ export function XmlIceAktar() {
             }}
             className="rounded-md border border-zinc-300 px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-100"
           >
-            Yeni dosyalar aktar
+            Import new files
           </button>
         </div>
       </div>
@@ -169,12 +169,13 @@ export function XmlIceAktar() {
     <div className="space-y-6">
       <div className="rounded-xl border border-zinc-200 bg-white p-6">
         <h2 className="text-sm font-semibold text-zinc-900">
-          e-Fatura / e-Arşiv XML dosyalarını seçin
+          Select e-Fatura / e-Arşiv XML files
         </h2>
         <p className="mt-2 text-sm text-zinc-500">
-          Entegratör portalınızdan indirdiğiniz <strong>giden (satış)</strong>{" "}
-          faturalarının UBL XML dosyalarını seçin. Birden çok dosyayı aynı anda
-          seçebilirsiniz; müşteri bilgileri faturadan otomatik alınır.
+          Select the UBL XML files for your <strong>outgoing (sales)</strong>{" "}
+          invoices downloaded from your e-invoice integrator portal. You can
+          select multiple files at once; customer details are read
+          automatically from the invoice.
         </p>
         <input
           type="file"
@@ -187,10 +188,10 @@ export function XmlIceAktar() {
 
       {sonuclar.length > 0 && (
         <div className="rounded-xl border border-zinc-200 bg-white p-6">
-          <h2 className="text-sm font-semibold text-zinc-900">Önizleme</h2>
+          <h2 className="text-sm font-semibold text-zinc-900">Preview</h2>
           <div className="mt-3 flex flex-wrap gap-4 text-sm">
             <span className="rounded-full bg-green-50 px-3 py-1 font-medium text-green-700">
-              {gecerliler.length} geçerli fatura
+              {gecerliler.length} valid invoices
             </span>
             <span
               className={`rounded-full px-3 py-1 font-medium ${
@@ -199,7 +200,7 @@ export function XmlIceAktar() {
                   : "bg-zinc-100 text-zinc-500"
               }`}
             >
-              {hatalilar.length} hatalı dosya (atlanacak)
+              {hatalilar.length} files with errors (will be skipped)
             </span>
           </div>
 
@@ -214,8 +215,8 @@ export function XmlIceAktar() {
           {vadesizSayisi > 0 && (
             <div className="mt-3 flex items-center gap-2 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
               <span>
-                {vadesizSayisi} faturada vade bilgisi yok. Vade = fatura tarihi
-                +
+                {vadesizSayisi} invoices have no due date. Due date = invoice
+                date +
               </span>
               <input
                 type="number"
@@ -225,7 +226,7 @@ export function XmlIceAktar() {
                 onChange={(e) => setVadeGunu(Number(e.target.value) || 0)}
                 className="w-16 rounded-md border border-amber-300 bg-white px-2 py-1 text-sm"
               />
-              <span>gün olarak hesaplanacak.</span>
+              <span>days.</span>
             </div>
           )}
 
@@ -234,11 +235,11 @@ export function XmlIceAktar() {
               <table className="w-full text-left text-sm">
                 <thead className="border-b border-zinc-200 text-zinc-500">
                   <tr>
-                    <th className="px-3 py-2 font-medium">Fatura no</th>
-                    <th className="px-3 py-2 font-medium">Müşteri</th>
-                    <th className="px-3 py-2 font-medium">Tarih</th>
-                    <th className="px-3 py-2 font-medium">Vade</th>
-                    <th className="px-3 py-2 font-medium">Tutar</th>
+                    <th className="px-3 py-2 font-medium">Invoice no</th>
+                    <th className="px-3 py-2 font-medium">Customer</th>
+                    <th className="px-3 py-2 font-medium">Date</th>
+                    <th className="px-3 py-2 font-medium">Due date</th>
+                    <th className="px-3 py-2 font-medium">Amount</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -251,7 +252,7 @@ export function XmlIceAktar() {
                       <td className="px-3 py-2">{sonuc.fatura.fatura_tarihi}</td>
                       <td className="px-3 py-2">
                         {sonuc.fatura.vade_tarihi ?? (
-                          <span className="text-amber-600">+{vadeGunu} gün</span>
+                          <span className="text-amber-600">+{vadeGunu} days</span>
                         )}
                       </td>
                       <td className="px-3 py-2">
@@ -263,7 +264,7 @@ export function XmlIceAktar() {
               </table>
               {gecerliler.length > 10 && (
                 <p className="px-3 py-2 text-sm text-zinc-500">
-                  … ve {gecerliler.length - 10} fatura daha
+                  … and {gecerliler.length - 10} more invoices
                 </p>
               )}
             </div>
@@ -275,8 +276,8 @@ export function XmlIceAktar() {
             className="mt-4 rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
           >
             {gonderiliyor
-              ? "Aktarılıyor…"
-              : `${gecerliler.length} faturayı içe aktar`}
+              ? "Importing…"
+              : `Import ${gecerliler.length} invoices`}
           </button>
         </div>
       )}

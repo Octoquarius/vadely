@@ -31,7 +31,7 @@ function detayOzeti(olay: OlaySatiri): string {
   }
   if (typeof detay.sablon === "string") parcalar.push(detay.sablon);
   if (typeof detay.hata === "string" && detay.hata) {
-    parcalar.push(`hata: ${detay.hata}`);
+    parcalar.push(`error: ${detay.hata}`);
   }
   return parcalar.join(" · ");
 }
@@ -49,16 +49,16 @@ export default async function GunlukSayfasi() {
   ]);
 
   const adHaritasi = new Map(
-    (profiller ?? []).map((profil) => [profil.id, profil.ad_soyad ?? "Kullanıcı"])
+    (profiller ?? []).map((profil) => [profil.id, profil.ad_soyad ?? "User"])
   );
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-zinc-900">Olay günlüğü</h1>
+        <h1 className="text-2xl font-semibold text-zinc-900">Event log</h1>
         <p className="mt-1 text-sm text-zinc-500">
-          Hatırlatma ve ödeme eşleştirme hareketlerinin değiştirilemez kaydı.
-          Son 200 olay gösterilir.
+          An immutable record of reminder and payment-matching activity.
+          The last 200 events are shown.
         </p>
       </div>
 
@@ -66,10 +66,10 @@ export default async function GunlukSayfasi() {
         <table className="w-full text-left text-sm">
           <thead className="border-b border-zinc-200 text-zinc-500">
             <tr>
-              <th className="px-4 py-3 font-medium">Zaman</th>
-              <th className="px-4 py-3 font-medium">Olay</th>
-              <th className="px-4 py-3 font-medium">Ayrıntı</th>
-              <th className="px-4 py-3 font-medium">Yapan</th>
+              <th className="px-4 py-3 font-medium">Time</th>
+              <th className="px-4 py-3 font-medium">Event</th>
+              <th className="px-4 py-3 font-medium">Detail</th>
+              <th className="px-4 py-3 font-medium">Performed by</th>
             </tr>
           </thead>
           <tbody>
@@ -86,15 +86,15 @@ export default async function GunlukSayfasi() {
                 </td>
                 <td className="px-4 py-3 text-zinc-600">
                   {olay.aktor === "sistem"
-                    ? "Sistem"
-                    : (adHaritasi.get(olay.aktor) ?? "Kullanıcı")}
+                    ? "System"
+                    : (adHaritasi.get(olay.aktor) ?? "User")}
                 </td>
               </tr>
             ))}
             {(olaylar ?? []).length === 0 && (
               <tr>
                 <td colSpan={4} className="px-4 py-8 text-center text-zinc-500">
-                  Henüz olay yok.
+                  No events yet.
                 </td>
               </tr>
             )}

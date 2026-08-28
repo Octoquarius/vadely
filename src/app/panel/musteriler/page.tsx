@@ -12,7 +12,7 @@ export default async function MusterilerSayfasi() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold text-zinc-900">Müşteriler</h1>
+      <h1 className="text-2xl font-semibold text-zinc-900">Customers</h1>
 
       <MusteriForm />
 
@@ -20,10 +20,10 @@ export default async function MusterilerSayfasi() {
         <table className="w-full text-left text-sm">
           <thead className="border-b border-zinc-200 text-zinc-500">
             <tr>
-              <th className="px-4 py-3 font-medium">Unvan</th>
-              <th className="px-4 py-3 font-medium">VKN</th>
-              <th className="px-4 py-3 font-medium">E-posta</th>
-              <th className="px-4 py-3 font-medium">Telefon</th>
+              <th className="px-4 py-3 font-medium">Company name</th>
+              <th className="px-4 py-3 font-medium">Tax ID</th>
+              <th className="px-4 py-3 font-medium">Email</th>
+              <th className="px-4 py-3 font-medium">Phone</th>
               <th className="px-4 py-3" />
             </tr>
           </thead>
@@ -34,7 +34,7 @@ export default async function MusterilerSayfasi() {
             {(musteriler ?? []).length === 0 && (
               <tr>
                 <td colSpan={5} className="px-4 py-8 text-center text-zinc-500">
-                  Henüz müşteri yok. Yukarıdaki formdan ilk müşterinizi ekleyin.
+                  No customers yet. Add your first one using the form above.
                 </td>
               </tr>
             )}

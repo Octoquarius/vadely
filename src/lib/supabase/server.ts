@@ -18,8 +18,8 @@ export async function createClient() {
               cookieStore.set(name, value, options)
             );
           } catch {
-            // Server Component içinden çağrıldığında çerez yazılamaz;
-            // oturum tazeleme proxy'de yapıldığı için güvenle yok sayılır.
+            // Cookies can't be written when called from a Server Component;
+            // safe to ignore since session refresh is handled in the proxy.
           }
         },
       },

@@ -1,15 +1,15 @@
-// UBL-TR (GİB e-Fatura / e-Arşiv) Invoice XML ayrıştırıcısı.
-// Yalnızca temel DOM API'leri kullanır (documentElement, childNodes,
-// localName, textContent, getAttribute) — tarayıcıda DOMParser, testte
-// @xmldom/xmldom ile aynı şekilde çalışır. Ad alanı (namespace) ön ekleri
-// yerine localName ile eşleşir; entegratörler arası ön ek farklarından
-// etkilenmez.
+// UBL-TR (GİB e-Invoice / e-Archive) Invoice XML parser.
+// Uses only basic DOM APIs (documentElement, childNodes, localName,
+// textContent, getAttribute) — works identically with the browser's
+// DOMParser and with @xmldom/xmldom in tests. Matches by localName rather
+// than namespace prefix, so it isn't affected by prefix differences between
+// integrators.
 
 export type UblFatura = {
   gib_uuid: string | null;
   fatura_no: string;
-  fatura_tarihi: string; // ISO yyyy-aa-gg
-  vade_tarihi: string | null; // yoksa çağıran taraf doldurur
+  fatura_tarihi: string; // ISO yyyy-mm-dd
+  vade_tarihi: string | null; // if absent, the caller fills it in
   tutar: number;
   para_birimi: string;
   musteri_unvan: string;
@@ -30,12 +30,12 @@ function elemanCocuklar(dugum: { childNodes: ArrayLike<Node> }): Element[] {
   return sonuc;
 }
 
-/** Doğrudan alt elemanlar içinde localName eşleşenleri döndürür. */
+/** Returns the direct children whose localName matches. */
 function cocuklar(eleman: Element, yerelAd: string): Element[] {
   return elemanCocuklar(eleman).filter((c) => c.localName === yerelAd);
 }
 
-/** localName zinciriyle ilk eşleşen torunu bulur (her adımda ilk eşleşme). */
+/** Finds the first descendant matching a chain of localNames (first match at each step). */
 function bul(eleman: Element, ...yol: string[]): Element | null {
   let simdiki: Element | null = eleman;
   for (const ad of yol) {
@@ -63,25 +63,25 @@ export function ublFaturaAyristir(
     hata: `${dosyaAdi}: ${mesaj}`,
   });
 
-  // Tarayıcı DOMParser hatada <parsererror> içeren belge döndürür
+  // The browser's DOMParser returns a document containing <parsererror> on failure
   if (belge.getElementsByTagName("parsererror").length > 0) {
-    return hataYap("XML okunamadı (bozuk dosya).");
+    return hataYap("Could not read the XML (corrupted file).");
   }
 
   const kok = belge.documentElement;
   if (!kok || kok.localName !== "Invoice") {
     return hataYap(
-      `UBL fatura belgesi değil (kök eleman: ${kok?.localName ?? "yok"}).`
+      `Not a UBL invoice document (root element: ${kok?.localName ?? "none"}).`
     );
   }
 
   const faturaNo = metin(bul(kok, "ID"));
-  if (!faturaNo) return hataYap("Fatura numarası (cbc:ID) bulunamadı.");
+  if (!faturaNo) return hataYap("Invoice number (cbc:ID) not found.");
 
   const faturaTarihi = isoTarih(metin(bul(kok, "IssueDate")));
-  if (!faturaTarihi) return hataYap("Fatura tarihi (cbc:IssueDate) okunamadı.");
+  if (!faturaTarihi) return hataYap("Could not read the invoice date (cbc:IssueDate).");
 
-  // Vade: önce fatura düzeyi DueDate, yoksa PaymentMeans/PaymentDueDate
+  // Due date: invoice-level DueDate first, otherwise PaymentMeans/PaymentDueDate
   let vadeTarihi = isoTarih(metin(bul(kok, "DueDate")));
   if (!vadeTarihi) {
     for (const odemeAraci of cocuklar(kok, "PaymentMeans")) {
@@ -93,21 +93,21 @@ export function ublFaturaAyristir(
   const odenecekEleman = bul(kok, "LegalMonetaryTotal", "PayableAmount");
   const tutar = Number(metin(odenecekEleman));
   if (!odenecekEleman || !Number.isFinite(tutar)) {
-    return hataYap("Ödenecek tutar (PayableAmount) okunamadı.");
+    return hataYap("Could not read the payable amount (PayableAmount).");
   }
   if (tutar <= 0) {
-    return hataYap("Ödenecek tutar sıfır — alacak takibine eklenmedi.");
+    return hataYap("Payable amount is zero — not added to receivables tracking.");
   }
   const paraBirimi =
     odenecekEleman.getAttribute("currencyID")?.trim() || "TRY";
 
-  // Alıcı (müşteri) bilgileri
+  // Recipient (customer) details
   const taraf = bul(kok, "AccountingCustomerParty", "Party");
-  if (!taraf) return hataYap("Alıcı bilgisi (AccountingCustomerParty) yok.");
+  if (!taraf) return hataYap("Recipient details (AccountingCustomerParty) missing.");
 
   let unvan = metin(bul(taraf, "PartyName", "Name"));
   if (!unvan) {
-    // e-Arşiv bireysel müşteri: Ad + Soyad
+    // e-Archive individual customer: first name + last name
     const kisi = bul(taraf, "Person");
     if (kisi) {
       unvan = [metin(bul(kisi, "FirstName")), metin(bul(kisi, "FamilyName"))]
@@ -115,7 +115,7 @@ export function ublFaturaAyristir(
         .join(" ");
     }
   }
-  if (!unvan) return hataYap("Müşteri unvanı bulunamadı.");
+  if (!unvan) return hataYap("Customer name not found.");
 
   let vkn: string | null = null;
   for (const kimlik of cocuklar(taraf, "PartyIdentification")) {

@@ -11,9 +11,9 @@ export default function SifreYenileSayfasi() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
       <div className="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-8 shadow-sm">
-        <h1 className="text-xl font-semibold text-zinc-900">Yeni şifre belirle</h1>
+        <h1 className="text-xl font-semibold text-zinc-900">Set a new password</h1>
         <p className="mt-1 text-sm text-zinc-500">
-          Hesabınız için yeni bir şifre girin.
+          Enter a new password for your account.
         </p>
 
         <form action={eylem} className="mt-6 space-y-4">
@@ -22,7 +22,7 @@ export default function SifreYenileSayfasi() {
               htmlFor="sifre"
               className="block text-sm font-medium text-zinc-700"
             >
-              Yeni şifre <span className="text-zinc-400">(en az 8 karakter)</span>
+              New password <span className="text-zinc-400">(at least 8 characters)</span>
             </label>
             <input
               id="sifre"
@@ -39,7 +39,7 @@ export default function SifreYenileSayfasi() {
               htmlFor="sifre_tekrar"
               className="block text-sm font-medium text-zinc-700"
             >
-              Yeni şifre (tekrar)
+              New password (confirm)
             </label>
             <input
               id="sifre_tekrar"
@@ -63,7 +63,7 @@ export default function SifreYenileSayfasi() {
             disabled={bekliyor}
             className="w-full rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
           >
-            {bekliyor ? "Güncelleniyor…" : "Şifreyi güncelle"}
+            {bekliyor ? "Updating…" : "Update password"}
           </button>
         </form>
       </div>

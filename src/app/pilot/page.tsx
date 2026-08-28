@@ -23,20 +23,21 @@ export default function PilotSayfasi() {
             href="/kayit"
             className="rounded-md bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700"
           >
-            Ücretsiz başla
+            Start for free
           </Link>
         </div>
       </header>
 
       <main className="mx-auto max-w-xl px-4 py-12">
         <h1 className="text-2xl font-bold text-zinc-900">
-          Pilot programına başvurun
+          Apply for the pilot program
         </h1>
         <p className="mt-2 text-sm leading-6 text-zinc-600">
-          İlk pilot dönemimizde sınırlı sayıda KOBİ ile birebir çalışıyoruz:
-          verinizi birlikte yüklüyor, hatırlatma planınızı birlikte kuruyor ve
-          2-4 hafta boyunca tahsilat sürenizdeki değişimi birlikte ölçüyoruz.
-          Pilot süresince kullanım <strong>ücretsizdir</strong>.
+          In our first pilot phase, we work one-on-one with a limited number
+          of SMEs: we upload your data together, set up your reminder plan
+          together, and measure the change in your collection time together
+          over 2-4 weeks. Usage during the pilot is{" "}
+          <strong>free of charge</strong>.
         </p>
 
         {durum.mesaj ? (
@@ -44,7 +45,7 @@ export default function PilotSayfasi() {
             {durum.mesaj}
             <p className="mt-3">
               <Link href="/" className="font-medium underline">
-                Ana sayfaya dön
+                Back to home
               </Link>
             </p>
           </div>
@@ -58,7 +59,7 @@ export default function PilotSayfasi() {
                 htmlFor="sirket_adi"
                 className="block text-sm font-medium text-zinc-700"
               >
-                Şirket adı
+                Company name
               </label>
               <input
                 id="sirket_adi"
@@ -75,7 +76,7 @@ export default function PilotSayfasi() {
                   htmlFor="ad_soyad"
                   className="block text-sm font-medium text-zinc-700"
                 >
-                  Ad soyad
+                  Full name
                 </label>
                 <input
                   id="ad_soyad"
@@ -92,7 +93,7 @@ export default function PilotSayfasi() {
                   htmlFor="telefon"
                   className="block text-sm font-medium text-zinc-700"
                 >
-                  Telefon <span className="text-zinc-400">(isteğe bağlı)</span>
+                  Phone <span className="text-zinc-400">(optional)</span>
                 </label>
                 <input
                   id="telefon"
@@ -109,7 +110,7 @@ export default function PilotSayfasi() {
                 htmlFor="eposta"
                 className="block text-sm font-medium text-zinc-700"
               >
-                İş e-postası
+                Work email
               </label>
               <input
                 id="eposta"
@@ -127,7 +128,7 @@ export default function PilotSayfasi() {
                   htmlFor="aylik_fatura_adedi"
                   className="block text-sm font-medium text-zinc-700"
                 >
-                  Aylık satış faturası adedi
+                  Monthly sales invoices
                 </label>
                 <select
                   id="aylik_fatura_adedi"
@@ -146,8 +147,8 @@ export default function PilotSayfasi() {
                   htmlFor="kullanilan_yazilim"
                   className="block text-sm font-medium text-zinc-700"
                 >
-                  Kullandığınız ön muhasebe{" "}
-                  <span className="text-zinc-400">(isteğe bağlı)</span>
+                  Accounting software you use{" "}
+                  <span className="text-zinc-400">(optional)</span>
                 </label>
                 <input
                   id="kullanilan_yazilim"
@@ -164,8 +165,8 @@ export default function PilotSayfasi() {
                 htmlFor="mesaj"
                 className="block text-sm font-medium text-zinc-700"
               >
-                Tahsilatta en çok zorlandığınız şey nedir?{" "}
-                <span className="text-zinc-400">(isteğe bağlı)</span>
+                What&apos;s your biggest challenge with collections?{" "}
+                <span className="text-zinc-400">(optional)</span>
               </label>
               <textarea
                 id="mesaj"
@@ -187,13 +188,13 @@ export default function PilotSayfasi() {
               disabled={bekliyor}
               className="w-full rounded-md bg-emerald-700 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-600 disabled:opacity-50"
             >
-              {bekliyor ? "Gönderiliyor…" : "Pilot başvurusu gönder"}
+              {bekliyor ? "Submitting…" : "Submit pilot application"}
             </button>
             <p className="text-xs text-zinc-400">
-              Başvuru bilgileriniz yalnızca pilot programı değerlendirmesi için
-              kullanılır. Ayrıntılar:{" "}
+              Your application information is used solely for evaluating the
+              pilot program. Details:{" "}
               <a href="/gizlilik" target="_blank" className="underline">
-                KVKK Aydınlatma Metni
+                Privacy Notice
               </a>
               .
             </p>

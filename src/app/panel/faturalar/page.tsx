@@ -19,12 +19,12 @@ export default async function FaturalarSayfasi() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-zinc-900">Faturalar</h1>
+        <h1 className="text-2xl font-semibold text-zinc-900">Invoices</h1>
         <Link
           href="/panel/faturalar/ice-aktar"
           className="rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100"
         >
-          ⬆ Fatura içe aktar (XML/CSV)
+          ⬆ Import invoices (XML/CSV)
         </Link>
       </div>
 
@@ -34,12 +34,12 @@ export default async function FaturalarSayfasi() {
         <table className="w-full text-left text-sm">
           <thead className="border-b border-zinc-200 text-zinc-500">
             <tr>
-              <th className="px-4 py-3 font-medium">Fatura no</th>
-              <th className="px-4 py-3 font-medium">Müşteri</th>
-              <th className="px-4 py-3 font-medium">Vade</th>
-              <th className="px-4 py-3 font-medium">Tutar</th>
-              <th className="px-4 py-3 font-medium">Kalan</th>
-              <th className="px-4 py-3 font-medium">Durum</th>
+              <th className="px-4 py-3 font-medium">Invoice no</th>
+              <th className="px-4 py-3 font-medium">Customer</th>
+              <th className="px-4 py-3 font-medium">Due date</th>
+              <th className="px-4 py-3 font-medium">Amount</th>
+              <th className="px-4 py-3 font-medium">Remaining</th>
+              <th className="px-4 py-3 font-medium">Status</th>
               <th className="px-4 py-3" />
             </tr>
           </thead>
@@ -64,7 +64,7 @@ export default async function FaturalarSayfasi() {
             {(faturalar ?? []).length === 0 && (
               <tr>
                 <td colSpan={7} className="px-4 py-8 text-center text-zinc-500">
-                  Henüz fatura yok.
+                  No invoices yet.
                 </td>
               </tr>
             )}

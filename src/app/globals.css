@@ -1,35 +1,36 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   Vadely tasarım sistemi — "Çam, altın ve kağıt"
-   Marka kimliği v1'den türetilen token'lar. Renkler Tailwind utility'lerine
-   dönüşür: bg-murekkep, text-altin, border-cizgi, bg-tahsil/10 ...
+   Vadely design system — "Pine, gold, and paper"
+   Tokens derived from brand identity v1. Colors resolve to Tailwind
+   utilities: bg-murekkep, text-altin, border-cizgi, bg-tahsil/10 ...
    --------------------------------------------------------------------------- */
 @theme {
-  /* Taban / nötrler (çamdan türetilmiş) */
-  --color-murekkep: #0c2b26; /* metin, koyu yüzeyler, güven */
-  --color-murekkep-2: #43574f; /* ikincil metin */
-  --color-sis: #6b7a72; /* soluk metin, ipuçları */
-  --color-cizgi: #e4e1d6; /* sınırlar */
+  /* Base / neutrals (derived from pine) */
+  --color-murekkep: #0c2b26; /* text, dark surfaces, trust */
+  --color-murekkep-2: #43574f; /* secondary text */
+  --color-sis: #6b7a72; /* muted text, hints */
+  --color-cizgi: #e4e1d6; /* borders */
 
-  /* Zemin */
-  --color-kagit: #f1efe8; /* sayfa zemini */
-  --color-kart: #fbfaf5; /* kart / yüzey */
+  /* Surface */
+  --color-kagit: #f1efe8; /* page background */
+  --color-kart: #fbfaf5; /* card / surface */
 
-  /* Vurgu — olgun altın (değer, "para geldi"); ölçülü kullanılır */
-  --color-altin: #a8760f; /* metin/çizgi için güvenli koyu altın */
-  --color-altin-parlak: #e3a93a; /* dolgu / koyu zemin üstü */
+  /* Accent — mature gold (value, "payment received"); used sparingly */
+  --color-altin: #a8760f; /* safe dark gold for text/lines */
+  --color-altin-parlak: #e3a93a; /* fill / on dark surfaces */
 
-  /* Durum renkleri — vurgudan ayrı, semantik */
-  --color-tahsil: #1e7a57; /* tahsil edildi, akan nakit */
-  --color-gecikme: #c0532b; /* vadesi geçti, dikkat */
+  /* Status colors — distinct from the accent, semantic */
+  --color-tahsil: #1e7a57; /* collected, cash flowing in */
+  --color-gecikme: #c0532b; /* past due, attention */
 
-  /* --- Tailwind varsayılan paletini markaya bağla ---
-     Mevcut panel/auth/yönetim sayfaları zinc/emerald/green/amber utility'leri
-     kullanıyor; bunları marka renklerine yeniden tanımlayınca tümü tek yerden
-     markaya geçer. (Landing yalnızca marka token'ları kullanır, etkilenmez.) */
+  /* --- Bind the default Tailwind palette to the brand ---
+     Existing panel/auth/admin pages use the zinc/emerald/green/amber
+     utilities; redefining them to the brand colors moves everything to the
+     brand from a single place. (The landing page only uses brand tokens
+     and is unaffected.) */
 
-  /* zinc → çam-tonlu nötr rampa */
+  /* zinc → pine-toned neutral ramp */
   --color-zinc-50: #f1efe8;
   --color-zinc-100: #eae7dd;
   --color-zinc-200: #e4e1d6;
@@ -42,7 +43,7 @@
   --color-zinc-900: #0c2b26;
   --color-zinc-950: #081f1b;
 
-  /* emerald → olgun altın */
+  /* emerald → mature gold */
   --color-emerald-50: #faf3e0;
   --color-emerald-100: #f2e6c4;
   --color-emerald-200: #e9d49c;
@@ -54,7 +55,7 @@
   --color-emerald-800: #6e4d08;
   --color-emerald-900: #5a3f0a;
 
-  /* green → tahsil (olumlu / tahsil edildi) */
+  /* green → tahsil (positive / collected) */
   --color-green-50: #e8f3ed;
   --color-green-100: #d1e8da;
   --color-green-500: #1e7a57;
@@ -62,7 +63,7 @@
   --color-green-700: #155840;
   --color-green-800: #114634;
 
-  /* amber → gecikme (uyarı / vadesi geçti) */
+  /* amber → gecikme (warning / past due) */
   --color-amber-50: #f7e9e1;
   --color-amber-100: #f0d7ca;
   --color-amber-500: #c0532b;
@@ -71,16 +72,16 @@
   --color-amber-800: #74331b;
 }
 
-/* next/font değişkenlerini Tailwind font utility'lerine bağla (inline: kullanım
-   yerinde CSS değişkeni olarak çözülür). */
+/* Bind next/font variables to Tailwind font utilities (inline: resolved as a
+   CSS variable at the point of use). */
 @theme inline {
   --font-display: var(--font-fraunces);
   --font-sans: var(--font-plex-sans);
   --font-mono: var(--font-plex-mono);
 }
 
-/* Arayüz açık tema; koyu tema bilinçli olarak kapalı (form yazılarının
-   sistem koyu temasında karta karışmasını önler). */
+/* Interface is light theme; dark theme is deliberately disabled (prevents
+   form text from blending into the card under the system dark theme). */
 html {
   color-scheme: light;
 }
@@ -91,7 +92,7 @@ body {
   font-family: var(--font-sans), system-ui, "Segoe UI", sans-serif;
 }
 
-/* Form alanları marka nötrleriyle; okunaklı ve tutarlı. */
+/* Form fields use brand neutrals; legible and consistent. */
 input,
 select,
 textarea {

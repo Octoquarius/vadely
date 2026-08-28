@@ -36,7 +36,7 @@ export function EslestirSatiri({
         disabled={bekliyor}
         className="rounded-md bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
       >
-        {bekliyor ? "…" : "Eşleştir"}
+        {bekliyor ? "…" : "Match"}
       </button>
       {durum.hata && (
         <span className="text-xs text-red-600">{durum.hata}</span>

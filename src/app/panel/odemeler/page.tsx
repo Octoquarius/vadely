@@ -4,9 +4,9 @@ import { odemeSil } from "./actions";
 import { OdemeForm } from "./odeme-form";
 
 const KAYNAK_ETIKETLERI: Record<string, string> = {
-  banka: "Banka",
-  odeme_linki: "Ödeme linki",
-  manuel: "Manuel",
+  banka: "Bank",
+  odeme_linki: "Payment link",
+  manuel: "Manual",
 };
 
 function paraFormat(tutar: number) {
@@ -49,19 +49,19 @@ export default async function OdemelerSayfasi() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-zinc-900">Ödemeler</h1>
+        <h1 className="text-2xl font-semibold text-zinc-900">Payments</h1>
         <Link
           href="/panel/odemeler/ekstre"
           className="rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100"
         >
-          ⬆ Banka ekstresi yükle
+          ⬆ Upload bank statement
         </Link>
       </div>
 
       {eslesmemisToplam > 0 && (
         <p className="rounded-md bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          Faturalarla eşleşmemiş <strong>{paraFormat(eslesmemisToplam)}</strong>{" "}
-          ödeme var. &quot;Eşleştir&quot; ile ilgili faturaları kapatın.
+          You have <strong>{paraFormat(eslesmemisToplam)}</strong>{" "}
+          in payments not yet matched to invoices. Use &quot;Match&quot; to close the related invoices.
         </p>
       )}
 
@@ -71,12 +71,12 @@ export default async function OdemelerSayfasi() {
         <table className="w-full text-left text-sm">
           <thead className="border-b border-zinc-200 text-zinc-500">
             <tr>
-              <th className="px-4 py-3 font-medium">Tarih</th>
-              <th className="px-4 py-3 font-medium">Müşteri</th>
-              <th className="px-4 py-3 font-medium">Tutar</th>
-              <th className="px-4 py-3 font-medium">Eşleşmemiş</th>
-              <th className="px-4 py-3 font-medium">Kaynak</th>
-              <th className="px-4 py-3 font-medium">Açıklama</th>
+              <th className="px-4 py-3 font-medium">Date</th>
+              <th className="px-4 py-3 font-medium">Customer</th>
+              <th className="px-4 py-3 font-medium">Amount</th>
+              <th className="px-4 py-3 font-medium">Unmatched</th>
+              <th className="px-4 py-3 font-medium">Source</th>
+              <th className="px-4 py-3 font-medium">Description</th>
               <th className="px-4 py-3" />
             </tr>
           </thead>
@@ -100,7 +100,7 @@ export default async function OdemelerSayfasi() {
                     </span>
                   ) : (
                     <span className="rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
-                      Tamamı eşleşti
+                      Fully matched
                     </span>
                   )}
                 </td>
@@ -116,7 +116,7 @@ export default async function OdemelerSayfasi() {
                       href={`/panel/odemeler/${odeme.id}`}
                       className="text-sm font-medium text-zinc-900 underline"
                     >
-                      {odeme.kalan > 0 ? "Eşleştir" : "Detay"}
+                      {odeme.kalan > 0 ? "Match" : "Details"}
                     </Link>
                     {odeme.eslesmis === 0 && (
                       <form action={odemeSil}>
@@ -125,7 +125,7 @@ export default async function OdemelerSayfasi() {
                           type="submit"
                           className="text-sm text-red-600 hover:underline"
                         >
-                          Sil
+                          Delete
                         </button>
                       </form>
                     )}
@@ -136,7 +136,7 @@ export default async function OdemelerSayfasi() {
             {satirlar.length === 0 && (
               <tr>
                 <td colSpan={7} className="px-4 py-8 text-center text-zinc-500">
-                  Henüz ödeme yok. Formdan ekleyin veya banka ekstresi yükleyin.
+                  No payments yet. Add one using the form or upload a bank statement.
                 </td>
               </tr>
             )}

@@ -40,18 +40,18 @@ async function hatirlatmaGonderVeIsaretle(
   const fatura = hatirlatma.faturalar;
   const musteri = hatirlatma.musteriler;
 
-  // Fatura bu arada kapandıysa hatırlatmayı sessizce iptal et
+  // If the invoice was closed in the meantime, silently cancel the reminder
   if (!fatura || !(fatura.durum === "acik" || fatura.durum === "kismi")) {
     await supabase
       .from("hatirlatmalar")
-      .update({ durum: "iptal", hata: "Fatura kapandığı için otomatik iptal" })
+      .update({ durum: "iptal", hata: "Automatically canceled because the invoice was closed" })
       .eq("id", hatirlatma.id)
       .eq("durum", "planlandi");
     return "iptal";
   }
 
   if (!musteri?.eposta || !musteri.izin_eposta) {
-    return "atlandi"; // planlandı olarak kalır; kullanıcı e-posta ekleyince gider
+    return "atlandi"; // stays scheduled; goes out once the user adds an email
   }
 
   const girdi: SablonGirdisi = {
@@ -96,7 +96,7 @@ async function gonderenUnvanGetir(
   supabase: Awaited<ReturnType<typeof createClient>>
 ): Promise<string> {
   const { data } = await supabase.from("hesaplar").select("ad").single();
-  return data?.ad ?? "Şirketimiz";
+  return data?.ad ?? "Our company";
 }
 
 export async function bekleyenleriGonder(
@@ -106,7 +106,7 @@ export async function bekleyenleriGonder(
   const gonderici = gondericiOlustur();
   if (!gonderici) {
     return {
-      hata: "E-posta sağlayıcısı yapılandırılmamış. .env.local dosyasına RESEND_API_KEY ekleyin.",
+      hata: "Email provider not configured. Add RESEND_API_KEY to your .env.local file.",
     };
   }
 
@@ -120,11 +120,11 @@ export async function bekleyenleriGonder(
     .order("planlanan_zaman", { ascending: true })
     .limit(50);
 
-  if (error) return { hata: "Bekleyen hatırlatmalar okunamadı." };
+  if (error) return { hata: "Could not read pending reminders." };
 
   const bekleyenler = (data ?? []) as unknown as GonderilecekHatirlatma[];
   if (bekleyenler.length === 0) {
-    return { mesaj: "Gönderilecek hatırlatma yok (zamanı gelmiş bekleyen yok)." };
+    return { mesaj: "No reminders to send (none due yet)." };
   }
 
   const gonderenUnvan = await gonderenUnvanGetir(supabase);
@@ -142,10 +142,10 @@ export async function bekleyenleriGonder(
 
   revalidatePath("/panel/hatirlatmalar");
 
-  const parcalar = [`${sayac.gonderildi} gönderildi`];
-  if (sayac.atlandi > 0) parcalar.push(`${sayac.atlandi} atlandı (e-posta/izin yok)`);
-  if (sayac.iptal > 0) parcalar.push(`${sayac.iptal} iptal (fatura kapanmış)`);
-  if (sayac.hata > 0) parcalar.push(`${sayac.hata} hata`);
+  const parcalar = [`${sayac.gonderildi} sent`];
+  if (sayac.atlandi > 0) parcalar.push(`${sayac.atlandi} skipped (no email/permission)`);
+  if (sayac.iptal > 0) parcalar.push(`${sayac.iptal} canceled (invoice closed)`);
+  if (sayac.hata > 0) parcalar.push(`${sayac.hata} failed`);
   return { mesaj: parcalar.join(", ") + "." };
 }
 
@@ -154,12 +154,12 @@ export async function tekHatirlatmaGonder(
   formData: FormData
 ): Promise<IslemDurum> {
   const id = String(formData.get("id") ?? "");
-  if (!id) return { hata: "Hatırlatma bulunamadı." };
+  if (!id) return { hata: "Reminder not found." };
 
   const gonderici = gondericiOlustur();
   if (!gonderici) {
     return {
-      hata: "E-posta sağlayıcısı yapılandırılmamış. .env.local dosyasına RESEND_API_KEY ekleyin.",
+      hata: "Email provider not configured. Add RESEND_API_KEY to your .env.local file.",
     };
   }
 
@@ -171,7 +171,7 @@ export async function tekHatirlatmaGonder(
     .eq("durum", "planlandi")
     .single();
 
-  if (!data) return { hata: "Hatırlatma bulunamadı ya da zaten gönderilmiş." };
+  if (!data) return { hata: "Reminder not found or already sent." };
 
   const gonderenUnvan = await gonderenUnvanGetir(supabase);
   const sonuc = await hatirlatmaGonderVeIsaretle(
@@ -186,13 +186,13 @@ export async function tekHatirlatmaGonder(
 
   switch (sonuc) {
     case "gonderildi":
-      return { mesaj: "Hatırlatma gönderildi." };
+      return { mesaj: "Reminder sent." };
     case "atlandi":
-      return { hata: "Müşterinin e-posta adresi veya izni yok." };
+      return { hata: "The customer has no email address or permission." };
     case "iptal":
-      return { hata: "Fatura kapandığı için hatırlatma iptal edildi." };
+      return { hata: "Reminder canceled because the invoice was closed." };
     default:
-      return { hata: "Gönderim başarısız. Ayrıntı hatırlatma kaydında." };
+      return { hata: "Send failed. See the reminder record for details." };
   }
 }
 
@@ -204,7 +204,7 @@ export async function planUret(
 
   const { data, error } = await supabase.rpc("hatirlatma_plani_uret_benim");
   if (error) {
-    return { hata: "Plan üretilemedi. Tekrar deneyin." };
+    return { hata: "Could not generate the plan. Please try again." };
   }
 
   revalidatePath("/panel/hatirlatmalar");
@@ -212,8 +212,8 @@ export async function planUret(
   return {
     mesaj:
       adet > 0
-        ? `${adet} yeni hatırlatma planlandı.`
-        : "Planlanacak yeni hatırlatma yok (her şey güncel).",
+        ? `${adet} new reminder(s) scheduled.`
+        : "No new reminders to schedule (everything is up to date).",
   };
 }
 
@@ -222,7 +222,7 @@ export async function whatsappGonderildiIsaretle(
   formData: FormData
 ): Promise<IslemDurum> {
   const id = String(formData.get("id") ?? "");
-  if (!id) return { hata: "Hatırlatma bulunamadı." };
+  if (!id) return { hata: "Reminder not found." };
 
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -237,12 +237,12 @@ export async function whatsappGonderildiIsaretle(
     .select("id");
 
   if (error || !data || data.length === 0) {
-    return { hata: "İşaretlenemedi (zaten gönderilmiş olabilir)." };
+    return { hata: "Could not mark as sent (it may already be sent)." };
   }
 
   revalidatePath("/panel/hatirlatmalar");
   revalidatePath(`/panel/hatirlatmalar/${id}`);
-  return { mesaj: "WhatsApp'tan gönderildi olarak işaretlendi." };
+  return { mesaj: "Marked as sent via WhatsApp." };
 }
 
 export async function hatirlatmaIptal(formData: FormData) {
@@ -254,7 +254,7 @@ export async function hatirlatmaIptal(formData: FormData) {
     .from("hatirlatmalar")
     .update({ durum: "iptal" })
     .eq("id", id)
-    .eq("durum", "planlandi"); // yalnızca henüz gönderilmemişler iptal edilebilir
+    .eq("durum", "planlandi"); // only reminders that haven't been sent yet can be canceled
 
   revalidatePath("/panel/hatirlatmalar");
 }
@@ -269,7 +269,7 @@ export async function kadansEkle(
   const sablonKodu = String(formData.get("sablon_kodu") ?? "");
 
   if (!Number.isInteger(gunFarki) || gunFarki < -60 || gunFarki > 365) {
-    return { hata: "Gün farkı -60 ile 365 arasında bir tam sayı olmalı." };
+    return { hata: "Day offset must be a whole number between -60 and 365." };
   }
 
   const { error } = await supabase.from("kadans_adimlari").insert({
@@ -280,9 +280,9 @@ export async function kadansEkle(
 
   if (error) {
     if (error.code === "23505") {
-      return { hata: "Bu gün farkı için zaten bir adım var." };
+      return { hata: "A step already exists for this day offset." };
     }
-    return { hata: "Adım eklenemedi. Yetkinizi kontrol edin." };
+    return { hata: "Could not add the step. Check your permissions." };
   }
 
   revalidatePath("/panel/hatirlatmalar/kadans");

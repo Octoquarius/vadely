@@ -1,464 +1,690 @@
-# plan.md — AI Destekli Otomatik Alacak Tahsilatı + Nakit Akışı Tahminleme SaaS'ı (Türkiye)
+# plan.md — AI-Assisted Automated Accounts-Receivable Collection + Cash-Flow Forecasting SaaS (Turkey)
 
-> Çalışma adı: **"Tahsilat Asistanı"** (VARSAYIM — marka adı sonra belirlenecek).
-> Tüm parasal tutarlar **USD** cinsindendir (dönüşüm çıpası: 1 USD ≈ 46,7 TL, Temmuz 2026).
-> İşgücü/maaş maliyeti bu planda **yer almaz** — erken aşama solo kurucu / sweat equity varsayımı.
-
----
-
-## 1. Yönetici Özeti
-
-**Vizyon:** Türkiye'deki her KOBİ'nin alacaklarını insan müdahalesi olmadan, ilişkiyi bozmadan ve öngörülebilir şekilde tahsil etmesini sağlamak.
-
-**Tek cümlelik değer önerisi:** "Faturalarınızı biz takip edelim; müşterinizle aranız bozulmadan paranız daha erken gelsin, önümüzdeki 90 günde kasada ne olacağını bugünden görün."
-
-**Kime:** e-Fatura/e-Arşiv kullanan, vadeli (B2B) satış yapan, 5-250 çalışanlı Türk KOBİ'leri — özellikle imalat, toptan ticaret, hizmet ve ajans segmentleri.
-
-**Neyi çözüyor:** KOBİ'ler faturayı kesmeyi biliyor; **tahsil etmeyi** sistematik yapamıyor. Hatırlatma yapmak utandırıcı, unutuluyor, tutarsız; nakit akışı görünmez. Ürün, GİB e-Fatura verisi + banka hareketlerinden beslenen bir **veri hattı** üzerine kurulu otomatik, kişiselleştirilmiş tahsilat iş akışı ve 30/60/90 gün nakit tahmini sunar.
-
-**Neden şimdi:** 1 Ocak 2026 itibarıyla bilanço esasına tabi mükelleflerde kâğıt fatura tamamen yasak ve bu kural **yürürlükte** — her ticari işlem artık GİB üzerinden dijital akıyor. Yapılandırılmış fatura verisi neredeyse evrensel; ürünün ihtiyaç duyduğu ham madde her KOBİ'de hazır.
-
-**Stratejik ilke:** Çekirdek değer AI modeli değil; **veri hattı + iş akışı**dır. AI katmanı soyutlanmış ve sağlayıcı-bağımsızdır (model-agnostic) — model piyasası ne kadar hızlı değişirse değişsin ürün eskimez.
+> Working name: **"Collection Assistant"** (ASSUMPTION — the brand name will be decided later).
+> All monetary amounts are in **USD** (conversion anchor: 1 USD ≈ 46.7 TL, July 2026).
+> Labor/salary costs are **not included** in this plan — early-stage solo-founder / sweat-equity assumption.
 
 ---
 
-## 2. Problem & Pazar
+## 1. Executive Summary
+
+**Vision:** Enable every SME in Turkey to collect its receivables without human
+intervention, without damaging the relationship, and predictably.
+
+**One-sentence value proposition:** "Let us chase your invoices; get paid
+sooner without straining the relationship with your customer, and see today
+what your bank balance will look like 90 days from now."
+
+**For whom:** Turkish SMEs with 5-250 employees that use e-Invoice/e-Archive
+and sell on credit terms (B2B) — especially manufacturing, wholesale trade,
+services, and agency segments.
+
+**What it solves:** SMEs know how to issue an invoice; they can't
+**collect** it systematically. Sending reminders feels awkward, gets
+forgotten, and is inconsistent; cash flow is invisible. The product is built
+on a **data pipeline** fed by GİB e-Invoice data and bank transactions, and it
+delivers an automatic, personalized collection workflow plus a 30/60/90-day
+cash forecast.
+
+**Why now:** As of January 1, 2026, paper invoices are completely banned for
+taxpayers on the balance-sheet basis, and this rule is **in effect** — every
+commercial transaction now flows digitally through GİB (the Turkish Revenue
+Administration). Structured invoice data is nearly universal; the raw
+material the product needs is already available at every SME.
+
+**Strategic principle:** The core value isn't the AI model; it's the **data
+pipeline + workflow**. The AI layer is abstracted and provider-agnostic
+(model-agnostic) — no matter how fast the model market changes, the product
+doesn't become obsolete.
+
+---
+
+## 2. Problem & Market
 
 ### Problem
 
-- KOBİ başarısızlıklarının **~%82'sinde** kötü nakit akışı yönetimi rol oynuyor.
-- Türkiye imalatta ortalama alacak tahsil süresi 2024'te **75 güne** ulaştı (TCMB).
-- Atradius 2025: B2B faturaların **~2/3'ü gecikmeli** ödeniyor; kötü borçlar B2B satışın **~%10'una** ulaşıyor.
-- KOBİ'de tahsilat takibi tipik olarak patronun veya ön muhasebecinin aklında/Excel'inde. Hatırlatma yapılınca "ilişki bozulur" korkusu var; yapılmayınca vade uzuyor. Sonuç: kârlı ama nakitsiz şirketler.
+- Poor cash-flow management plays a role in **~82%** of SME failures.
+- The average receivables collection period in Turkish manufacturing reached
+  **75 days** in 2024 (CBRT/TCMB).
+- Atradius 2025: **~2/3 of B2B invoices** are paid late; bad debt reaches
+  **~10%** of B2B sales.
+- At an SME, collection tracking is typically kept in the owner's head or in
+  a bookkeeper's spreadsheet. There's a fear that sending reminders "damages
+  the relationship"; not sending them extends the payment cycle. The result:
+  profitable but cash-poor companies.
 
-### İdeal Müşteri Profili (ICP)
+### Ideal Customer Profile (ICP)
 
-| Özellik | Hedef |
+| Attribute | Target |
 |---|---|
-| Segment | İmalat, toptan/dağıtım, B2B hizmet, ajans |
-| Büyüklük | 5-250 çalışan; ayda 20-500 arası satış faturası |
-| Satış modeli | Vadeli B2B satış (30-120 gün vade) |
-| Mevcut araçlar | Paraşüt / Logo / Mikro gibi ön muhasebe + Excel |
-| Ağrı düzeyi | Açık alacak bakiyesi aylık cironun 2-3 katı; DSO 60+ gün |
-| Karar verici | Şirket sahibi veya mali işler sorumlusu |
+| Segment | Manufacturing, wholesale/distribution, B2B services, agencies |
+| Size | 5-250 employees; 20-500 sales invoices per month |
+| Sales model | B2B credit sales (30-120 day terms) |
+| Current tools | Basic accounting software like Parasut / Logo / Mikro + Excel |
+| Pain level | Open receivables balance 2-3x monthly revenue; DSO 60+ days |
+| Decision maker | Company owner or finance lead |
 
-### Pazar Boşluğu (Whitespace)
+### Market Whitespace
 
-Türkiye'de **AI odaklı yerli otomatik alacak tahsilatı (autonomous AR) oyuncusu yok**. Yerli araçlar ön muhasebe/faturalama tarafında yoğunlaşmış durumda; en yakın yerli benzer Mikro'nun "Tahsildar" modülü. Figopara faktoring (alacağı satın alma) yapıyor — otomatik dunning/nakit tahmini değil. Küresel oyuncular (HighRadius, BlackLine, Esker, Bill.com, Versapay, Tipalti) Türkiye'de yerleşik değil ve GİB/yerel bankacılık entegrasyonları yok. Bu bulgu Bölüm 16'daki adımlarla birincil kaynaklardan teyit edilecek.
+There is **no AI-focused, homegrown autonomous accounts-receivable (AR)
+player in Turkey**. Local tools are concentrated on basic accounting/invoicing;
+the closest local comparable is Mikro's "Tahsildar" (Collector) module.
+Figopara does factoring (purchasing receivables) — not automated dunning or
+cash forecasting. Global players (HighRadius, BlackLine, Esker, Bill.com,
+Versapay, Tipalti) aren't established in Turkey and lack GİB/local banking
+integrations. This finding will be confirmed against primary sources via the
+steps in Section 16.
 
 ---
 
-## 3. Rakip & Konumlandırma
+## 3. Competitors & Positioning
 
-### Rekabet Haritası
+### Competitive Map
 
-| Oyuncu | Ne yapıyor | Bizden farkı |
+| Player | What it does | How we differ |
 |---|---|---|
-| Paraşüt, Logo İşbaşı, Mikro | Ön muhasebe, faturalama | Fatura **kesmeye** odaklı; tahsilat otomasyonu ve tahmin yok/zayıf. **Rakip değil, veri kaynağı ve potansiyel kanal.** |
-| Mikro "Tahsildar" | Temel tahsilat hatırlatma | Mikro ekosistemine kilitli; AI risk skoru, nakit tahmini, çok kanallı kişiselleştirilmiş dunning yok. |
-| Figopara | Fatura finansmanı / faktoring | Alacağı iskonto ile satın alıyor; tahsilat sürecini otomatikleştirmiyor. Uzun vadede **ortaklık adayı** (riskli alacağa finansman yönlendirme). |
-| HighRadius, BlackLine, Esker, Versapay, Bill.com, Tipalti | Kurumsal AR otomasyonu (global) | Enterprise fiyatlı, TR yerelleştirmesi (GİB, KVKK, TL, WhatsApp kültürü) yok; KOBİ'ye inmiyor. |
-| Banka/fintech nakit yönetimi panelleri | Hesap görünümü | Alacak tarafını (fatura + davranış) görmüyor; iş akışı yok. |
+| Parasut, Logo İşbaşı, Mikro | Basic accounting, invoicing | Focused on **issuing** invoices; collection automation and forecasting are missing or weak. **Not a competitor — a data source and potential channel.** |
+| Mikro "Tahsildar" | Basic collection reminders | Locked into the Mikro ecosystem; no AI risk score, cash forecast, or multi-channel personalized dunning. |
+| Figopara | Invoice financing / factoring | Buys receivables at a discount; doesn't automate the collection process. Long-term **partnership candidate** (routing risky receivables to financing). |
+| HighRadius, BlackLine, Esker, Versapay, Bill.com, Tipalti | Enterprise AR automation (global) | Enterprise pricing, no Turkish localization (GİB, KVKK, TRY, WhatsApp culture); doesn't reach SMEs. |
+| Bank/fintech cash-management dashboards | Account overview | Doesn't see the receivables side (invoices + behavior); no workflow. |
 
-### Konumlandırma Tezi: "Tamamlayıcı, Rakip Değil"
+### Positioning Thesis: "Complementary, Not a Competitor"
 
-- Ön muhasebe araçlarının **yerine geçmiyoruz**; onların ürettiği fatura verisinin **üzerine** tahsilat ve tahmin katmanı ekliyoruz.
-- Mesaj: *"Paraşüt/Logo/Mikro faturanı keser, biz paranı toplarız."*
-- Bu konum (a) rakip tepkisini geciktirir, (b) entegrasyon ortaklıklarının (Aşama 2) kapısını açar, (c) müşterinin mevcut alışkanlığını değiştirmesini gerektirmediği için satış sürtünmesini düşürür.
-- Savunma hattı: ürün derinleştikçe biriken **ödeme davranışı verisi** (kim, kime, ne kadar gecikmeyle ödüyor) taklit edilmesi en zor varlıktır — ağ etkisi yaratır.
-
----
-
-## 4. Ürün Kapsamı
-
-### MVP (Aşama 0 çıktısı) — SADECE iki şey
-
-1. **Otomatik tahsilat hatırlatmaları (dunning):** Fatura vadesine göre kurala dayalı, kişiselleştirilebilir şablonlu hatırlatma dizileri. İlk kanal **e-posta** (en düşük entegrasyon maliyeti), hemen ardından WhatsApp.
-2. **Basit DSO panosu:** Açık alacak yaşlandırması (aging), DSO trendi, en riskli 10 fatura/müşteri listesi.
-
-MVP'ye **bilerek dahil olmayanlar:** risk skoru (ML), nakit akışı tahmini, çoklu banka, muhasebe yazılımı API entegrasyonları. Veri girişi MVP'de GİB e-Arşiv çekimi + **CSV import fallback** ile çözülür.
-
-### v1 (Aşama 1 — karar eşikleri tutarsa)
-
-- **Risk skoru:** Önce kural tabanlı (gecikme geçmişi, tutar, sektör), sonra ML (bkz. Bölüm 9).
-- **30/60/90 gün nakit akışı tahmini:** Açık faturalar + tahmini ödeme tarihleri + banka bakiyesi.
-- **Çok kanallı dunning:** WhatsApp + SMS + e-posta orkestrasyonu; kanal/kadans optimizasyonu.
-- **Tek-tık ödeme linki:** Hatırlatma mesajının içinde sanal POS linki.
-- Açık bankacılık ile otomatik ödeme eşleştirme (tahsilatın kapandığını insan girmeden anlama).
-
-### v2 (Aşama 2)
-
-- Ön muhasebe yazılımlarıyla (Paraşüt, Logo, Mikro) çift yönlü API entegrasyonları ve marketplace listelenmeleri.
-- Mali müşavir çoklu-müşteri paneli (bir müşavir 30 mükellefini tek ekrandan yönetir).
-- Sektörel kıyas verileri ("sektörünüzde ortalama DSO 68 gün, sizinki 82").
-- Riskli alacak için finansman yönlendirme ortaklığı (ör. Figopara) — komisyon geliri.
-- Anlaşmazlık/itiraz yönetimi (fatura itirazlarını akışta yakalama).
+- We're **not replacing** basic accounting tools; we're adding a collection
+  and forecasting layer **on top of** the invoice data they produce.
+- Message: *"Parasut/Logo/Mikro issues your invoice, we collect your money."*
+- This positioning (a) delays competitive reaction, (b) opens the door to
+  integration partnerships (Phase 2), (c) reduces sales friction since it
+  doesn't require the customer to change their existing habits.
+- Defensive moat: as the product matures, the accumulated **payment behavior
+  data** (who pays whom, how much, and how late) is the asset that's hardest
+  to copy — it creates a network effect.
 
 ---
 
-## 5. Aşamalı Yol Haritası + Karar Eşikleri
+## 4. Product Scope
 
-### Aşama 0 — Doğrulama + MVP (0-3 ay)
+### MVP (Phase 0 output) — ONLY two things
 
-- **15-20 KOBİ mülakatı** (hedef ICP'den): tahsilat sürecini, "ilişki bozulur" korkusunun gerçekliğini, ödeme istekliliğini doğrula. Mülakatlar bitmeden kod yazımı minimum tutulur.
-- **MVP inşası:** GİB e-Arşiv/e-Fatura verisi çekimi (özel entegratör aracılığıyla veya portal dışa aktarımı + CSV fallback) + **1 banka** hesap hareketi bağlantısı + e-posta dunning + DSO panosu.
-- **5-25 ödeyen müşteri** ile erken çekiş; 2-4 haftalık ücretsiz pilot → ücretli geçiş.
+1. **Automatic collection reminders (dunning):** Rule-based, template-driven
+   reminder sequences keyed off the invoice due date. First channel:
+   **email** (lowest integration cost), followed immediately by WhatsApp.
+2. **Simple DSO dashboard:** Open-receivables aging, DSO trend, list of the
+   10 riskiest invoices/customers.
 
-### Aşama 1 — Ürün-Pazar Uyumu (3-9 ay)
+**Deliberately excluded** from the MVP: risk scoring (ML), cash-flow
+forecasting, multi-bank support, accounting-software API integrations. Data
+entry in the MVP is solved via GİB e-Archive retrieval + a **CSV import
+fallback**.
 
-- Hedefler: **50+ ödeyen KOBİ**, müşterilerde **DSO'da >10 gün azalma** (ROI kanıtı), **aylık churn <%5**.
-- Bu eşikler tutarsa: **nakit akışı tahmini + risk skoru** modülleri (v1) eklenir; WhatsApp/SMS kanalları ve ödeme linki devreye alınır.
-- Fiyatlama kademelerinin (Başlangıç/Profesyonel/İşletme) gerçek kullanımla doğrulanması.
+### v1 (Phase 1 — if decision thresholds are met)
 
-### Aşama 2 — Ölçek (9-18 ay)
+- **Risk score:** Rule-based first (delinquency history, amount, industry),
+  then ML (see Section 9).
+- **30/60/90-day cash-flow forecast:** Open invoices + estimated payment
+  dates + bank balance.
+- **Multi-channel dunning:** WhatsApp + SMS + email orchestration;
+  channel/cadence optimization.
+- **One-click payment link:** A virtual POS link embedded in the reminder
+  message.
+- Automatic payment matching via open banking (recognizing a paid invoice
+  without manual entry).
 
-- Ön muhasebe yazılımlarıyla **entegrasyon ortaklıkları** ve marketplace kanalları.
-- Mali müşavir kanalının sistematikleştirilmesi (kanal komisyon modeli).
-- Hedef: **500+ ödeyen KOBİ** (~$120K ARR baz senaryoda).
+### v2 (Phase 2)
 
-### ⛔ GERİ DÖNÜŞ KRİTERİ
-
-> **İlk 9 ayda 50 ödeyen müşteri VE ölçülebilir DSO iyileşmesi yoksa strateji gözden geçirilir.** Seçenekler: (a) segment değiştir (ör. yalnızca mali müşavirlere satış), (b) tek özelliğe daralt (yalnızca dunning), (c) ürünü ön muhasebe oyuncularına white-label teklif et, (d) durdur. "Biraz daha zaman verelim" bu planda geçerli bir seçenek değildir.
+- Two-way API integrations and marketplace listings with basic accounting
+  software (Parasut, Logo, Mikro).
+- Multi-client dashboard for accountants (an accountant manages 30 clients
+  from a single screen).
+- Sector-benchmark data ("average DSO in your sector is 68 days, yours is
+  82").
+- Financing-referral partnership for risky receivables (e.g. Figopara) —
+  commission revenue.
+- Dispute management (capturing invoice disputes within the workflow).
 
 ---
 
-## 6. Teknik Mimari
+## 5. Phased Roadmap + Decision Thresholds
 
-### İlkeler
+### Phase 0 — Validation + MVP (0-3 months)
 
-- **Bakım yükü minimum:** Solo kurucu; yönetilen servisler > kendi sunucun. Sıkıcı, kanıtlanmış teknoloji.
-- **Modüler monolit:** Mikroservis yok. Tek depoda net modül sınırları; ölçek gerektirirse sonra ayrıştırılır.
-- **AI katmanı sağlayıcı-bağımsız:** Tüm LLM/ML çağrıları tek bir iç arayüzün (`AiProvider`) arkasında; model/sağlayıcı konfigürasyonla değişir.
-- **Çekirdek değer veri hattında:** AI modülü tamamen kapatılsa bile ürün (kural tabanlı dunning + pano) çalışmaya devam eder.
+- **15-20 SME interviews** (from the target ICP): validate the collection
+  process, whether the "damages the relationship" fear is real, and
+  willingness to pay. Coding is kept to a minimum before interviews wrap up.
+- **MVP build:** GİB e-Archive/e-Invoice data retrieval (via a private
+  integrator, or portal export + CSV fallback) + **1 bank** account
+  transaction connection + email dunning + DSO dashboard.
+- Early traction with **5-25 paying customers**; a 2-4 week free pilot →
+  paid conversion.
 
-### Sistem Şeması
+### Phase 1 — Product-Market Fit (3-9 months)
+
+- Goals: **50+ paying SMEs**, **>10-day DSO reduction** for customers (proof
+  of ROI), **<5% monthly churn**.
+- If these thresholds hold: add the **cash-flow forecasting + risk score**
+  modules (v1); roll out WhatsApp/SMS channels and the payment link.
+- Validate the pricing tiers (Starter/Professional/Business) against actual
+  usage.
+
+### Phase 2 — Scale (9-18 months)
+
+- **Integration partnerships** and marketplace channels with basic
+  accounting software.
+- Systematize the accountant channel (channel commission model).
+- Target: **500+ paying SMEs** (~$120K ARR base case).
+
+### ⛔ PIVOT/KILL CRITERION
+
+> **If there aren't 50 paying customers AND measurable DSO improvement within
+> the first 9 months, the strategy is reassessed.** Options: (a) change
+> segment (e.g. sell only to accountants), (b) narrow to a single feature
+> (dunning only), (c) offer the product white-label to basic accounting
+> players, (d) shut down. "Let's give it a bit more time" is not a valid
+> option in this plan.
+
+---
+
+## 6. Technical Architecture
+
+### Principles
+
+- **Minimize maintenance burden:** Solo founder; managed services over
+  self-hosted servers. Boring, proven technology.
+- **Modular monolith:** No microservices. Clear module boundaries in a
+  single repo; split out later only if scale demands it.
+- **AI layer is provider-agnostic:** All LLM/ML calls go through a single
+  internal interface (`AiProvider`); model/provider changes via
+  configuration.
+- **Core value lives in the data pipeline:** Even if the AI module is
+  disabled entirely, the product (rule-based dunning + dashboard) keeps
+  working.
+
+### System Diagram
 
 ```
 ┌────────────────────────────────────────────────────────────────────┐
-│                        VERİ KAYNAKLARI                             │
-│  GİB e-Fatura/e-Arşiv     Banka API'leri        CSV Import         │
-│  (özel entegratör)        (açık bankacılık)     (fallback)         │
+│                          DATA SOURCES                               │
+│  GİB e-Invoice/e-Archive   Bank APIs             CSV Import         │
+│  (private integrator)      (open banking)        (fallback)         │
 └───────────┬───────────────────┬──────────────────────┬─────────────┘
             ▼                   ▼                      ▼
 ┌────────────────────────────────────────────────────────────────────┐
-│  INGEST KATMANI (zamanlanmış işler + webhook alıcıları)            │
-│  → ham veri arşivi (değiştirilmeden saklanır)                      │
+│  INGEST LAYER (scheduled jobs + webhook receivers)                  │
+│  → raw data archive (stored unmodified)                             │
 └───────────────────────────────┬────────────────────────────────────┘
                                 ▼
 ┌────────────────────────────────────────────────────────────────────┐
-│  NORMALİZE: tekilleştirme, cari eşleştirme, para birimi,           │
-│  fatura ↔ ödeme eşleştirme (reconciliation)                        │
+│  NORMALIZE: deduplication, customer matching, currency,             │
+│  invoice ↔ payment matching (reconciliation)                        │
 └───────────────────────────────┬────────────────────────────────────┘
                                 ▼
 ┌────────────────────────────────────────────────────────────────────┐
-│  ÇEKİRDEK VERİTABANI (PostgreSQL)                                  │
-│  Müşteri · Fatura · Ödeme · Hatırlatma · RiskSkoru · NakitTahmini  │
+│  CORE DATABASE (PostgreSQL)                                         │
+│  Customer · Invoice · Payment · Reminder · RiskScore · CashForecast │
 └──────┬──────────────────┬─────────────────────┬────────────────────┘
        ▼                  ▼                     ▼
 ┌─────────────┐   ┌──────────────────┐   ┌──────────────────────────┐
-│ SKOR MOTORU │   │ DUNNING MOTORU   │   │ PANO / RAPORLAMA         │
-│ (v1: kural→ │   │ (kural + kadans; │   │ (DSO, aging, tahmin)     │
-│  ML; MVP'de │   │  MVP çekirdeği)  │   │                          │
-│  yok)       │   └────────┬─────────┘   └──────────────────────────┘
+│ SCORE ENGINE│   │ DUNNING ENGINE   │   │ DASHBOARD / REPORTING    │
+│ (v1: rules→ │   │ (rules + cadence;│   │ (DSO, aging, forecast)   │
+│  ML; absent │   │  MVP core)       │   │                          │
+│  in MVP)    │   └────────┬─────────┘   └──────────────────────────┘
 └─────────────┘            ▼
                   ┌──────────────────┐        ┌─────────────────────┐
-                  │ MESAJ KATMANI    │───────▶│ ÖDEME LİNKİ (v1)    │
-                  │ e-posta/WA/SMS   │        │ sanal POS sağlayıcı │
+                  │ MESSAGE LAYER    │───────▶│ PAYMENT LINK (v1)   │
+                  │ email/WA/SMS     │        │ virtual POS provider│
                   └────────┬─────────┘        └──────────┬──────────┘
                            ▼                             ▼
                   ┌────────────────────────────────────────────────┐
-                  │ GERİ BESLEME: açıldı/tıklandı/ödendi olayları  │
-                  │ → skor motoru + kadans optimizasyonu           │
+                  │ FEEDBACK LOOP: opened/clicked/paid events      │
+                  │ → score engine + cadence optimization          │
                   └────────────────────────────────────────────────┘
 
-Kesikli katman (her modülün önünde): AiProvider arayüzü
-— LLM sağlayıcısı (Claude/GPT/yerel model) konfigürasyonla değişir.
+Cross-cutting layer (in front of every module): the AiProvider interface
+— the LLM provider (Claude/GPT/local model) changes via configuration.
 ```
 
-### Veri Hattı Akışı (uçtan uca döngü)
+### Data Pipeline Flow (end-to-end loop)
 
-**Fatura ingest → normalize → (v1: skor) → dunning → ödeme → geri besleme:** Yeni fatura sisteme düşer → cariyle eşleştirilir → vade ve (v1'de) risk skoruna göre hatırlatma kadansı planlanır → mesaj gönderilir → ödeme linki tıklanır veya banka hareketinde ödeme görülür → fatura kapanır → gerçekleşen ödeme davranışı skor motorunu ve kadans şablonlarını besler. Bu kapalı döngü ürünün savunma hattıdır.
+**Invoice ingest → normalize → (v1: score) → dunning → payment → feedback:**
+A new invoice lands in the system → it's matched to a customer → a reminder
+cadence is scheduled based on due date and (in v1) risk score → the message
+is sent → the payment link is clicked, or a payment shows up in a bank
+transaction → the invoice closes → the resulting payment behavior feeds back
+into the score engine and cadence templates. This closed loop is the
+product's defensive moat.
 
-### Önerilen Stack (her seçim tek cümle gerekçeli; hepsi VARSAYIM — eşdeğerle değiştirilebilir)
+### Proposed Stack (each choice justified in one sentence; all of it is an
+ASSUMPTION — swappable for an equivalent)
 
-| Katman | Seçim | Gerekçe (1 cümle) |
+| Layer | Choice | Rationale (1 sentence) |
 |---|---|---|
-| Uygulama çatısı | **Next.js (TypeScript, App Router)** | Tek dil/tek depo ile hem pano hem API; devasa ekosistem, solo kurucu için en düşük bağlam değiştirme maliyeti. |
-| Barındırma | **Vercel veya eşdeğer yönetilen platform** | Sunucu yönetimi sıfır; deploy/rollback/önizleme hazır gelir. |
-| Veritabanı | **PostgreSQL (yönetilen: Neon/Supabase)** | İlişkisel finansal veri için endüstri standardı; yönetilen hizmetle yedekleme/ölçek dert değil. |
-| ORM/migration | **Drizzle veya Prisma** | Şema değişikliklerini versiyonlu ve güvenli yapar. |
-| Zamanlanmış işler / kuyruk | **Platform cron + iş kuyruğu (ör. Vercel Queues/Upstash QStash)** | Dunning ve ingest doğası gereği zamanlanmış iştir; yönetilen kuyruk retry/at-least-once'ı bedavaya getirir. |
-| E-posta | **Resend/Postmark benzeri işlemsel e-posta API'si** | Teslim edilebilirlik (deliverability) uzmanlık işidir, satın alınır. |
-| WhatsApp/SMS | **WhatsApp Business API (BSP üzerinden) + yerli SMS ağ geçidi** | Türkiye'de B2B iletişimin fiili kanalı WhatsApp; BSP kullanımı Meta onay sürecini basitleştirir. |
-| Ödeme linki | **iyzico veya PayTR (link tabanlı)** | TR kartları/taksit desteğiyle yerleşik sanal POS; link modeli entegrasyonu bir API çağrısına indirir. |
-| AI erişimi | **Kendi `AiProvider` arayüzümüz + arkasında AI Gateway türü çoklu-sağlayıcı yönlendirici** | Model-agnostiklik planın açık şartı; sağlayıcı değişimi tek konfigürasyon satırı olmalı. |
-| ML (v1 risk skoru) | **Python mikroservis değil; önce SQL/TS kural motoru, sonra basit gradient boosting (ayrı batch job)** | Skor günlük batch üretilebilir; gerçek zamanlı ML servisi bakım yükü erken aşamada gereksiz. |
-| İzleme | **Sentry + platform logları** | Hata görünürlüğü ilk günden şart; kurulumu dakikalar sürer. |
+| App framework | **Next.js (TypeScript, App Router)** | One language/one repo for both the dashboard and the API; huge ecosystem, lowest context-switching cost for a solo founder. |
+| Hosting | **Vercel or an equivalent managed platform** | Zero server management; deploy/rollback/preview come built in. |
+| Database | **PostgreSQL (managed: Neon/Supabase)** | Industry standard for relational financial data; backup/scaling is a non-issue with a managed service. |
+| ORM/migrations | **Drizzle or Prisma** | Makes schema changes versioned and safe. |
+| Scheduled jobs / queue | **Platform cron + job queue (e.g. Vercel Queues/Upstash QStash)** | Dunning and ingest are inherently scheduled work; a managed queue gets retry/at-least-once delivery for free. |
+| Email | **A transactional email API such as Resend/Postmark** | Deliverability is a specialty — buy it, don't build it. |
+| WhatsApp/SMS | **WhatsApp Business API (via a BSP) + a local SMS gateway** | WhatsApp is the de facto B2B communication channel in Turkey; using a BSP simplifies the Meta approval process. |
+| Payment link | **iyzico or PayTR (link-based)** | Established virtual POS with support for Turkish cards/installments; the link model reduces integration to a single API call. |
+| AI access | **Our own `AiProvider` interface, backed by an AI-Gateway-style multi-provider router** | Model-agnosticism is an explicit requirement of the plan; switching providers should be a single config line. |
+| ML (v1 risk score) | **Not a Python microservice; a SQL/TS rule engine first, then simple gradient boosting (separate batch job)** | The score can be produced by a daily batch job; a real-time ML service is unnecessary maintenance burden at this stage. |
+| Monitoring | **Sentry + platform logs** | Error visibility is a must from day one; setup takes minutes. |
 
-### "Teknolojik yeniliklerde kaybolmama" garantisi
+### The "don't get lost chasing new tech" guarantee
 
-- AI katmanı **yalnızca** şu üç yerde kullanılır ve üçü de arayüz arkasındadır: (1) dunning mesajı kişiselleştirme, (2) risk skoru açıklaması/özeti, (3) cari eşleştirme yardımcısı. Model değişse ürün davranışı değişmez.
-- Skor ve tahmin motorlarının **kural tabanlı fallback'i** her zaman canlı tutulur; AI sağlayıcı kesintisi üründe kesinti yaratmaz.
-- Ham veri değiştirilmeden arşivlenir; ileride daha iyi model çıktığında tüm geçmiş yeniden skorlanabilir.
+- The AI layer is used in **only** these three places, and all three sit
+  behind the interface: (1) personalizing dunning messages, (2) explaining/
+  summarizing the risk score, (3) a customer-matching assistant. If the
+  model changes, product behavior doesn't.
+- The **rule-based fallback** for the scoring and forecasting engines is
+  always kept live; an AI provider outage doesn't cause a product outage.
+- Raw data is archived unmodified; when a better model appears later, all
+  historical data can be rescored.
 
 ---
 
-## 7. Entegrasyonlar
+## 7. Integrations
 
-Her entegrasyonda ilke: **önce fallback ile canlıya çık, gerçek entegrasyonu talep kanıtlayınca yap.**
+Principle for every integration: **go live with the fallback first, build
+the real integration once demand proves it out.**
 
-| Entegrasyon | Gerçek entegrasyon | Başlangıç fallback'i | Not |
+| Integration | Real integration | Starter fallback | Note |
 |---|---|---|---|
-| **GİB e-Fatura/e-Arşiv** | GİB'e doğrudan değil, **özel entegratör** (ör. Logo/eLogo, Foriba/Sovos, Uyumsoft, İzibiz vb.) API'si üzerinden fatura verisi çekimi (VARSAYIM — entegratör API erişim koşulları Bölüm 16'da doğrulanacak) | Kullanıcının entegratör portalından aldığı **XML/UBL veya CSV/Excel dışa aktarımını** yükleme; ayrıca elle fatura girişi | MVP fallback ile başlar; ilk 2-3 entegratörle resmi bağlantı Aşama 1'de. |
-| **Açık bankacılık (hesap hareketleri)** | TCMB/BKM açık bankacılık altyapısı (HHS/YÖS) veya banka API'leri üzerinden hesap hareketi çekimi (VARSAYIM — lisans/iş ortaklığı gereksinimi doğrulanacak; gerekirse lisanslı bir TPP/agregator ile ortaklık) | Banka ekstre dosyası (CSV/MT940) yükleme | Ödeme eşleştirme MVP'de yarı-manuel ("bu ödeme şu faturayı kapattı mı?" onayı) kabul edilebilir. |
-| **Ödeme sağlayıcı (tek-tık link)** | iyzico / PayTR link API'si (v1) | Hatırlatma mesajına IBAN + tutar + açıklama bloğu koymak | Link, dunning mesajının dönüşüm oranını ölçülebilir kılar. |
-| **E-posta** | İşlemsel e-posta API'si (MVP'de gerçek entegrasyon — en ucuz ve en kolay kanal) | — (fallback gerekmez) | SPF/DKIM/DMARC ilk günden kurulur; teslim edilebilirlik ürünün canı. |
-| **WhatsApp** | WhatsApp Business API, bir BSP üzerinden; **onaylı şablon mesajları** | Kullanıcıya "kopyala-yapıştır" hazır mesaj üretme (tek tıkla panoya kopyala + wa.me linki) | **WhatsApp-öncelikli strateji:** TR'de açılma oranı en yüksek kanal; bildirim maliyeti ~$0,0006/adet. |
-| **SMS** | Yerli toplu SMS ağ geçidi (İYS uyumlu) | WhatsApp/e-posta varken SMS ertelenebilir | ~$0,011/adet; yalnızca WhatsApp'ı olmayan alıcılara yedek kanal. |
-| **Ön muhasebe yazılımları (Paraşüt/Logo/Mikro)** | Resmi API + marketplace ortaklığı (Aşama 2) | GİB verisi zaten fatura akışını kapsıyor; ayrıca CSV | Ortaklık, satış kanalı olarak entegrasyondan daha değerli. |
+| **GİB e-Invoice/e-Archive** | Pulling invoice data not directly from GİB but via a **private integrator** (e.g. Logo/eLogo, Foriba/Sovos, Uyumsoft, İzibiz, etc.) API (ASSUMPTION — integrator API access terms to be verified per Section 16) | Uploading the **XML/UBL or CSV/Excel export** the user gets from their integrator portal; also manual invoice entry | MVP starts with the fallback; formal connections with the first 2-3 integrators happen in Phase 1. |
+| **Open banking (account transactions)** | Pulling account transactions via the CBRT/BKM open banking infrastructure (HHS/YÖS) or bank APIs (ASSUMPTION — license/partnership requirement to be verified; partner with a licensed TPP/aggregator if needed) | Uploading a bank statement file (CSV/MT940) | Semi-manual payment matching ("did this payment close this invoice?" confirmation) is acceptable in the MVP. |
+| **Payment provider (one-click link)** | iyzico / PayTR link API (v1) | Putting an IBAN + amount + description block in the reminder message | The link makes the dunning message's conversion rate measurable. |
+| **Email** | Transactional email API (real integration from the MVP — the cheapest and easiest channel) | — (no fallback needed) | SPF/DKIM/DMARC are set up from day one; deliverability is the product's lifeblood. |
+| **WhatsApp** | WhatsApp Business API via a BSP; **pre-approved template messages** | Generating a ready-to-send "copy-paste" message for the user (one-click copy to clipboard + wa.me link) | **WhatsApp-first strategy:** the channel with the highest open rate in Turkey; notification cost is ~$0.0006 per message. |
+| **SMS** | A local bulk SMS gateway (İYS-compliant) | Can be deferred while WhatsApp/email are available | ~$0.011 per message; backup channel only for recipients without WhatsApp. |
+| **Basic accounting software (Parasut/Logo/Mikro)** | Official API + marketplace partnership (Phase 2) | GİB data already covers the invoice flow; plus CSV | The partnership is more valuable as a sales channel than as an integration. |
 
-**Mesajlaşma maliyet modeli — pass-through (kontör):** Mesaj maliyetleri müşteriye kontör/kredi olarak yansıtılır (ör. paketle gelen aylık kontör + aşımda kontör satın alma). WhatsApp ~$0,0006 ve SMS ~$0,011 birim maliyetleri abonelik marjını **aşındırmaz**; mesaj hacmi büyüdükçe maliyet müşteriyle birlikte ölçeklenir.
+**Messaging cost model — pass-through (credits):** Message costs are passed
+through to the customer as credits (e.g. monthly credits bundled with the
+plan + top-up purchases on overage). The ~$0.0006 WhatsApp and ~$0.011 SMS
+unit costs **don't erode** the subscription margin; costs scale with message
+volume alongside the customer.
 
 ---
 
-## 8. Veri Modeli
+## 8. Data Model
 
-Ana entiteler ve ilişkiler (PostgreSQL; hepsi `tenant_id` ile çok-kiracılı):
+Main entities and relationships (PostgreSQL; all multi-tenant via
+`tenant_id`):
 
 ```
-Hesap (tenant: KOBİ)
- └─< Kullanıcı (rol: sahip / muhasebe / salt-okur)
- └─< Müşteri (cari: KOBİ'nin alacaklı olduğu firma)
-     ├─ alanlar: unvan, VKN, iletişim kanalları (e-posta/tel/WA),
-     │           tercih edilen kanal, iletişim izinleri (KVKK/İYS)
-     └─< Fatura
-         ├─ alanlar: GİB UUID, no, tarih, vade, tutar, para birimi,
-         │           kalan bakiye, durum (açık/kısmi/kapalı/itilaflı), kaynak (GİB/CSV/manuel)
-         ├─< Ödeme  (n-n olabilir: bir ödeme birden çok faturayı kapatabilir →
-         │           FaturaÖdemeEşleşme ara tablosu; kaynak: banka/ödeme linki/manuel)
-         └─< Hatırlatma
-             ├─ alanlar: kanal, şablon, planlanan/gönderilen zaman,
-             │           durum (planlandı/gönderildi/açıldı/tıklandı/yanıtlandı), maliyet
-             └─ bağlı: DunningKadansı (kural seti: vade-3g, vade günü, +7g, +15g...)
-Müşteri ─< RiskSkoru (v1)
- └─ alanlar: skor (0-100), sürüm, üretim zamanı, girdi özeti, açıklama
-Hesap ─< NakitTahmini (v1)
- └─ alanlar: ufuk (30/60/90), tarih aralığı, beklenen giriş, güven bandı, sürüm
-Hesap ─< BankaHesabı ─< BankaHareketi (eşleşme: FaturaÖdemeEşleşme'ye bağlanır)
-Denetim/olay tablosu: tüm gönderim ve durum değişiklikleri (immutable log)
+Account (tenant: SME)
+ └─< User (role: owner / accountant / read-only)
+ └─< Customer (the company the SME is owed money by)
+     ├─ fields: name, tax ID, contact channels (email/phone/WA),
+     │          preferred channel, communication consents (KVKK/İYS)
+     └─< Invoice
+         ├─ fields: GİB UUID, number, date, due date, amount, currency,
+         │          remaining balance, status (open/partial/closed/disputed), source (GİB/CSV/manual)
+         ├─< Payment  (can be n-to-n: one payment can close multiple invoices →
+         │           InvoicePaymentMatch join table; source: bank/payment link/manual)
+         └─< Reminder
+             ├─ fields: channel, template, scheduled/sent time,
+             │          status (scheduled/sent/opened/clicked/replied), cost
+             └─ linked to: DunningCadence (rule set: due-3d, due date, +7d, +15d...)
+Customer ─< RiskScore (v1)
+ └─ fields: score (0-100), version, generation time, input summary, explanation
+Account ─< CashForecast (v1)
+ └─ fields: horizon (30/60/90), date range, expected inflow, confidence band, version
+Account ─< BankAccount ─< BankTransaction (matching: links to InvoicePaymentMatch)
+Audit/event table: all sends and status changes (immutable log)
 ```
 
-Tasarım notları:
+Design notes:
 
-- **Skor ve tahminler sürümlüdür** (hangi kural/model sürümü üretti) — geriye dönük değerlendirme ve model değişimi için şart.
-- **Ham ingest arşivi** ayrı tutulur (S3/Blob); çekirdek DB yalnızca normalize veri taşır.
-- İletişim izinleri (KVKK/İYS) Müşteri entitesinde birinci sınıf alandır; izin yoksa dunning motoru o kanalı hiç göremez.
-
----
-
-## 9. AI/ML Bileşenleri
-
-İlke: **her AI bileşeninin kural tabanlı bir "sıfırıncı sürümü" vardır** ve AI kapansa bile ürün çalışır. Tüm LLM çağrıları `AiProvider` arayüzü arkasındadır.
-
-### 9.1 Risk Skorlama (v1) — kural → ML
-
-- **Sürüm 0 (kural):** Ağırlıklı puan: geçmiş ortalama gecikme günü, gecikme trendi, açık bakiye/tarihsel ciro oranı, kısmi ödeme alışkanlığı, fatura büyüklüğü. Şeffaf, açıklanabilir, ilk gün çalışır.
-- **Sürüm 1 (ML):** Yeterli etiketli veri birikince (gerçekleşen ödeme tarihleri = doğal etiket) gradient boosting (XGBoost/LightGBM benzeri) ile "X gün içinde ödenme olasılığı". Günlük batch job; gerçek zamanlı servis gerekmez.
-- **LLM'in rolü:** Skoru **üretmek değil**, açıklamak ("Bu müşteri son 6 ayda ortalama 22 gün gecikti; risk yükseliyor çünkü...").
-
-### 9.2 Nakit Akışı Tahmini (v1)
-
-- **Sürüm 0:** Deterministik: açık faturalar × (vade + müşterinin tarihsel ortalama gecikmesi) → 30/60/90 gün beklenen giriş; iyimser/kötümser bant.
-- **Sürüm 1:** Müşteri bazlı ödeme tarihi dağılımı (survival analizi veya kantil regresyon) ile olasılıklı tahmin.
-- Tahmin her zaman **banka bakiyesiyle** birlikte sunulur (tahmin + mevcut nakit = eyleme dönük tablo).
-
-### 9.3 Dunning Kişiselleştirme (MVP'de şablon, v1'de LLM)
-
-- **MVP:** Elle yazılmış, değişkenli şablon setleri (nazik → kararlı tonda kademelenen 3-4 basamaklı kadans). Türkçe ticari nezaket kalıpları ürünün "ilişkiyi bozmama" vaadinin taşıyıcısıdır — bu şablonlar özenle, kurucu tarafından yazılır.
-- **v1:** LLM, şablonu müşteri bağlamına göre uyarlar (ilişki süresi, tutar, geçmiş ton, sektör). Her mesaj **gönderim öncesi kural denetiminden** geçer (yasal ifade yok, tehdit yok, tutar/tarih doğruluğu şablondan). İsteğe bağlı "göndermeden önce onayla" modu.
-- **Geri besleme:** Açılma/tıklanma/ödenme olayları hangi ton+kanal+kadansın işe yaradığını ölçer; önce basit A/B, sonra otomatik optimizasyon.
-
-### 9.4 Soğuk Başlangıç Stratejisi
-
-1. **Gün 0:** Kural tabanlı skor + deterministik tahmin — hiç veri gerektirmez, ilk müşteride çalışır.
-2. **Onboarding'de geçmiş yükleme:** GİB/CSV'den son 12-24 ayın faturaları ve ödemeleri çekilir → müşteri **daha ilk hafta** kendi tarihsel davranış verisiyle anlamlı skor görür.
-3. **Sektör önselleri:** Yeterli tenant birikince anonimleştirilmiş sektör ortalamaları (imalatta tipik gecikme X gün) yeni tenant'ların önseli olur (VARSAYIM — KVKK uyumlu anonimleştirme Bölüm 10 kapsamında tasarlanır).
-4. **ML'e geçiş eşiği:** ~50+ tenant ve on binlerce kapanmış fatura birikince; öncesinde ML yatırımı yapılmaz.
+- **Scores and forecasts are versioned** (which rule/model version produced
+  them) — required for retrospective evaluation and model changes.
+- The **raw ingest archive** is kept separate (S3/Blob); the core DB only
+  holds normalized data.
+- Communication consents (KVKK/İYS) are a first-class field on the Customer
+  entity; without consent, the dunning engine never sees that channel.
 
 ---
 
-## 10. Güvenlik & KVKK
+## 9. AI/ML Components
 
-İlk günden **privacy & security by design** — finansal veri işleyen üründe güven, özelliğin kendisidir.
+Principle: **every AI component has a rule-based "version zero"** and the
+product keeps working even if AI is disabled. All LLM calls sit behind the
+`AiProvider` interface.
 
-- **Veri minimizasyonu:** Yalnızca tahsilat için gerekli alanlar (fatura başlığı, tutar, vade, cari iletişim). Fatura kalem detayı gerekmedikçe çekilmez/saklanmaz.
-- **Şifreleme:** Aktarımda TLS 1.2+; durağan veride disk şifreleme + hassas alanlar (API anahtarları, banka tokenları) için uygulama katmanı şifreleme (envelope encryption).
-- **Erişim kontrolü:** Çok kiracılı izolasyon her sorguda `tenant_id` zorunluluğu (Postgres RLS ile DB katmanında da zorlanır); rol bazlı yetki (sahip/muhasebe/salt-okur); tüm erişim denetim loguna yazılır.
-- **KVKK uyumu:** VERBİS kaydı; aydınlatma metni; veri işleyen sıfatıyla müşterilerle veri işleme sözleşmesi (DPA); cari iletişim verisi için hukuki dayanak (meşru menfaat — ticari alacak takibi) yazılı olarak belgelenir (VARSAYIM — lansmandan önce KVKK uzmanı görüşü alınır, tek seferlik danışmanlık maliyeti İSTEĞE BAĞLI kaleme yazılır).
-- **İYS (İleti Yönetim Sistemi):** Ticari elektronik ileti tarafında İYS uyumu; B2B tahsilat hatırlatmasının hukuki niteliği (pazarlama iletisi değil, sözleşmesel bildirim) yazılı görüşle netleştirilir (VARSAYIM).
-- **Saklama politikası:** Sözleşme bitiminde veri X gün içinde silinir/anonimleştirilir (varsayılan 90 gün — VARSAYIM); yasal saklama süreleri (VUK) ayrık tutulur; müşteri "verimi indir + sil" hakkına panelden sahiptir.
-- **Operasyonel güvenlik:** Sırlar ortam değişkeni kasasında (asla repo'da değil); bağımlılık taraması (Dependabot); yedekleme + geri dönüş testi; olay müdahale için basit runbook.
-- **AI özelinde:** LLM sağlayıcıya kişisel veri **gönderilmeden önce** maskeleme (unvan/tutar kalır, kişi adı/telefon maskelenebilir); zero-data-retention seçenekli sağlayıcı/geçit tercihi.
+### 9.1 Risk Scoring (v1) — rules → ML
+
+- **Version 0 (rules):** Weighted score: historical average days-late,
+  delinquency trend, open-balance-to-historical-revenue ratio, partial-payment
+  habits, invoice size. Transparent, explainable, works from day one.
+- **Version 1 (ML):** Once enough labeled data accumulates (actual payment
+  dates serve as the natural label), gradient boosting (XGBoost/LightGBM-style)
+  predicts "probability of payment within X days." Daily batch job; no
+  real-time service needed.
+- **The LLM's role:** Not to **produce** the score, but to explain it ("This
+  customer has averaged 22 days late over the last 6 months; risk is rising
+  because...").
+
+### 9.2 Cash-Flow Forecasting (v1)
+
+- **Version 0:** Deterministic: open invoices × (due date + the customer's
+  historical average lateness) → expected inflow over 30/60/90 days;
+  optimistic/pessimistic band.
+- **Version 1:** Probabilistic forecast using a per-customer payment-date
+  distribution (survival analysis or quantile regression).
+- The forecast is always presented **alongside the bank balance** (forecast +
+  current cash = an actionable table).
+
+### 9.3 Dunning Personalization (templates in MVP, LLM in v1)
+
+- **MVP:** Hand-written templates with variables (a 3-4 step cadence graded
+  from gentle to firm tone). Turkish commercial-courtesy conventions carry
+  the product's "don't damage the relationship" promise — these templates are
+  written carefully by the founder.
+- **v1:** The LLM adapts the template to the customer's context
+  (relationship length, amount, past tone, industry). Every message passes a
+  **pre-send rule check** (no legal threats, no intimidation, amount/date
+  accuracy against the template). Optional "approve before sending" mode.
+- **Feedback loop:** Open/click/paid events measure which tone + channel +
+  cadence works; simple A/B testing first, then automated optimization.
+
+### 9.4 Cold-Start Strategy
+
+1. **Day 0:** Rule-based score + deterministic forecast — requires no data,
+   works for the very first customer.
+2. **Historical backfill during onboarding:** The last 12-24 months of
+   invoices and payments are pulled from GİB/CSV → the customer sees a
+   meaningful score based on their own historical behavior **within the
+   first week**.
+3. **Industry priors:** Once enough tenants accumulate, anonymized
+   sector averages (e.g. typical delinquency in manufacturing is X days)
+   become the prior for new tenants (ASSUMPTION — KVKK-compliant
+   anonymization is designed under Section 10).
+4. **Threshold for moving to ML:** ~50+ tenants and tens of thousands of
+   closed invoices; no ML investment is made before that.
 
 ---
 
-## 11. İş Modeli & Fiyatlama
+## 10. Security & Data Protection (KVKK)
 
-### Paketler (aylık / yıllık — yıllıkta ~2 ay bedava)
+**Privacy & security by design** from day one — for a product handling
+financial data, trust is the feature itself.
 
-| Paket | Aylık | Yıllık | İçerik |
+- **Data minimization:** Only fields necessary for collection (invoice
+  header, amount, due date, customer contact info). Invoice line-item detail
+  is not pulled/stored unless needed.
+- **Encryption:** TLS 1.2+ in transit; disk encryption at rest + application-
+  layer (envelope) encryption for sensitive fields (API keys, bank tokens).
+- **Access control:** Multi-tenant isolation enforces `tenant_id` on every
+  query (also enforced at the DB layer via Postgres RLS); role-based access
+  (owner/accountant/read-only); all access is written to an audit log.
+- **KVKK (Turkish data-protection law) compliance:** VERBİS registration;
+  privacy notice; a data-processing agreement (DPA) with customers as data
+  processor; the legal basis for processing customer contact data (legitimate
+  interest — commercial debt collection) is documented in writing
+  (ASSUMPTION — a KVKK expert's opinion is obtained before launch; the
+  one-time consulting cost is listed as an OPTIONAL line item).
+- **İYS (Turkey's Message Management System):** Compliance for commercial
+  electronic messages; the legal nature of a B2B collection reminder (not a
+  marketing message, but a contractual notice) is clarified with a written
+  legal opinion (ASSUMPTION).
+- **Retention policy:** Data is deleted/anonymized within X days of contract
+  end (default 90 days — ASSUMPTION); statutory retention periods (Turkish
+  Tax Procedure Law, VUK) are kept separate; customers have a "download my
+  data + delete" right from the panel.
+- **Operational security:** Secrets live in an environment-variable vault
+  (never in the repo); dependency scanning (Dependabot); backups + restore
+  testing; a simple incident-response runbook.
+- **AI-specific:** Personal data is masked **before** being sent to the LLM
+  provider (name/amount stay, personal name/phone can be masked); preference
+  for a provider/gateway with a zero-data-retention option.
+
+---
+
+## 11. Business Model & Pricing
+
+### Plans (monthly / annual — annual billing gets you ~2 months free)
+
+| Plan | Monthly | Annual | Includes |
 |---|---|---|---|
-| **Başlangıç** | $12 | $120 | Otomatik hatırlatma (e-posta) + DSO panosu |
-| **Profesyonel** | $24 | $240 | + Çok kanallı dunning (WhatsApp/SMS) + ödeme linki |
-| **İşletme** | $48 | $480 | + Risk skoru + 30/60/90 nakit akışı tahmini |
+| **Starter** | $12 | $120 | Automatic reminders (email) + DSO dashboard |
+| **Professional** | $24 | $240 | + Multi-channel dunning (WhatsApp/SMS) + payment link |
+| **Business** | $48 | $480 | + Risk score + 30/60/90-day cash-flow forecast |
 
-- Mesajlaşma **pass-through kontör** modeliyle ayrıca ücretlendirilir (paketle gelen kontör + aşım satışı) — marjı korur.
-- Harmanlanmış **ARPU baz senaryo ~$20/ay**.
-- Yıllık paket nakit akışını öne çeker ve churn'ü yapısal olarak düşürür; satışta varsayılan teklif yıllıktır.
+- Messaging is billed separately on a **pass-through credit** model (bundled
+  plan credits + overage top-ups) — this protects margin.
+- Blended **base-case ARPU is ~$20/month**.
+- Annual plans pull cash forward and structurally lower churn; the default
+  offer at sale time is annual.
 
-### Gelir Kademeleri (ARPU ~$20/ay baz)
+### Revenue Tiers (base case ARPU ~$20/month)
 
-| Ödeyen müşteri | ARR |
+| Paying customers | ARR |
 |---|---|
-| 5 | $1.200 |
-| 10 | $2.400 |
-| 25 | $6.000 |
-| 50 | $12.000 |
-| 100 | $24.000 |
-| 250 | $60.000 |
-| 500 | $120.000 |
-| 1.000 | $240.000 |
+| 5 | $1,200 |
+| 10 | $2,400 |
+| 25 | $6,000 |
+| 50 | $12,000 |
+| 100 | $24,000 |
+| 250 | $60,000 |
+| 500 | $120,000 |
+| 1,000 | $240,000 |
 
-**ARPU duyarlılığı (500 müşteride):** düşük $13 → $78K; baz $20 → $120K; yüksek $33 → $198K ARR. (Yüksek senaryo, İşletme paketinin payının artması + kontör gelirleriyle ulaşılabilir.)
+**ARPU sensitivity (at 500 customers):** low $13 → $78K; base $20 → $120K;
+high $33 → $198K ARR. (The high scenario is reachable via a larger share of
+Business-plan customers plus credit revenue.)
 
-### ROI Hikayesi (satış anlatısının çekirdeği)
+### ROI Story (the core of the sales narrative)
 
-- Aylık $50K cirolu, DSO'su 75 gün olan bir KOBİ'de **DSO'nun 10 gün düşmesi ≈ ~$16-17K nakdin kalıcı olarak öne çekilmesi** demektir (10/30 × aylık ciro). Yıllık $240-480'lık abonelik, serbest kalan nakdin kredi maliyetinden (TR'de ticari kredi faizi dikkate alındığında) yüzlerce kat küçüktür.
-- Mesaj: *"Yılda araba parası faiz maliyetinden kurtulmak için ayda bir yemek parası."*
-- Bu hesap panoda müşteriye **kendi verisiyle** gösterilir ("bu ay sizin için öne çektiğimiz nakit: $X") — elde tutmanın (retention) ana mekanizması.
+- For an SME with $50K/month revenue and a 75-day DSO, **a 10-day drop in
+  DSO ≈ ~$16-17K of cash pulled forward, permanently** (10/30 × monthly
+  revenue). The $240-480 annual subscription is hundreds of times smaller
+  than the cost of that freed-up cash if borrowed (given Turkish commercial
+  loan interest rates).
+- Message: *"A dinner's worth per month, to skip a year's worth of interest
+  on a car."*
+- This calculation is shown to the customer on the dashboard, using **their
+  own data** ("cash pulled forward for you this month: $X") — the primary
+  retention mechanism.
 
 ---
 
-## 12. Maliyet & Birim Ekonomi
+## 12. Cost & Unit Economics
 
-> **İşgücü/maaş hariçtir** — erken aşama solo kurucu / sweat equity. Aşağıdaki tüm rakamlar salt altyapı+servis maliyetidir.
+> **Labor/salary is excluded** — early-stage solo-founder / sweat-equity
+> assumption. All figures below are pure infrastructure + service cost.
 
-### Maliyet Grupları
+### Cost Groups
 
-| Grup | Kalemler | Davranış |
+| Group | Line items | Behavior |
 |---|---|---|
-| **SABİT** | Bulut/barındırma, yönetilen veritabanı, izleme (Sentry), alan adı, geliştirme araçları, e-posta altyapı taban ücreti | Müşteri sayısından bağımsız, öngörülebilir |
-| **DEĞİŞKEN** | AI/LLM API çağrıları, WhatsApp/SMS mesaj maliyeti, entegratör API kullanım ücretleri | Kullanımla artar; mesajlaşma kısmı **müşteriye pass-through** |
-| **İSTEĞE BAĞLI** | Pazarlama (reklam, içerik, etkinlik), tek seferlik hukuk/KVKK danışmanlığı | Bilinçli karar; kapatılabilir |
+| **FIXED** | Cloud/hosting, managed database, monitoring (Sentry), domain, dev tools, email infrastructure base fee | Independent of customer count, predictable |
+| **VARIABLE** | AI/LLM API calls, WhatsApp/SMS message cost, integrator API usage fees | Scales with usage; the messaging portion is **passed through to the customer** |
+| **OPTIONAL** | Marketing (ads, content, events), one-time legal/KVKK consulting | A deliberate choice; can be turned off |
 
-### Faz Bazlı Maliyet
+### Cost by Phase
 
-| Faz | Aylık | Yıllık | Not |
+| Phase | Monthly | Annual | Note |
 |---|---|---|---|
-| **Erken (~50-100 müşteri)** | ~$200-600 | ~$2.400-7.200 | Pazarlama hariç |
-| **Ölçek (~500 müşteri)** | ~$2.200-6.000 | ~$26.000-72.000 | Pazarlama dahil; salt operasyon ~$1.100-2.800/ay |
+| **Early (~50-100 customers)** | ~$200-600 | ~$2,400-7,200 | Excludes marketing |
+| **Scale (~500 customers)** | ~$2,200-6,000 | ~$26,000-72,000 | Includes marketing; pure operations only ~$1,100-2,800/mo |
 
-### Birim Ekonomi
+### Unit Economics
 
-- Mesajlaşma birim maliyetleri: **WhatsApp bildirim ~$0,0006/adet, SMS ~$0,011/adet** — kontör modeliyle müşteriye yansıtıldığı için marjı aşındırmaz.
-- **Brüt marj: ~%75-85** (klasik SaaS bandı; en büyük değişken kalem LLM çağrıları, o da mesaj başına şablon+uyarlama ile sınırlı tutulur).
-- **Nakit başabaş:** Erken fazda **~15-30 ödeyen müşteri** (ARPU $20 × 15-30 ≈ $300-600 ≈ erken faz aylık maliyet). Ölçek fazında pazarlama dahil **~110-300 müşteri**.
-- Kur riski notu: maliyetler ağırlıkla USD, gelir TL tahsil edilebilir — fiyat listesi USD'ye endekslenir (bkz. Bölüm 15).
-
----
-
-## 13. GTM / Dağıtım
-
-**Ana ilke: PLG (ürün odaklı büyüme) + iki kaldıraç: e-fatura kancası ve mali müşavir kanalı.**
-
-1. **E-fatura kancası (zamanlama silahı):** Kâğıt fatura yasağı yürürlükte; her KOBİ zorunlu olarak dijital fatura kesiyor. Mesaj: *"Zorunlu e-faturaya geçtiniz; o veri artık sizin için para toplayabilir."* Uyum söylemini tahsilat değerine bağlayan içerik (SEO: "e-fatura tahsilat", "DSO nasıl düşürülür", "alacak takibi programı") ilk günden üretilir.
-2. **İlk 15-20 mülakat = ilk satış hattı:** Mülakat yapılan KOBİ'lerin en ağrılıları ücretsiz pilota, pilot başarılıları ilk ödeyenlere dönüştürülür (mülakat → pilot → referans zinciri).
-3. **Ücretsiz pilot → ilk ödeyenler:** 2-4 hafta, gerçek veriyle, tek başarı ölçütü baştan yazılı: "pilotta en az X fatura tahsilatı hızlandı / DSO şu kadar düştü." Pilot bitiminde panoda kendi ROI'sini gören müşteriye yıllık paket teklif edilir.
-4. **Mali müşavir kanalı:** Bir müşavir 20-50 mükellef demektir. Müşavire çoklu-müşteri görünürlüğü (v2) + tavsiye komisyonu (ör. ilk yıl %20 — VARSAYIM). Türkiye'de KOBİ yazılım kararında müşavir tavsiyesi en güçlü tetikleyicidir.
-5. **Self-servis PLG hattı:** CSV yükle → 5 dakikada aging + DSO panonu ücretsiz gör ("ücretsiz DSO analizi" olarak da pazarlanabilir) → hatırlatma göndermek için ücretli pakete geç. Değeri kartsız göster, iş akışını paraya bağla.
-6. **Aşama 2 kanalları:** Ön muhasebe marketplace'leri (Paraşüt/Logo ekosistemi), sektör dernekleri/OSB'ler, fatura finansmanı ortaklıkları.
+- Messaging unit costs: **WhatsApp notification ~$0.0006/message, SMS
+  ~$0.011/message** — passed through to the customer via the credit model,
+  so margin isn't eroded.
+- **Gross margin: ~75-85%** (typical SaaS range; the largest variable line
+  is LLM calls, which is kept bounded by limiting template+adaptation to
+  once per message).
+- **Cash break-even:** In the early phase, **~15-30 paying customers**
+  (ARPU $20 × 15-30 ≈ $300-600 ≈ early-phase monthly cost). At scale, with
+  marketing included, **~110-300 customers**.
+- Currency-risk note: costs are mostly USD, revenue is collected in TRY —
+  the price list is indexed to USD (see Section 15).
 
 ---
 
-## 14. Metrikler / KPI
+## 13. Go-To-Market / Distribution
 
-| Metrik | Tanım | Hedef |
+**Core principle: PLG (product-led growth) + two levers: the e-invoice hook
+and the accountant channel.**
+
+1. **The e-invoice hook (a timing weapon):** The paper-invoice ban is in
+   effect; every SME is now issuing digital invoices, mandatorily. Message:
+   *"You've already switched to mandatory e-invoicing; that data can now earn
+   you money."* Content that links compliance messaging to collection value
+   (SEO: "e-invoice collections," "how to lower DSO," "receivables tracking
+   software") is produced from day one.
+2. **The first 15-20 interviews = the first sales pipeline:** The SMEs with
+   the biggest pain from the interviews convert into free pilots; successful
+   pilots convert into first paying customers (interview → pilot → reference
+   chain).
+3. **Free pilot → first paying customers:** 2-4 weeks, with real data, with a
+   single success metric written down up front: "at least X invoices were
+   collected faster in the pilot / DSO dropped by this much." At the end of
+   the pilot, the customer — seeing their own ROI on the dashboard — is
+   offered an annual plan.
+4. **The accountant channel:** One accountant means 20-50 clients. Give
+   accountants multi-client visibility (v2) + a referral commission (e.g.
+   20% in year one — ASSUMPTION). In Turkey, an accountant's recommendation
+   is the strongest trigger in an SME's software decision.
+5. **The self-serve PLG funnel:** Upload a CSV → see aging + a DSO dashboard
+   free in 5 minutes (can also be marketed as a "free DSO analysis") →
+   upgrade to a paid plan to send reminders. Show the value without a card,
+   gate the workflow behind payment.
+6. **Phase 2 channels:** Basic-accounting-software marketplaces
+   (Parasut/Logo ecosystem), industry associations/organized industrial
+   zones, invoice-financing partnerships.
+
+---
+
+## 14. Metrics / KPIs
+
+| Metric | Definition | Target |
 |---|---|---|
-| **DSO azalması** | Müşteri bazında, başlangıca göre ortalama tahsil süresi düşüşü | >10 gün (Aşama 1 eşiği) — ürünün varlık nedeni |
-| **Tahsilat oranı** | Hatırlatma sonrası X gün içinde kapanan fatura oranı | Kadans bazında sürekli iyileşme |
-| **Aktivasyon** | Kayıt → ilk 7 günde veri bağlanmış + ilk hatırlatma gönderilmiş | >%60 (VARSAYIM) |
-| **Aylık churn** | İptal eden ödeyen müşteri oranı | <%5 (Aşama 1 eşiği) |
-| **MRR / ARR** | Aylık/yıllık yinelenen gelir + kontör geliri ayrı izlenir | Bölüm 11 kademeleri |
-| **CAC** | Kanal bazında müşteri edinme maliyeti | CAC geri ödeme <6 ay (VARSAYIM) |
-| **NRR** | Net gelir tutundurma (paket yükseltme + kontör dahil) | >%100 hedefi (İşletme paketine yükselme ile) |
-| **Mesaj performansı** | Kanal bazında açılma/tıklanma/ödemeye dönüşme | WhatsApp-öncelikli stratejinin sürekli testi |
+| **DSO reduction** | Per-customer drop in average collection time vs. baseline | >10 days (Phase 1 threshold) — the product's reason for existing |
+| **Collection rate** | Share of invoices closed within X days of a reminder | Continuous improvement per cadence |
+| **Activation** | Signup → data connected + first reminder sent within 7 days | >60% (ASSUMPTION) |
+| **Monthly churn** | Share of paying customers who cancel | <5% (Phase 1 threshold) |
+| **MRR / ARR** | Monthly/annual recurring revenue + credit revenue tracked separately | Per Section 11 tiers |
+| **CAC** | Customer acquisition cost, by channel | CAC payback <6 months (ASSUMPTION) |
+| **NRR** | Net revenue retention (including plan upgrades + credits) | >100% target (via upgrades to the Business plan) |
+| **Message performance** | Open/click/pay-conversion rate, by channel | Continuous testing of the WhatsApp-first strategy |
 
-Kuzey Yıldızı Metriği: **"Müşteriler için öne çekilen toplam nakit ($)"** — hem ürün başarısını hem satış anlatısını tek sayıda birleştirir.
+North Star Metric: **"Total cash pulled forward for customers ($)"** — it
+combines both product success and the sales narrative into a single number.
 
 ---
 
-## 15. Riskler & Azaltımlar
+## 15. Risks & Mitigations
 
-| Risk | Etki | Azaltım |
+| Risk | Impact | Mitigation |
 |---|---|---|
-| **GİB/entegratör entegrasyon eforu** beklenenden ağır | MVP gecikir | CSV/XML import fallback ile canlıya çık; entegratör API'sini paralel yürüt; tek entegratörle başla. |
-| **Açık bankacılık erişimi** lisans/ortaklık gerektirir | Ödeme eşleştirme manuel kalır | Ekstre dosyası yükleme + yarı-manuel eşleştirme MVP'de yeterli; lisanslı TPP ortaklığı Aşama 1-2'de. |
-| **KVKK/İYS uyumsuzluğu** | Ceza + itibar | Bölüm 10 tasarımı ilk günden; lansman öncesi tek seferlik hukuki görüş; hatırlatmaların "sözleşmesel bildirim" niteliğinin yazılı tespiti. |
-| **Rakip tepkisi** (Paraşüt/Logo/Mikro benzer modül ekler) | Kanal + pazar daralır | "Tamamlayıcı" konumu koru; ödeme davranışı veri birikimini ve çok-kaynaklı (tüm yazılımlarla çalışan) yapıyı hendek yap; ortaklıkları erken bağla. |
-| **Kur riski** (maliyet USD, gelir TL) | Marj erimesi | Fiyat listesi USD'ye endeksli (TL tahsil edilse bile kur güncellenir); yıllık ön ödeme kur tamponu yaratır. |
-| **Metodoloji riski** (dunning DSO'yu ölçülebilir düşürmezse) | Değer önerisi çöker | Pilotlarda önce/sonra ölçüm disiplini; kadans A/B testleri; Aşama 1 eşiği tutmazsa GERİ DÖNÜŞ kriteri işletilir. |
-| **"İlişki bozulur" algısı** ürün kullanımını frenler | Aktivasyon düşük | Nazik şablonlar + "göndermeden onayla" modu + mesajların KOBİ'nin kendi adından gitmesi. |
-| **Tek kurucu yoğunluğu** | Her şey darboğaz | Yönetilen servisler, modüler monolit, fallback-önce entegrasyon sırası — planın tamamı bu kısıta göre kurgulandı. |
-| **LLM sağlayıcı değişimi/fiyat artışı** | Değişken maliyet oynar | `AiProvider` soyutlaması + kural tabanlı fallback; AI kapansa da ürün çalışır. |
+| **GİB/integrator integration effort** heavier than expected | MVP delayed | Go live with a CSV/XML import fallback; run the integrator API in parallel; start with a single integrator. |
+| **Open banking access** requires a license/partnership | Payment matching stays manual | Statement-file upload + semi-manual matching is sufficient for the MVP; licensed TPP partnership in Phase 1-2. |
+| **KVKK/İYS non-compliance** | Fines + reputational damage | Section 10 design from day one; a one-time legal opinion before launch; written determination that reminders are "contractual notices." |
+| **Competitive reaction** (Parasut/Logo/Mikro add a similar module) | Channel + market shrinks | Maintain the "complementary" position; make accumulated payment-behavior data and multi-source compatibility (works with all accounting software) the moat; lock in partnerships early. |
+| **Currency risk** (costs in USD, revenue in TRY) | Margin erosion | Price list indexed to USD (updated with the exchange rate even when collected in TRY); annual prepayment creates a currency buffer. |
+| **Methodology risk** (dunning doesn't measurably lower DSO) | Value proposition collapses | Disciplined before/after measurement in pilots; cadence A/B tests; the PIVOT/KILL criterion applies if the Phase 1 threshold isn't met. |
+| **"Damages the relationship" perception** slows adoption | Low activation | Gentle templates + "approve before sending" mode + messages sent from the SME's own name. |
+| **Solo-founder bottleneck** | Everything bottlenecks on one person | Managed services, modular monolith, fallback-first integration order — the whole plan is designed around this constraint. |
+| **LLM provider change/price increase** | Variable cost swings | The `AiProvider` abstraction + rule-based fallback; the product works even if AI is disabled. |
 
 ---
 
-## 16. Doğrulama Adımları (kurucu için yapılacaklar — iddia değil, kontrol listesi)
+## 16. Validation Steps (a checklist for the founder — not a claim)
 
-- [ ] **"Rakip yok" tezini teyit et:** Startups.watch ve Crunchbase'de "accounts receivable", "tahsilat", "dunning", "cash flow forecasting" + Türkiye filtresiyle tarama yap; son 24 ayın tohum yatırımlarını kontrol et.
-- [ ] **GİB özel entegratör listesini tara:** GİB'in güncel özel entegratör listesinden 3-5 adayın (eLogo, Sovos/Foriba, Uyumsoft, İzibiz vb.) API dokümantasyonu, veri erişim koşulları ve fiyatlarını iste; "mükellef adına gelen/giden fatura çekme" yetkisinin sözleşmesel çerçevesini öğren.
-- [ ] **GİB tebliğlerini birincil kaynaktan doğrula:** Kâğıt fatura yasağının kapsamını (hangi mükellef grupları, istisnalar) gib.gov.tr üzerindeki VUK Genel Tebliğlerinden teyit et; pazarlama metinlerinde tebliğ numarasıyla atıf yap.
-- [ ] **TCMB 75 gün verisini kaynağıyla arşivle** (sektör raporu/istatistik linki) — satış sunumunda birincil kaynak göster.
-- [ ] **Açık bankacılık erişim modelini netleştir:** BKM/TCMB çerçevesinde hesap bilgisi hizmeti için lisans mı, lisanslı iş ortağı mı gerektiğini öğren (bir fintech hukukçusuyla 1 saatlik görüşme yeterli).
-- [ ] **İYS/KVKK ön görüş al:** B2B tahsilat hatırlatmasının ticari elektronik ileti sayılıp sayılmadığına dair yazılı görüş.
-- [ ] **Mikro "Tahsildar" ve Figopara'yı ürün olarak dene/incele:** Gerçek özellik setlerini birinci elden görüp konumlandırma tablosunu güncelle.
-- [ ] **15-20 KOBİ mülakatını tamamla** ve şu üç hipotezi test et: (1) "ilişki bozulur" korkusu gerçek mi, (2) $12-48/ay ödeme istekliliği var mı, (3) veri bağlama (GİB/CSV) zahmetine katlanırlar mı.
+- [ ] **Confirm the "no competitors" thesis:** Search Startups.watch and
+  Crunchbase for "accounts receivable," "collections," "dunning," "cash flow
+  forecasting" + a Turkey filter; check seed rounds from the last 24 months.
+- [ ] **Scan the GİB private-integrator list:** Request API documentation,
+  data-access terms, and pricing from 3-5 candidates on GİB's current
+  private-integrator list (eLogo, Sovos/Foriba, Uyumsoft, İzibiz, etc.);
+  learn the contractual framework for "pulling invoices in/out on behalf of a
+  taxpayer" authorization.
+- [ ] **Verify the GİB communiqués from the primary source:** Confirm the
+  scope of the paper-invoice ban (which taxpayer groups, exceptions) against
+  the VUK General Communiqués on gib.gov.tr; cite the communiqué number in
+  marketing copy.
+- [ ] **Archive the CBRT 75-day figure with its source** (sector
+  report/statistics link) — show a primary source in the sales deck.
+- [ ] **Clarify the open-banking access model:** Find out whether account-
+  information services under the BKM/CBRT framework require a license or a
+  licensed partner (a 1-hour call with a fintech lawyer should suffice).
+- [ ] **Get a preliminary İYS/KVKK opinion:** A written opinion on whether a
+  B2B collection reminder counts as a commercial electronic message.
+- [ ] **Try/review Mikro "Tahsildar" and Figopara as products:** See their
+  actual feature sets firsthand and update the positioning table.
+- [ ] **Complete the 15-20 SME interviews** and test three hypotheses: (1) is
+  the "damages the relationship" fear real, (2) is there willingness to pay
+  $12-48/month, (3) will they tolerate the effort of connecting data
+  (GİB/CSV).
 
 ---
 
-## 17. Uygulama Sırası (Claude Code için — MVP görev listesi)
+## 17. Implementation Order (for Claude Code — MVP task list)
 
-Her görev tek oturumda tamamlanabilir büyüklükte; sıra bağımlılığa göre.
+Each task is sized to be completed in a single session; ordered by
+dependency.
 
-### Temel
+### Foundation
 
-- [ ] **T1 — Proje iskeleti:** Next.js (TypeScript) + PostgreSQL bağlantısı + ORM/migration altyapısı + Sentry; `AiProvider` arayüzünün boş iskeleti dahil.
-- [ ] **T2 — Kimlik & çok kiracılılık:** Kayıt/giriş, Hesap (tenant) + Kullanıcı modeli, rol bazlı yetki, tüm sorgularda tenant izolasyonu (RLS dahil).
-- [ ] **T3 — Çekirdek veri modeli:** Müşteri, Fatura, Ödeme, FaturaÖdemeEşleşme, Hatırlatma tablolarının migration'ları + temel CRUD API.
+- [ ] **T1 — Project scaffold:** Next.js (TypeScript) + PostgreSQL connection
+  + ORM/migration setup + Sentry; includes an empty scaffold for the
+  `AiProvider` interface.
+- [ ] **T2 — Auth & multi-tenancy:** Signup/login, Account (tenant) + User
+  model, role-based access, tenant isolation on every query (including RLS).
+- [ ] **T3 — Core data model:** Migrations + basic CRUD API for the
+  Customer, Invoice, Payment, InvoicePaymentMatch, and Reminder tables.
 
-### Veri Girişi
+### Data Entry
 
-- [ ] **T4 — CSV/Excel fatura import:** Şablon dosya + yükleme akışı + kolon eşleme ekranı + doğrulama/hata raporu; cari otomatik oluşturma.
-- [ ] **T5 — e-Arşiv/e-Fatura XML (UBL) import:** Entegratör portalından indirilen XML dosyalarını ayrıştırıp Fatura+Müşteri'ye normalize etme.
-- [ ] **T6 — Ödeme girişi:** Manuel ödeme kaydı + banka ekstresi (CSV) yükleme + faturayla yarı-manuel eşleştirme ekranı ("bu ödeme şu faturayı kapatıyor mu?").
+- [ ] **T4 — CSV/Excel invoice import:** Template file + upload flow + column
+  mapping screen + validation/error report; automatic customer creation.
+- [ ] **T5 — e-Archive/e-Invoice XML (UBL) import:** Parse XML files
+  downloaded from the integrator portal and normalize them into
+  Invoice+Customer.
+- [ ] **T6 — Payment entry:** Manual payment recording + bank statement (CSV)
+  upload + a semi-manual invoice-matching screen ("does this payment close
+  this invoice?").
 
-### Dunning Motoru (MVP çekirdeği)
+### Dunning Engine (MVP core)
 
-- [ ] **T7 — Kadans kural motoru:** Vadeye göre hatırlatma planlama (vade-3g / vade günü / +7g / +15g), tenant bazında özelleştirilebilir kurallar, zamanlanmış iş (cron) ile günlük plan üretimi.
-- [ ] **T8 — E-posta gönderimi:** İşlemsel e-posta API entegrasyonu, Türkçe nazik→kararlı şablon seti (değişkenli), gönderim + açılma/tıklama webhook'larının Hatırlatma durumuna işlenmesi.
-- [ ] **T9 — "Göndermeden onayla" modu + gönderim günlüğü:** Bekleyen hatırlatmalar kuyruğu, tek tık onay/düzenle/atla; immutable olay logu.
-- [ ] **T10 — WhatsApp kopyala-gönder fallback'i:** Onaylı BSP entegrasyonu öncesi, hazır mesajı wa.me linki + panoya kopyala ile kullanıcıya sunma.
+- [ ] **T7 — Cadence rule engine:** Reminder scheduling based on due date
+  (due-3d / due date / +7d / +15d), tenant-customizable rules, daily
+  scheduled-job (cron) plan generation.
+- [ ] **T8 — Email sending:** Transactional email API integration, a
+  Turkish gentle-to-firm template set (with variables), recording send +
+  open/click webhooks against Reminder status.
+- [ ] **T9 — "Approve before sending" mode + send log:** A pending-reminders
+  queue, one-click approve/edit/skip, an immutable event log.
+- [ ] **T10 — WhatsApp copy-and-send fallback:** Before a fully approved BSP
+  integration, offer the user a ready-made message via a wa.me link + copy
+  to clipboard.
 
-### Pano
+### Dashboard
 
-- [ ] **T11 — DSO panosu:** DSO hesabı + trendi, alacak yaşlandırma (aging) tablosu, en riskli 10 fatura/müşteri listesi.
-- [ ] **T12 — "Öne çekilen nakit" göstergesi:** Hatırlatma sonrası erken kapanan faturalardan ROI göstergesi (Kuzey Yıldızı metriği panoda).
+- [ ] **T11 — DSO dashboard:** DSO calculation + trend, receivables aging
+  table, list of the 10 riskiest invoices/customers.
+- [ ] **T12 — "Cash pulled forward" indicator:** An ROI indicator from
+  invoices closed earlier thanks to reminders (the North Star metric on the
+  dashboard).
 
-### Ticarileştirme
+### Commercialization
 
-- [ ] **T13 — Paket & abonelik:** 3 paket (aylık/yıllık), ödeme sağlayıcı aboneliği (iyzico/PayTR — VARSAYIM), paket bazlı özellik kapıları (feature flags).
-- [ ] **T14 — Onboarding akışı:** Kayıt → CSV/XML yükle → 5 dakikada ilk DSO panosu → ilk kadansı kur sihirbazı; aktivasyon olay takibi (analytics).
-- [ ] **T15 — KVKK temelleri:** Aydınlatma metni sayfaları, iletişim izni alanları, veri indir/sil uçları, saklama politikası job'ı.
-- [ ] **T16 — Lansman hazırlığı:** Basit pazarlama sayfası (e-fatura kancası mesajıyla), demo tenant + örnek veri, pilot başvuru formu.
+- [ ] **T13 — Plans & subscriptions:** 3 plans (monthly/annual), payment
+  provider subscription (iyzico/PayTR — ASSUMPTION), plan-based feature
+  gates.
+- [ ] **T14 — Onboarding flow:** Signup → upload CSV/XML → first DSO
+  dashboard in 5 minutes → cadence setup wizard; activation event tracking
+  (analytics).
+- [ ] **T15 — KVKK foundations:** Privacy-notice pages, consent fields,
+  download/delete-data endpoints, a retention-policy job.
+- [ ] **T16 — Launch readiness:** A simple marketing page (with the
+  e-invoice-hook message), a demo tenant + sample data, a pilot-application
+  form.
 
-> v1 görevleri (risk skoru, nakit tahmini, WhatsApp BSP, ödeme linki, açık bankacılık) **Aşama 1 karar eşikleri tutunca** ayrı bir görev listesi olarak planlanır — MVP listesine bilinçli olarak eklenmedi.
+> v1 tasks (risk score, cash forecast, WhatsApp BSP, payment link, open
+> banking) will be planned as a separate task list **once the Phase 1
+> decision thresholds are met** — deliberately not included in the MVP list.

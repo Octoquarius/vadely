@@ -1,6 +1,6 @@
-// Vadely marka işareti: çam çek/V + olgun altın sikke (rim + ışıltı detaylı).
-// Çek "currentColor" kullanır; kelime markasının rengini çağıran belirler.
-// Sikke sabit altın tonlarıyla her zemin üstünde çalışır.
+// Vadely brand mark: pine checkmark/V + mature gold coin (with rim + glint detail).
+// The checkmark uses "currentColor"; the caller determines the wordmark's color.
+// The coin works on any background with its fixed gold tones.
 
 export function VadelyMark({
   size = 28,

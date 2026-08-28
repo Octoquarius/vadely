@@ -57,7 +57,7 @@ export default async function OdemeDetaySayfasi({
   );
   const kalan = Number(odeme.tutar) - eslesmisToplam;
 
-  // Ödemenin müşterisi belliyse onun faturaları öne, diğerleri sonra
+  // If the payment's customer is known, put their invoices first, the rest after
   const siraliFaturalar = [...(acikFaturalar ?? [])].sort((a, b) => {
     if (!odeme.musteri_id) return 0;
     const aAyni = a.musteri_id === odeme.musteri_id ? 0 : 1;
@@ -72,22 +72,22 @@ export default async function OdemeDetaySayfasi({
           href="/panel/odemeler"
           className="text-sm text-zinc-500 hover:text-zinc-900"
         >
-          ← Ödemeler
+          ← Payments
         </Link>
         <h1 className="mt-1 text-2xl font-semibold text-zinc-900">
-          Ödeme detayı
+          Payment details
         </h1>
       </div>
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <div className="rounded-xl border border-zinc-200 bg-white p-4">
-          <p className="text-sm text-zinc-500">Tutar</p>
+          <p className="text-sm text-zinc-500">Amount</p>
           <p className="mt-1 text-xl font-semibold text-zinc-900">
             {paraFormat(Number(odeme.tutar))}
           </p>
         </div>
         <div className="rounded-xl border border-zinc-200 bg-white p-4">
-          <p className="text-sm text-zinc-500">Eşleşmemiş</p>
+          <p className="text-sm text-zinc-500">Unmatched</p>
           <p
             className={`mt-1 text-xl font-semibold ${
               kalan > 0 ? "text-amber-600" : "text-green-600"
@@ -97,13 +97,13 @@ export default async function OdemeDetaySayfasi({
           </p>
         </div>
         <div className="rounded-xl border border-zinc-200 bg-white p-4">
-          <p className="text-sm text-zinc-500">Tarih</p>
+          <p className="text-sm text-zinc-500">Date</p>
           <p className="mt-1 text-xl font-semibold text-zinc-900">
             {tarihFormat(odeme.odeme_tarihi)}
           </p>
         </div>
         <div className="rounded-xl border border-zinc-200 bg-white p-4">
-          <p className="text-sm text-zinc-500">Müşteri</p>
+          <p className="text-sm text-zinc-500">Customer</p>
           <p className="mt-1 truncate text-xl font-semibold text-zinc-900">
             {(odeme.musteriler as unknown as { unvan: string } | null)?.unvan ??
               "—"}
@@ -120,7 +120,7 @@ export default async function OdemeDetaySayfasi({
       {(eslesmeler ?? []).length > 0 && (
         <div className="rounded-xl border border-zinc-200 bg-white p-4">
           <h2 className="text-sm font-semibold text-zinc-900">
-            Eşleşen faturalar
+            Matched invoices
           </h2>
           <table className="mt-3 w-full text-left text-sm">
             <tbody>
@@ -152,7 +152,7 @@ export default async function OdemeDetaySayfasi({
                           type="submit"
                           className="text-sm text-red-600 hover:underline"
                         >
-                          Eşleşmeyi kaldır
+                          Remove match
                         </button>
                       </form>
                     </td>
@@ -167,20 +167,20 @@ export default async function OdemeDetaySayfasi({
       {kalan > 0 && (
         <div className="rounded-xl border border-zinc-200 bg-white p-4">
           <h2 className="text-sm font-semibold text-zinc-900">
-            Bu ödeme hangi faturayı kapatıyor?
+            Which invoice does this payment close?
           </h2>
           <p className="mt-1 text-sm text-zinc-500">
-            Açık faturalar vade sırasıyla listelendi
-            {odeme.musteri_id && "; ödemenin müşterisine ait olanlar en üstte"}.
+            Open invoices listed by due date
+            {odeme.musteri_id && "; those belonging to the payment's customer are shown first"}.
           </p>
           <table className="mt-3 w-full text-left text-sm">
             <thead className="border-b border-zinc-200 text-zinc-500">
               <tr>
-                <th className="py-2 font-medium">Fatura no</th>
-                <th className="py-2 font-medium">Müşteri</th>
-                <th className="py-2 font-medium">Vade</th>
-                <th className="py-2 font-medium">Kalan</th>
-                <th className="py-2 text-right font-medium">Eşleştir</th>
+                <th className="py-2 font-medium">Invoice no</th>
+                <th className="py-2 font-medium">Customer</th>
+                <th className="py-2 font-medium">Due date</th>
+                <th className="py-2 font-medium">Remaining</th>
+                <th className="py-2 text-right font-medium">Match</th>
               </tr>
             </thead>
             <tbody>
@@ -224,7 +224,7 @@ export default async function OdemeDetaySayfasi({
               {siraliFaturalar.length === 0 && (
                 <tr>
                   <td colSpan={5} className="py-6 text-center text-zinc-500">
-                    Açık fatura yok.
+                    No open invoices.
                   </td>
                 </tr>
               )}

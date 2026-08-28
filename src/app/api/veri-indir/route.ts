@@ -1,15 +1,15 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-// KVKK erişim/taşınabilirlik hakkı: oturumdaki kullanıcının tenant verisini
-// tek JSON dosyası olarak indirir. RLS sayesinde yalnızca kendi hesabının
-// verisi döner.
+// KVKK access/portability right: downloads the signed-in user's tenant data
+// as a single JSON file. Thanks to RLS, only their own account's data is
+// returned.
 export async function GET() {
   const supabase = await createClient();
 
   const { data } = await supabase.auth.getClaims();
   if (!data?.claims) {
-    return NextResponse.json({ hata: "oturum yok" }, { status: 401 });
+    return NextResponse.json({ hata: "no session" }, { status: 401 });
   }
 
   const [hesap, musteriler, faturalar, odemeler, eslesmeler, hatirlatmalar, gunluk] =
@@ -24,7 +24,7 @@ export async function GET() {
     ]);
 
   const disaAktarim = {
-    aciklama: "Vadely veri dışa aktarımı (KVKK erişim hakkı)",
+    aciklama: "Vadely data export (KVKK access right)",
     tarih: new Date().toISOString(),
     hesap: hesap.data,
     musteriler: musteriler.data ?? [],
@@ -38,7 +38,7 @@ export async function GET() {
   return new NextResponse(JSON.stringify(disaAktarim, null, 2), {
     headers: {
       "Content-Type": "application/json; charset=utf-8",
-      "Content-Disposition": `attachment; filename="vadely-veri-${new Date()
+      "Content-Disposition": `attachment; filename="vadely-data-${new Date()
         .toISOString()
         .slice(0, 10)}.json"`,
     },

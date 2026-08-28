@@ -1,6 +1,7 @@
-// Sağlayıcı-bağımsız e-posta gönderim katmanı.
-// Aktif sağlayıcı ortam değişkenleriyle seçilir; Resend yerine başka bir
-// servis (Postmark, SES...) eklemek = bu arayüzü uygulayan yeni bir nesne.
+// Provider-agnostic email sending layer.
+// The active provider is chosen via environment variables; adding another
+// service instead of Resend (Postmark, SES...) just means implementing this
+// interface with a new object.
 
 import "server-only";
 import type { EpostaIcerik } from "./sablonlar";
@@ -41,8 +42,8 @@ class ResendGonderici implements EpostaGonderici {
 
       if (!cevap.ok) {
         const govde = await cevap.text();
-        // Resend test modu: doğrulanmamış alan adı / onboarding@resend.dev ile
-        // yalnızca hesap sahibinin e-postasına gönderilebilir.
+        // Resend test mode: with an unverified domain / onboarding@resend.dev,
+        // sending only works to the account owner's own email address.
         if (
           cevap.status === 403 &&
           /verify a domain|testing emails|own email/i.test(govde)
@@ -50,9 +51,9 @@ class ResendGonderici implements EpostaGonderici {
           return {
             tamam: false,
             hata:
-              "Resend test modunda: yalnızca kendi e-postanıza gönderim yapılabiliyor. " +
-              "Müşterilere göndermek için resend.com/domains adresinde bir alan adı doğrulayın " +
-              "ve MAIL_FROM'u o alan adına ait bir adresle güncelleyin.",
+              "Resend is in test mode: you can only send to your own email address. " +
+              "To send to customers, verify a domain at resend.com/domains " +
+              "and update MAIL_FROM to an address on that domain.",
           };
         }
         return {
@@ -62,19 +63,19 @@ class ResendGonderici implements EpostaGonderici {
       }
 
       const veri = (await cevap.json()) as { id?: string };
-      return { tamam: true, mesajId: veri.id ?? "bilinmiyor" };
+      return { tamam: true, mesajId: veri.id ?? "unknown" };
     } catch (hata) {
       return {
         tamam: false,
-        hata: `Ağ hatası: ${hata instanceof Error ? hata.message : String(hata)}`,
+        hata: `Network error: ${hata instanceof Error ? hata.message : String(hata)}`,
       };
     }
   }
 }
 
 /**
- * Yapılandırılmış göndericiyi döndürür; RESEND_API_KEY tanımlı değilse null.
- * Çağıran taraf null durumunu kullanıcıya anlaşılır biçimde raporlamalı.
+ * Returns the configured sender; null if RESEND_API_KEY isn't set.
+ * The caller should report the null case to the user in a clear way.
  */
 export function gondericiOlustur(): EpostaGonderici | null {
   const apiAnahtari = process.env.RESEND_API_KEY;

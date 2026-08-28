@@ -27,10 +27,10 @@ export function AyarFormu({
             htmlFor="ad"
             className="block text-sm font-medium text-zinc-700"
           >
-            Şirket adı
+            Company name
           </label>
           <p className="text-xs text-zinc-500">
-            Hatırlatma e-postalarında imza olarak görünür.
+            Appears as the signature on reminder emails.
           </p>
           <input
             id="ad"
@@ -44,7 +44,7 @@ export function AyarFormu({
 
         <fieldset disabled={!duzenleyebilir}>
           <legend className="text-sm font-medium text-zinc-700">
-            Gönderim modu
+            Sending mode
           </legend>
           <div className="mt-2 space-y-3">
             <label className="flex items-start gap-3 text-sm">
@@ -57,12 +57,12 @@ export function AyarFormu({
               />
               <span>
                 <span className="font-medium text-zinc-900">
-                  Göndermeden önce onayla (önerilen)
+                  Approve before sending (recommended)
                 </span>
                 <br />
                 <span className="text-zinc-500">
-                  Hatırlatmalar planlanır ama siz &quot;Gönder&quot; demeden
-                  hiçbir müşteriye e-posta gitmez.
+                  Reminders are scheduled, but no email goes to any customer
+                  until you click &quot;Send&quot;.
                 </span>
               </span>
             </label>
@@ -75,12 +75,12 @@ export function AyarFormu({
                 className="mt-1"
               />
               <span>
-                <span className="font-medium text-zinc-900">Otomatik gönder</span>
+                <span className="font-medium text-zinc-900">Send automatically</span>
                 <br />
                 <span className="text-zinc-500">
-                  Zamanı gelen hatırlatmalar her sabah kendiliğinden gönderilir.
-                  (Bu mod, uygulama yayına alındığında etkinleşir; tercihiniz
-                  şimdiden kaydedilir.)
+                  Reminders are sent on their own each morning once they come
+                  due. (This mode activates once the app goes live; your
+                  preference is saved now.)
                 </span>
               </span>
             </label>
@@ -104,11 +104,11 @@ export function AyarFormu({
             disabled={bekliyor}
             className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
           >
-            {bekliyor ? "Kaydediliyor…" : "Kaydet"}
+            {bekliyor ? "Saving…" : "Save"}
           </button>
         ) : (
           <p className="text-sm text-zinc-500">
-            Ayarları yalnızca hesap sahibi değiştirebilir.
+            Only the account owner can change these settings.
           </p>
         )}
       </div>

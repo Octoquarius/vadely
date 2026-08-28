@@ -25,10 +25,10 @@ export async function odemeEkle(
   const musteriId = String(formData.get("musteri_id") ?? "");
 
   if (!Number.isFinite(tutar) || tutar <= 0) {
-    return { hata: "Tutar sıfırdan büyük olmalı." };
+    return { hata: "Amount must be greater than zero." };
   }
   if (!ISO_TARIH.test(odemeTarihi)) {
-    return { hata: "Geçerli bir ödeme tarihi seçin." };
+    return { hata: "Select a valid payment date." };
   }
 
   const { error } = await supabase.from("odemeler").insert({
@@ -39,7 +39,7 @@ export async function odemeEkle(
     kaynak: "manuel",
   });
 
-  if (error) return { hata: "Ödeme eklenemedi. Yetkinizi kontrol edin." };
+  if (error) return { hata: "Payment could not be added. Check your permissions." };
 
   sayfalariYenile();
   return {};
@@ -50,8 +50,8 @@ export async function odemeSil(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   if (!id) return;
 
-  // Eşleşmesi olan ödeme silinemez: önce eşleşmeler kaldırılmalı,
-  // yoksa fatura bakiyeleri tutarsız kalır.
+  // A payment that has matches cannot be deleted: matches must be removed
+  // first, otherwise invoice balances would become inconsistent.
   const { count } = await supabase
     .from("fatura_odeme_eslesmeleri")
     .select("id", { count: "exact", head: true })
@@ -74,7 +74,7 @@ export async function odemeEslestir(
   const tutar = Number(formData.get("tutar"));
 
   if (!odemeId || !faturaId || !Number.isFinite(tutar) || tutar <= 0) {
-    return { hata: "Geçerli bir tutar girin." };
+    return { hata: "Enter a valid amount." };
   }
 
   const { error } = await supabase.rpc("odeme_eslestir", {
@@ -84,12 +84,12 @@ export async function odemeEslestir(
   });
 
   if (error) {
-    // Fonksiyondaki raise exception mesajları kullanıcıya uygun (Türkçe)
-    return { hata: error.message || "Eşleştirme yapılamadı." };
+    // The raise exception messages from the database function are already user-facing
+    return { hata: error.message || "Could not complete the match." };
   }
 
   sayfalariYenile(odemeId);
-  return { mesaj: "Eşleştirildi." };
+  return { mesaj: "Matched." };
 }
 
 export async function eslesmeKaldir(formData: FormData) {
@@ -102,7 +102,7 @@ export async function eslesmeKaldir(formData: FormData) {
   sayfalariYenile(odemeId || undefined);
 }
 
-// ---- Banka ekstresi içe aktarma ----
+// ---- Bank statement import ----
 
 export type EkstreSatir = {
   odeme_tarihi: string; // ISO
@@ -120,12 +120,12 @@ export async function ekstreOdemeleriIceAktar(
   const bos: EkstreSonuc = { eklenen: 0, mukerrer: 0 };
 
   if (!Array.isArray(satirlar) || satirlar.length === 0) {
-    return { ...bos, hata: "Aktarılacak satır bulunamadı." };
+    return { ...bos, hata: "No rows found to import." };
   }
   if (satirlar.length > AZAMI_SATIR) {
     return {
       ...bos,
-      hata: `Tek seferde en fazla ${AZAMI_SATIR} satır aktarılabilir.`,
+      hata: `At most ${AZAMI_SATIR} rows can be imported at once.`,
     };
   }
 
@@ -138,19 +138,19 @@ export async function ekstreOdemeleriIceAktar(
       (satir.aciklama == null ||
         (typeof satir.aciklama === "string" && satir.aciklama.length <= 500));
     if (!gecerli) {
-      return { ...bos, hata: "Geçersiz satır var. Kolon eşlemesini kontrol edin." };
+      return { ...bos, hata: "Some rows are invalid. Check the column mapping." };
     }
   }
 
   const supabase = await createClient();
 
-  // Mükerrer sezgisi: aynı tarih + tutar + açıklama daha önce bankadan geldiyse atla
+  // Duplicate heuristic: skip if the same date + amount + description was already imported from the bank
   const { data: mevcutlar, error: okumaHata } = await supabase
     .from("odemeler")
     .select("odeme_tarihi, tutar, aciklama")
     .eq("kaynak", "banka");
   if (okumaHata) {
-    return { ...bos, hata: "Mevcut ödemeler okunamadı. Tekrar deneyin." };
+    return { ...bos, hata: "Could not read existing payments. Try again." };
   }
 
   const anahtar = (t: string, tu: number, a: string | null) =>
@@ -168,7 +168,7 @@ export async function ekstreOdemeleriIceAktar(
     if (mevcutAnahtarlar.has(k)) {
       mukerrer++;
     } else {
-      mevcutAnahtarlar.add(k); // dosya içi mükerrerler de yakalansın
+      mevcutAnahtarlar.add(k); // also catch duplicates within the file
       eklenecekler.push(satir);
     }
   }
@@ -186,7 +186,7 @@ export async function ekstreOdemeleriIceAktar(
       return {
         eklenen,
         mukerrer,
-        hata: `Ödemelerin bir kısmı eklenemedi (${eklenen}/${eklenecekler.length} eklendi).`,
+        hata: `Some payments could not be added (${eklenen}/${eklenecekler.length} added).`,
       };
     }
     eklenen += parca.length;

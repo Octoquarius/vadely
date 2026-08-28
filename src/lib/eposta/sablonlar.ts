@@ -1,17 +1,18 @@
-// Tahsilat hatırlatması e-posta şablonları.
-// Ton kademesi: nazik ön hatırlatma -> bilgilendirici vade günü ->
-// nazik gecikme -> kararlı (ama asla tehditkâr olmayan) gecikme.
-// Bu metinler ürünün "ilişkiyi bozmadan tahsilat" vaadinin kendisidir.
+// Collection reminder email templates.
+// Tone progression: gentle pre-reminder -> informative due-date notice ->
+// gentle overdue -> firm (but never threatening) overdue.
+// This copy IS the product's "collection without damaging the relationship"
+// promise.
 
 export type SablonGirdisi = {
-  gonderenUnvan: string; // hatırlatmayı gönderen şirket (tenant)
+  gonderenUnvan: string; // the company (tenant) sending the reminder
   musteriUnvan: string;
   faturaNo: string;
   faturaTarihi: string; // ISO
   vadeTarihi: string; // ISO
   kalanBakiye: number;
   paraBirimi: string;
-  gecikmeGunu: number; // negatif: vadeye kalan gün
+  gecikmeGunu: number; // negative: days remaining until due
 };
 
 export type EpostaIcerik = {
@@ -32,16 +33,17 @@ function paraFormat(tutar: number, paraBirimi: string): string {
 }
 
 function tarihFormat(iso: string): string {
-  return new Date(`${iso}T00:00:00`).toLocaleDateString("tr-TR", {
+  return new Date(`${iso}T00:00:00`).toLocaleDateString("en-GB", {
     day: "numeric",
     month: "long",
     year: "numeric",
   });
 }
 
-// Müşteri unvanı / fatura no gibi kullanıcı verileri HTML gövdeye gömülmeden
-// önce kaçırılır (bozuk render / enjeksiyon önlenir). Düz metin sürümü
-// paragraflardan etiket sökerek üretildiği için orada varlıklar geri çözülür.
+// User data such as customer name / invoice number is escaped before being
+// embedded in the HTML body (prevents broken rendering / injection). The
+// plain-text version is produced by stripping tags from the paragraphs, so
+// entities are unescaped again there.
 function htmlKac(deger: string): string {
   return deger
     .replace(/&/g, "&amp;")
@@ -69,31 +71,31 @@ function htmlSar(girdi: SablonGirdisi, paragraflar: string[]): string {
     .join("\n");
 
   return `<!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <body style="margin:0;padding:24px;background-color:#fafafa;font-family:Arial,Helvetica,sans-serif;">
   <div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #e4e4e7;border-radius:12px;padding:32px;">
     ${satirlar}
     <table style="width:100%;margin:8px 0 20px 0;border-collapse:collapse;font-size:14px;color:#27272a;">
       <tr>
-        <td style="padding:6px 0;color:#71717a;">Fatura no</td>
+        <td style="padding:6px 0;color:#71717a;">Invoice no</td>
         <td style="padding:6px 0;text-align:right;font-weight:bold;">${htmlKac(girdi.faturaNo)}</td>
       </tr>
       <tr>
-        <td style="padding:6px 0;color:#71717a;">Fatura tarihi</td>
+        <td style="padding:6px 0;color:#71717a;">Invoice date</td>
         <td style="padding:6px 0;text-align:right;">${tarihFormat(girdi.faturaTarihi)}</td>
       </tr>
       <tr>
-        <td style="padding:6px 0;color:#71717a;">Vade tarihi</td>
+        <td style="padding:6px 0;color:#71717a;">Due date</td>
         <td style="padding:6px 0;text-align:right;">${tarihFormat(girdi.vadeTarihi)}</td>
       </tr>
       <tr>
-        <td style="padding:6px 0;color:#71717a;border-top:1px solid #e4e4e7;">Kalan tutar</td>
+        <td style="padding:6px 0;color:#71717a;border-top:1px solid #e4e4e7;">Amount due</td>
         <td style="padding:6px 0;text-align:right;font-weight:bold;border-top:1px solid #e4e4e7;">${paraFormat(girdi.kalanBakiye, girdi.paraBirimi)}</td>
       </tr>
     </table>
-    <p style="margin:0 0 4px 0;font-size:15px;color:#27272a;">Saygılarımızla,</p>
+    <p style="margin:0 0 4px 0;font-size:15px;color:#27272a;">Best regards,</p>
     <p style="margin:0;font-size:15px;font-weight:bold;color:#27272a;">${htmlKac(girdi.gonderenUnvan)}</p>
-    <p style="margin:24px 0 0 0;font-size:12px;color:#a1a1aa;">Ödemenizi yaptıysanız lütfen bu e-postayı dikkate almayın.</p>
+    <p style="margin:24px 0 0 0;font-size:12px;color:#a1a1aa;">If you've already made this payment, please disregard this email.</p>
   </div>
 </body>
 </html>`;
@@ -103,15 +105,15 @@ function metinYap(girdi: SablonGirdisi, paragraflar: string[]): string {
   return [
     ...paragraflar.map((p) => htmlCoz(p.replace(/<[^>]+>/g, ""))),
     "",
-    `Fatura no: ${girdi.faturaNo}`,
-    `Fatura tarihi: ${tarihFormat(girdi.faturaTarihi)}`,
-    `Vade tarihi: ${tarihFormat(girdi.vadeTarihi)}`,
-    `Kalan tutar: ${paraFormat(girdi.kalanBakiye, girdi.paraBirimi)}`,
+    `Invoice no: ${girdi.faturaNo}`,
+    `Invoice date: ${tarihFormat(girdi.faturaTarihi)}`,
+    `Due date: ${tarihFormat(girdi.vadeTarihi)}`,
+    `Amount due: ${paraFormat(girdi.kalanBakiye, girdi.paraBirimi)}`,
     "",
-    "Saygılarımızla,",
+    "Best regards,",
     girdi.gonderenUnvan,
     "",
-    "Ödemenizi yaptıysanız lütfen bu e-postayı dikkate almayın.",
+    "If you've already made this payment, please disregard this email.",
   ].join("\n");
 }
 
@@ -121,14 +123,14 @@ const SABLONLAR: Record<string, SablonUretici> = {
   on_hatirlatma: (girdi) => {
     const kalanGun = -girdi.gecikmeGunu;
     const paragraflar = [
-      `Sayın <strong>${htmlKac(girdi.musteriUnvan)}</strong> yetkilisi,`,
-      `${htmlKac(girdi.faturaNo)} numaralı faturamızın vadesi ${
-        kalanGun > 0 ? `<strong>${kalanGun} gün sonra</strong>` : "yakında"
-      } (${tarihFormat(girdi.vadeTarihi)}) doluyor. Planlamanıza yardımcı olması için kısa bir hatırlatma iletmek istedik.`,
-      `Ödemenizi şimdiden planladıysanız harika — bu e-postayı gönül rahatlığıyla yok sayabilirsiniz.`,
+      `Dear <strong>${htmlKac(girdi.musteriUnvan)}</strong> team,`,
+      `Our invoice ${htmlKac(girdi.faturaNo)} is due ${
+        kalanGun > 0 ? `<strong>in ${kalanGun} days</strong>` : "soon"
+      } (${tarihFormat(girdi.vadeTarihi)}). We wanted to send a quick heads-up to help with your planning.`,
+      `If you've already scheduled the payment, that's great — feel free to disregard this email.`,
     ];
     return {
-      konu: `Hatırlatma: ${girdi.faturaNo} numaralı faturanın vadesi yaklaşıyor`,
+      konu: `Reminder: invoice ${girdi.faturaNo} is coming due`,
       html: htmlSar(girdi, paragraflar),
       metin: metinYap(girdi, paragraflar),
     };
@@ -136,12 +138,12 @@ const SABLONLAR: Record<string, SablonUretici> = {
 
   vade_gunu: (girdi) => {
     const paragraflar = [
-      `Sayın <strong>${htmlKac(girdi.musteriUnvan)}</strong> yetkilisi,`,
-      `${htmlKac(girdi.faturaNo)} numaralı faturamızın vadesi <strong>bugün</strong> (${tarihFormat(girdi.vadeTarihi)}) doluyor. Aşağıda fatura özetini bulabilirsiniz.`,
-      `Ödemeniz bugün içinde yapılacaksa ayrıca bir işlem yapmanıza gerek yok. Herhangi bir sorunuz varsa bu e-postayı yanıtlamanız yeterli.`,
+      `Dear <strong>${htmlKac(girdi.musteriUnvan)}</strong> team,`,
+      `Our invoice ${htmlKac(girdi.faturaNo)} is due <strong>today</strong> (${tarihFormat(girdi.vadeTarihi)}). You'll find the invoice summary below.`,
+      `If your payment is going out today, there's nothing further you need to do. If you have any questions, just reply to this email.`,
     ];
     return {
-      konu: `${girdi.faturaNo} numaralı faturanın vadesi bugün doluyor`,
+      konu: `Invoice ${girdi.faturaNo} is due today`,
       html: htmlSar(girdi, paragraflar),
       metin: metinYap(girdi, paragraflar),
     };
@@ -149,12 +151,12 @@ const SABLONLAR: Record<string, SablonUretici> = {
 
   nazik_gecikme: (girdi) => {
     const paragraflar = [
-      `Sayın <strong>${htmlKac(girdi.musteriUnvan)}</strong> yetkilisi,`,
-      `${htmlKac(girdi.faturaNo)} numaralı faturamızın vadesi ${tarihFormat(girdi.vadeTarihi)} tarihinde doldu; kayıtlarımıza göre ödeme henüz bize ulaşmadı. Gözden kaçmış olabileceğini düşünerek nazikçe hatırlatmak istedik.`,
-      `Ödemeyi son günlerde yaptıysanız teşekkür ederiz — kayıtlarımıza yansıması birkaç gün sürebilir. Bir aksilik ya da sorunuz varsa bu e-postayı yanıtlamanız yeterli; birlikte çözüm bulalım.`,
+      `Dear <strong>${htmlKac(girdi.musteriUnvan)}</strong> team,`,
+      `Our invoice ${htmlKac(girdi.faturaNo)} was due on ${tarihFormat(girdi.vadeTarihi)}; according to our records, the payment hasn't reached us yet. It may simply have slipped by, so we wanted to send a gentle reminder.`,
+      `If you made the payment in the last few days, thank you — it can take a few days to show up in our records. If there's a hiccup or you have a question, just reply to this email and we'll work it out together.`,
     ];
     return {
-      konu: `Hatırlatma: ${girdi.faturaNo} numaralı faturanın ödemesi görünmüyor`,
+      konu: `Reminder: payment for invoice ${girdi.faturaNo} not showing yet`,
       html: htmlSar(girdi, paragraflar),
       metin: metinYap(girdi, paragraflar),
     };
@@ -162,13 +164,13 @@ const SABLONLAR: Record<string, SablonUretici> = {
 
   kararli_gecikme: (girdi) => {
     const paragraflar = [
-      `Sayın <strong>${htmlKac(girdi.musteriUnvan)}</strong> yetkilisi,`,
-      `${htmlKac(girdi.faturaNo)} numaralı faturamızın vadesi <strong>${girdi.gecikmeGunu} gün önce</strong> (${tarihFormat(girdi.vadeTarihi)}) doldu ve ödeme kayıtlarımıza hâlâ ulaşmadı. Konuyu önemle dikkatinize sunuyoruz.`,
-      `Ödemenin en geç birkaç iş günü içinde yapılmasını rica ediyoruz. Ödeme planında bir zorluk yaşıyorsanız, birlikte bir çözüm bulmak için bu e-postayı yanıtlamanızı memnuniyetle karşılarız.`,
-      `İş birliğiniz için şimdiden teşekkür ederiz.`,
+      `Dear <strong>${htmlKac(girdi.musteriUnvan)}</strong> team,`,
+      `Our invoice ${htmlKac(girdi.faturaNo)} was due <strong>${girdi.gecikmeGunu} days ago</strong> (${tarihFormat(girdi.vadeTarihi)}) and payment still hasn't reached our records. We want to bring this to your attention as a priority.`,
+      `We'd appreciate the payment being made within the next few business days at the latest. If you're facing a difficulty with the payment schedule, we're glad to work out a solution together — just reply to this email.`,
+      `Thank you in advance for your cooperation.`,
     ];
     return {
-      konu: `Önemli: ${girdi.faturaNo} numaralı fatura ${girdi.gecikmeGunu} gündür ödenmedi`,
+      konu: `Important: invoice ${girdi.faturaNo} has been unpaid for ${girdi.gecikmeGunu} days`,
       html: htmlSar(girdi, paragraflar),
       metin: metinYap(girdi, paragraflar),
     };

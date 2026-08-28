@@ -1,13 +1,13 @@
-// CSV ayrıştırma ve Türkçe biçim (sayı/tarih) yardımcıları.
-// Türkçe Excel çıktıları için: noktalı virgül ayracı, "1.234,56" sayılar,
-// "gg.aa.yyyy" tarihler ve Windows-1254 kodlaması desteklenir.
+// CSV parsing and Turkish-format (number/date) helpers.
+// Supports Turkish Excel exports: semicolon delimiter, "1.234,56"-style
+// numbers, "dd.mm.yyyy" dates, and Windows-1254 encoding.
 
 export type CsvTablo = {
   basliklar: string[];
   satirlar: string[][];
 };
 
-/** Dosya baytlarını metne çevirir; UTF-8 değilse Windows-1254 dener. */
+/** Converts file bytes to text; falls back to Windows-1254 if not UTF-8. */
 export function baytlariCoz(buffer: ArrayBuffer): string {
   const baytlar = new Uint8Array(buffer);
   // UTF-8 BOM
@@ -21,7 +21,7 @@ export function baytlariCoz(buffer: ArrayBuffer): string {
   }
 }
 
-/** İlk satırdaki (tırnak dışı) sayıya göre ayracı tahmin eder. */
+/** Guesses the delimiter from its (non-quoted) count on the first line. */
 function ayracTahminEt(ilkSatir: string): string {
   const adaylar = [";", ",", "\t"];
   let enIyi = ";";
@@ -41,7 +41,7 @@ function ayracTahminEt(ilkSatir: string): string {
   return enIyi;
 }
 
-/** Tırnak destekli CSV ayrıştırıcı (RFC 4180 uyumlu durum makinesi). */
+/** Quote-aware CSV parser (RFC 4180-compliant state machine). */
 export function csvAyristir(metin: string): CsvTablo {
   const icerik = metin.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
   const ilkSatirSonu = icerik.indexOf("\n");
@@ -88,7 +88,7 @@ export function csvAyristir(metin: string): CsvTablo {
   return { basliklar: basliklar.map((b) => b.trim()), satirlar: veri };
 }
 
-/** "1.234,56", "1234.56", "1234" gibi biçimleri sayıya çevirir; olmazsa null. */
+/** Converts formats like "1.234,56", "1234.56", "1234" to a number; null if it can't. */
 export function sayiAyristir(ham: string): number | null {
   const temiz = ham.replace(/[₺TL\s]/gi, "").trim();
   if (!temiz) return null;
@@ -98,18 +98,18 @@ export function sayiAyristir(ham: string): number | null {
   const sonNokta = temiz.lastIndexOf(".");
 
   if (sonVirgul !== -1 && sonNokta !== -1) {
-    // İki ayraç da var: son görünen ondalık ayracıdır
+    // Both separators present: whichever appears last is the decimal separator
     normalize =
       sonVirgul > sonNokta
         ? temiz.replace(/\./g, "").replace(",", ".")
         : temiz.replace(/,/g, "");
   } else if (sonVirgul !== -1) {
-    // Yalnız virgül: "1,234,567" gibi binlik dizisi değilse ondalıktır
+    // Comma only: decimal unless it's a thousands grouping like "1,234,567"
     normalize = /^\d{1,3}(,\d{3}){2,}$/.test(temiz)
       ? temiz.replace(/,/g, "")
       : temiz.replace(/,/g, ".");
   } else if (sonNokta !== -1) {
-    // Yalnız nokta: "1.234" / "1.234.567" binlik desenidir
+    // Period only: "1.234" / "1.234.567" is a thousands pattern
     normalize = /^\d{1,3}(\.\d{3})+$/.test(temiz)
       ? temiz.replace(/\./g, "")
       : temiz;
@@ -121,9 +121,9 @@ export function sayiAyristir(ham: string): number | null {
   return Number.isFinite(sayi) ? sayi : null;
 }
 
-/** "gg.aa.yyyy", "gg/aa/yyyy", "yyyy-aa-gg" → ISO (yyyy-aa-gg); olmazsa null. */
+/** "dd.mm.yyyy", "dd/mm/yyyy", "yyyy-mm-dd" → ISO (yyyy-mm-dd); null if it can't. */
 export function tarihAyristir(ham: string): string | null {
-  const temiz = ham.trim().split(" ")[0]; // olası saat kısmını at
+  const temiz = ham.trim().split(" ")[0]; // drop a possible time portion
   if (!temiz) return null;
 
   let yil: number, ay: number, gun: number;
@@ -149,13 +149,13 @@ export function tarihAyristir(ham: string): string | null {
 }
 
 export const ESLENEBILIR_ALANLAR = [
-  { anahtar: "musteri_unvan", etiket: "Müşteri unvanı", zorunlu: true },
-  { anahtar: "fatura_no", etiket: "Fatura no", zorunlu: true },
-  { anahtar: "fatura_tarihi", etiket: "Fatura tarihi", zorunlu: true },
-  { anahtar: "vade_tarihi", etiket: "Vade tarihi", zorunlu: false },
-  { anahtar: "tutar", etiket: "Tutar", zorunlu: true },
-  { anahtar: "vkn", etiket: "VKN", zorunlu: false },
-  { anahtar: "eposta", etiket: "Müşteri e-postası", zorunlu: false },
+  { anahtar: "musteri_unvan", etiket: "Customer name", zorunlu: true },
+  { anahtar: "fatura_no", etiket: "Invoice no", zorunlu: true },
+  { anahtar: "fatura_tarihi", etiket: "Invoice date", zorunlu: true },
+  { anahtar: "vade_tarihi", etiket: "Due date", zorunlu: false },
+  { anahtar: "tutar", etiket: "Amount", zorunlu: true },
+  { anahtar: "vkn", etiket: "Tax ID", zorunlu: false },
+  { anahtar: "eposta", etiket: "Customer email", zorunlu: false },
 ] as const;
 
 export type AlanAnahtari = (typeof ESLENEBILIR_ALANLAR)[number]["anahtar"];
@@ -181,9 +181,10 @@ function basligiNormallestir(baslik: string): string {
     .replace(/ç/g, "c");
 }
 
-// Tahmin sırası: "Vade Tarihi" gibi bir kolonun fatura_tarihi'nin jenerik
-// "tarih" ipucuna kapılmaması için vade_tarihi, fatura_tarihi'nden önce
-// denenir (fatura_tarihi'nin "fatura tarih" özel ipucu yine öncelik alır).
+// Detection order: vade_tarihi (due date) is tried before fatura_tarihi
+// (invoice date) so a column like "Vade Tarihi" doesn't get swallowed by
+// fatura_tarihi's generic "tarih" (date) hint (fatura_tarihi's more specific
+// "fatura tarih" hint still takes priority when it matches).
 const TAHMIN_SIRASI: AlanAnahtari[] = [
   "musteri_unvan",
   "fatura_no",
@@ -194,7 +195,7 @@ const TAHMIN_SIRASI: AlanAnahtari[] = [
   "fatura_tarihi",
 ];
 
-/** Başlık adlarından alan → kolon indeksi tahmini üretir. */
+/** Produces a field → column-index guess from the header names. */
 export function kolonlariTahminEt(
   basliklar: string[]
 ): Partial<Record<AlanAnahtari, number>> {

@@ -1,9 +1,9 @@
-// DSO panosu hesaplamaları — saf fonksiyonlar (birim test edilebilir).
-// DSO yaklaşımı (MVP): kapanmış faturalarda gerçekleşen tahsil süresinin
-// tutar-ağırlıklı ortalaması. Klasik (ortalama alacak / kredili satış) formülü
-// dönem cirosu verisi gerektirir; kapanış bazlı ölçüm KOBİ verisiyle ilk
-// günden hesaplanabilir ve "hatırlatmalar işe yarıyor mu?" sorusuna doğrudan
-// yanıt verir.
+// DSO dashboard calculations — pure functions (unit-testable).
+// DSO approach (MVP): the amount-weighted average of the realized collection
+// time for closed invoices. The classic formula (average receivables /
+// credit sales) requires period-revenue data; a closure-based measurement
+// can be computed from SME data on day one and directly answers the
+// question "are reminders working?"
 
 export type AcikFatura = {
   id: string;
@@ -19,7 +19,7 @@ export type KapanmaKaydi = {
   fatura_id: string;
   fatura_tarihi: string; // ISO
   fatura_tutari: number;
-  odeme_tarihi: string; // ISO (eşleşmenin ödemesi)
+  odeme_tarihi: string; // ISO (payment for the match)
   eslesme_tutari: number;
 };
 
@@ -34,7 +34,7 @@ function gunFarki(sonIso: string, ilkIso: string): number {
   return Math.round((son - ilk) / 86400000);
 }
 
-// ---- Yaşlandırma (aging) ----
+// ---- Aging ----
 
 export type YaslandirmaKovasi = {
   etiket: string;
@@ -47,11 +47,11 @@ export function yaslandirmaHesapla(
   bugunIso: string
 ): YaslandirmaKovasi[] {
   const kovalar: YaslandirmaKovasi[] = [
-    { etiket: "Vadesi gelmemiş", toplam: 0, adet: 0 },
-    { etiket: "1-30 gün gecikmiş", toplam: 0, adet: 0 },
-    { etiket: "31-60 gün gecikmiş", toplam: 0, adet: 0 },
-    { etiket: "61-90 gün gecikmiş", toplam: 0, adet: 0 },
-    { etiket: "90+ gün gecikmiş", toplam: 0, adet: 0 },
+    { etiket: "Not yet due", toplam: 0, adet: 0 },
+    { etiket: "1-30 days overdue", toplam: 0, adet: 0 },
+    { etiket: "31-60 days overdue", toplam: 0, adet: 0 },
+    { etiket: "61-90 days overdue", toplam: 0, adet: 0 },
+    { etiket: "90+ days overdue", toplam: 0, adet: 0 },
   ];
 
   for (const fatura of faturalar) {
@@ -64,10 +64,11 @@ export function yaslandirmaHesapla(
   return kovalar;
 }
 
-// ---- Gerçekleşen DSO ----
+// ---- Realized DSO ----
 
-/** Fatura bazında kapanma: son ödeme tarihi. Yalnızca tam kapanmışlar sayılır
- *  (kapanma listesi zaten durum=kapali faturalardan gelir). */
+/** Per-invoice closure: the last payment date. Only fully closed invoices
+ *  are counted (the closure list is already sourced from status=kapali
+ *  invoices). */
 export function faturaKapanmalari(
   kayitlar: KapanmaKaydi[]
 ): { fatura_id: string; tutar: number; tahsilSuresi: number; kapanmaTarihi: string }[] {
@@ -100,7 +101,7 @@ export function faturaKapanmalari(
   return sonuc;
 }
 
-/** Tutar-ağırlıklı ortalama tahsil süresi (gün); veri yoksa null. */
+/** Amount-weighted average collection time (days); null if no data. */
 export function gerceklesenDso(
   kayitlar: KapanmaKaydi[],
   bugunIso: string,
@@ -120,7 +121,7 @@ export function gerceklesenDso(
 
 export type AylikDso = { ay: string; dso: number; adet: number }; // ay: "2026-06"
 
-/** Kapanma ayına göre aylık DSO serisi (son N ay, eskiden yeniye). */
+/** Monthly DSO series by closure month (last N months, oldest to newest). */
 export function aylikDsoSerisi(
   kayitlar: KapanmaKaydi[],
   bugunIso: string,
@@ -156,7 +157,7 @@ export function aylikDsoSerisi(
   return sonuc;
 }
 
-// ---- Riskli listeler ----
+// ---- At-risk lists ----
 
 export type RiskliMusteri = {
   musteri_id: string;
@@ -210,12 +211,13 @@ export function riskliFaturalar(
     .slice(0, adet);
 }
 
-// ---- Öne çekilen nakit (Kuzey Yıldızı) ----
+// ---- Cash pulled forward (North Star) ----
 
 /**
- * Hatırlatma gönderildikten sonra (ve 30 gün içinde) gelen ödeme eşleşmelerinin
- * toplamı: "hatırlatmaların tahsil ettirdiği nakit" yaklaşımı (VARSAYIM:
- * nedensellik değil korelasyon; pano metninde böyle sunulur).
+ * The total of payment matches that arrive after a reminder was sent
+ * (within 30 days): the "cash reminders helped collect" approach
+ * (ASSUMPTION: correlation, not causation; it's presented that way in the
+ * dashboard copy).
  */
 export function oneCekilenNakit(
   eslesmeler: KapanmaKaydi[],

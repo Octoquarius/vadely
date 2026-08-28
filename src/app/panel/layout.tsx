@@ -28,7 +28,7 @@ export default async function PanelYerlesimi({
     paket: string;
     created_at: string;
   } | null;
-  const hesapAdi = hesap?.ad ?? "Hesabım";
+  const hesapAdi = hesap?.ad ?? "My account";
   const denemede = hesap?.paket === "deneme";
   const kalanGun = hesap ? denemeKalanGun(hesap.created_at) : 0;
 
@@ -48,22 +48,22 @@ export default async function PanelYerlesimi({
             </Link>
             <nav className="flex gap-4 text-sm text-zinc-600">
               <Link href="/panel" className="hover:text-zinc-900">
-                Genel Bakış
+                Overview
               </Link>
               <Link href="/panel/musteriler" className="hover:text-zinc-900">
-                Müşteriler
+                Customers
               </Link>
               <Link href="/panel/faturalar" className="hover:text-zinc-900">
-                Faturalar
+                Invoices
               </Link>
               <Link href="/panel/odemeler" className="hover:text-zinc-900">
-                Ödemeler
+                Payments
               </Link>
               <Link href="/panel/hatirlatmalar" className="hover:text-zinc-900">
-                Hatırlatmalar
+                Reminders
               </Link>
               <Link href="/panel/gunluk" className="hover:text-zinc-900">
-                Günlük
+                Log
               </Link>
             </nav>
           </div>
@@ -73,7 +73,7 @@ export default async function PanelYerlesimi({
                 href="/yonetim"
                 className="rounded-full bg-altin/10 px-3 py-1 text-xs font-medium text-altin hover:bg-altin/20"
               >
-                Yönetim
+                Admin
               </Link>
             )}
             {denemede && (
@@ -86,14 +86,14 @@ export default async function PanelYerlesimi({
                 }`}
               >
                 {kalanGun > 0
-                  ? `Deneme: ${kalanGun} gün kaldı`
-                  : "Deneme bitti — paket seçin"}
+                  ? `Trial: ${kalanGun} days left`
+                  : "Trial ended — choose a plan"}
               </Link>
             )}
             <Link
               href="/panel/ayarlar"
               className="text-zinc-500 hover:text-zinc-900"
-              title="Ayarlar"
+              title="Settings"
             >
               {hesapAdi} ⚙
             </Link>
@@ -102,7 +102,7 @@ export default async function PanelYerlesimi({
                 type="submit"
                 className="rounded-md border border-zinc-300 px-3 py-1.5 text-zinc-700 hover:bg-zinc-100"
               >
-                Çıkış
+                Log out
               </button>
             </form>
           </div>

@@ -1,5 +1,5 @@
-// Paket tanımları ve özellik kapıları.
-// Fiyatlar USD (plan.md'deki fiyatlama); yıllıkta ~2 ay bedava.
+// Plan definitions and feature gates.
+// Prices in USD (pricing per plan.md); annual billing gets ~2 months free.
 
 export const DENEME_GUN = 14;
 
@@ -24,42 +24,42 @@ export const PAKETLER: {
 }[] = [
   {
     kod: "baslangic",
-    ad: "Başlangıç",
+    ad: "Starter",
     aylikUsd: 12,
     yillikUsd: 120,
-    ozet: "Otomatik hatırlatmaya ilk adım",
+    ozet: "The first step toward automatic reminders",
     ozellikler: [
-      "Otomatik e-posta hatırlatmaları",
-      "Kadans kural motoru",
-      "DSO panosu ve yaşlandırma",
-      "CSV / e-Fatura XML içe aktarma",
+      "Automatic email reminders",
+      "Cadence rule engine",
+      "DSO dashboard and aging",
+      "CSV / e-Invoice XML import",
     ],
   },
   {
     kod: "profesyonel",
-    ad: "Profesyonel",
+    ad: "Professional",
     aylikUsd: 24,
     yillikUsd: 240,
-    ozet: "Çok kanallı tahsilat",
+    ozet: "Multi-channel collections",
     one_cikan: true,
     ozellikler: [
-      "Başlangıç'taki her şey",
-      "WhatsApp hatırlatmaları",
-      "Tek tık ödeme linki (yakında)",
-      "Banka ekstresi eşleştirme",
+      "Everything in Starter",
+      "WhatsApp reminders",
+      "One-click payment link (coming soon)",
+      "Bank statement matching",
     ],
   },
   {
     kod: "isletme",
-    ad: "İşletme",
+    ad: "Business",
     aylikUsd: 48,
     yillikUsd: 480,
-    ozet: "Öngörü ve risk yönetimi",
+    ozet: "Forecasting and risk management",
     ozellikler: [
-      "Profesyonel'deki her şey",
-      "Müşteri risk skoru (yakında)",
-      "30/60/90 gün nakit akışı tahmini (yakında)",
-      "Öncelikli destek",
+      "Everything in Professional",
+      "Customer risk score (coming soon)",
+      "30/60/90-day cash-flow forecast (coming soon)",
+      "Priority support",
     ],
   },
 ];
@@ -86,7 +86,7 @@ export function denemeKalanGun(
   return Math.max(0, DENEME_GUN - gecen);
 }
 
-/** Deneme süresince her şey açık; sonrasında paket matrisi geçerli. */
+/** Everything is unlocked during the trial; the plan matrix applies afterward. */
 export function ozellikAcikMi(
   paket: string,
   hesapOlusturma: string,
@@ -95,15 +95,15 @@ export function ozellikAcikMi(
   if (paket === "deneme") {
     return denemeKalanGun(hesapOlusturma) > 0
       ? true
-      : OZELLIK_MATRISI.baslangic.includes(ozellik); // süresi biten deneme Başlangıç gibi davranır
+      : OZELLIK_MATRISI.baslangic.includes(ozellik); // an expired trial behaves like Starter
   }
   const liste = OZELLIK_MATRISI[paket as Exclude<PaketKodu, "deneme">];
   return liste ? liste.includes(ozellik) : false;
 }
 
 export const PAKET_ETIKETLERI: Record<string, string> = {
-  deneme: "Deneme",
-  baslangic: "Başlangıç",
-  profesyonel: "Profesyonel",
-  isletme: "İşletme",
+  deneme: "Trial",
+  baslangic: "Starter",
+  profesyonel: "Professional",
+  isletme: "Business",
 };

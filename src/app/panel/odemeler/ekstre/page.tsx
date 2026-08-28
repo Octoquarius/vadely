@@ -9,14 +9,14 @@ export default function EkstreSayfasi() {
           href="/panel/odemeler"
           className="text-sm text-zinc-500 hover:text-zinc-900"
         >
-          ← Ödemeler
+          ← Payments
         </Link>
         <h1 className="mt-1 text-2xl font-semibold text-zinc-900">
-          Banka ekstresi yükle
+          Upload bank statement
         </h1>
         <p className="mt-1 text-sm text-zinc-500">
-          Hesap hareketlerinizi yükleyin; gelen ödemeleri içeri alıp açık
-          faturalarınızla eşleştirmenize yardımcı olalım.
+          Upload your account transactions; we&apos;ll help you import incoming
+          payments and match them with your open invoices.
         </p>
       </div>
       <EkstreForm />

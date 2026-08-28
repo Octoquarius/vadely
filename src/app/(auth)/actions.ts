@@ -19,12 +19,12 @@ export async function girisYap(
 
   if (error) {
     if (error.code === "invalid_credentials") {
-      return { hata: "E-posta veya şifre hatalı." };
+      return { hata: "Incorrect email or password." };
     }
     if (error.code === "email_not_confirmed") {
-      return { hata: "E-posta adresiniz henüz onaylanmamış. Gelen kutunuzu kontrol edin." };
+      return { hata: "Your email address hasn't been confirmed yet. Check your inbox." };
     }
-    return { hata: "Giriş yapılamadı. Lütfen tekrar deneyin." };
+    return { hata: "Login failed. Please try again." };
   }
 
   redirect("/panel");
@@ -40,14 +40,15 @@ export async function kayitOl(
 
   const sifre = String(formData.get("sifre") ?? "");
   if (sifre.length < 8) {
-    return { hata: "Şifre en az 8 karakter olmalı." };
+    return { hata: "Password must be at least 8 characters." };
   }
 
-  // KVKK açık rızası: tarayıcı onay kutusu atlanabildiği için sunucuda da
-  // zorunlu tutulur ve rıza zamanı denetlenebilir bir kayıt olarak saklanır.
+  // Explicit KVKK (Turkish data protection law) consent: since the browser
+  // checkbox can be bypassed, it's also enforced server-side, and the consent
+  // timestamp is stored as an auditable record.
   if (!formData.get("kvkk_onay")) {
     return {
-      hata: "Kullanım Koşulları ve KVKK Aydınlatma Metni'ni onaylamalısınız.",
+      hata: "You must accept the Terms of Use and the Privacy Notice.",
     };
   }
 
@@ -67,14 +68,14 @@ export async function kayitOl(
 
   if (error) {
     if (error.code === "user_already_exists") {
-      return { hata: "Bu e-posta ile zaten bir hesap var. Giriş yapmayı deneyin." };
+      return { hata: "An account with this email already exists. Try logging in instead." };
     }
-    return { hata: "Kayıt tamamlanamadı. Lütfen tekrar deneyin." };
+    return { hata: "Registration could not be completed. Please try again." };
   }
 
   return {
     mesaj:
-      "Kayıt alındı! E-posta adresinize gönderilen onay bağlantısına tıklayın, sonra giriş yapın.",
+      "Registration received! Click the confirmation link sent to your email address, then log in.",
   };
 }
 
@@ -94,20 +95,20 @@ export async function sifreSifirlaIste(
 
   const eposta = String(formData.get("eposta") ?? "").trim();
   if (!eposta.includes("@")) {
-    return { hata: "Geçerli bir e-posta adresi girin." };
+    return { hata: "Enter a valid email address." };
   }
 
-  // Kurtarma bağlantısı /auth/callback'e gelir, oradan /sifre-yenile'ye
-  // yönlenir (kurtarma oturumu kurulmuş olur).
+  // The recovery link arrives at /auth/callback, which then redirects to
+  // /sifre-yenile (the recovery session gets established there).
   await supabase.auth.resetPasswordForEmail(eposta, {
     redirectTo: `${origin}/auth/callback?next=/sifre-yenile`,
   });
 
-  // Kullanıcı numaralandırmasını (enumeration) önlemek için her zaman aynı
-  // yanıt verilir — e-posta kayıtlı olsun olmasın.
+  // To prevent user enumeration, the same response is always returned —
+  // whether or not the email is registered.
   return {
     mesaj:
-      "Bu e-posta kayıtlıysa şifre sıfırlama bağlantısı gönderildi. Gelen kutunuzu (ve spam klasörünü) kontrol edin.",
+      "If this email is registered, a password reset link has been sent. Check your inbox (and spam folder).",
   };
 }
 
@@ -119,18 +120,18 @@ export async function sifreGuncelle(
   const sifreTekrar = String(formData.get("sifre_tekrar") ?? "");
 
   if (sifre.length < 8) {
-    return { hata: "Şifre en az 8 karakter olmalı." };
+    return { hata: "Password must be at least 8 characters." };
   }
   if (sifre !== sifreTekrar) {
-    return { hata: "Şifreler eşleşmiyor." };
+    return { hata: "Passwords don't match." };
   }
 
   const supabase = await createClient();
-  // Kurtarma oturumu gerektirir; bağlantı olmadan gelen istek yetkisizdir.
+  // Requires a recovery session; a request arriving without the link is unauthorized.
   const { error } = await supabase.auth.updateUser({ password: sifre });
   if (error) {
     return {
-      hata: "Şifre güncellenemedi. Bağlantının süresi dolmuş olabilir; sıfırlamayı tekrar isteyin.",
+      hata: "Password could not be updated. The link may have expired; request a new reset.",
     };
   }
 

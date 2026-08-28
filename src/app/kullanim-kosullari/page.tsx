@@ -1,11 +1,11 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Kullanım Koşulları — Vadely",
+  title: "Terms of Use — Vadely",
 };
 
-// NOT (kurucuya): Bu metin genel bir şablondur; yayına almadan önce
-// hukukçuya inceletin. (plan.md Bölüm 10 ve 16)
+// NOTE (to founder): This text is a general template; have it reviewed by a
+// lawyer before publishing. (plan.md Section 10 and 16)
 
 export default function KullanimKosullariSayfasi() {
   return (
@@ -16,69 +16,71 @@ export default function KullanimKosullariSayfasi() {
             Vadely
           </Link>
           <Link href="/kayit" className="text-sm text-zinc-600 hover:text-zinc-900">
-            Kayıt ol
+            Sign up
           </Link>
         </div>
       </header>
       <main className="mx-auto max-w-3xl space-y-6 px-4 py-10 text-sm leading-6 text-zinc-700">
         <h1 className="text-2xl font-semibold text-zinc-900">
-          Kullanım Koşulları
+          Terms of Use
         </h1>
 
-        <h2 className="text-lg font-semibold text-zinc-900">1. Hizmet</h2>
+        <h2 className="text-lg font-semibold text-zinc-900">1. The Service</h2>
         <p>
-          Vadely; fatura verilerinizden ödeme hatırlatmaları planlayan ve
-          gönderen, tahsilat ve nakit akışı görünürlüğü sunan bir yazılım
-          hizmetidir (SaaS). Hizmet &quot;olduğu gibi&quot; sunulur; tahsilat
-          sonuçları garanti edilmez.
+          Vadely is a software-as-a-service (SaaS) product that schedules and
+          sends payment reminders based on your invoice data, and provides
+          visibility into collections and cash flow. The Service is provided
+          &quot;as is&quot;; collection outcomes are not guaranteed.
         </p>
 
         <h2 className="text-lg font-semibold text-zinc-900">
-          2. Abonelik ve ücretlendirme
+          2. Subscription and billing
         </h2>
         <p>
-          Paketler aylık veya yıllık olarak ücretlendirilir; fiyatlar USD
-          cinsinden ilan edilir, tahsilat TL karşılığıyla yapılabilir.
-          Mesajlaşma (SMS/WhatsApp) kullandıkça öde kontör modeliyle ayrıca
-          ücretlendirilir. Deneme süresi 14 gündür.
+          Plans are billed monthly or annually; prices are quoted in USD, and
+          billing may be charged in TRY equivalent. Messaging (SMS/WhatsApp)
+          is billed separately on a pay-as-you-go credit model. The trial
+          period is 14 days.
         </p>
 
         <h2 className="text-lg font-semibold text-zinc-900">
-          3. Kullanıcı yükümlülükleri
+          3. User obligations
         </h2>
         <ul className="list-disc space-y-1 pl-6">
           <li>
-            Yüklediğiniz fatura ve iletişim verilerinin doğruluğundan ve bu
-            verileri işleme hukuki yetkinizden siz sorumlusunuz.
+            You are responsible for the accuracy of the invoice and contact
+            data you upload, and for your legal authority to process that
+            data.
           </li>
           <li>
-            Hatırlatma iletileri sizin adınıza ve talimatınızla gönderilir;
-            ilgili mevzuata (KVKK, İYS/ticari ileti kuralları) uyum abonenin
-            sorumluluğundadır.
+            Reminder messages are sent on your behalf and at your
+            instruction; compliance with applicable regulations (KVKK, the
+            İYS/commercial communication rules) is the subscriber&apos;s
+            responsibility.
           </li>
-          <li>Hizmet, hukuka aykırı tahsilat baskısı için kullanılamaz.</li>
+          <li>The Service may not be used for unlawful collection pressure.</li>
         </ul>
 
         <h2 className="text-lg font-semibold text-zinc-900">
-          4. Fesih ve veri
+          4. Termination and data
         </h2>
         <p>
-          Aboneliğinizi dilediğiniz an sonlandırabilirsiniz. Hesap
-          silindiğinde verileriniz geri döndürülemez biçimde silinir;
-          silmeden önce &quot;Verilerimi indir&quot; ile dışa aktarım
-          yapabilirsiniz.
+          You may cancel your subscription at any time. When an account is
+          deleted, your data is irreversibly deleted; you may export your
+          data via &quot;Download my data&quot; before deletion.
         </p>
 
         <h2 className="text-lg font-semibold text-zinc-900">
-          5. Sorumluluğun sınırı
+          5. Limitation of liability
         </h2>
         <p>
-          Vadely; dolaylı zararlardan, veri kaynaklı hatalı hatırlatmalardan
-          ve üçüncü taraf servis kesintilerinden sorumlu tutulamaz. Toplam
-          sorumluluk, son 12 ayda ödenen abonelik bedeliyle sınırlıdır.
+          Vadely is not liable for indirect damages, reminder errors caused
+          by faulty source data, or third-party service outages. Total
+          liability is limited to the subscription fees paid in the
+          preceding 12 months.
         </p>
 
-        <p className="text-zinc-400">Son güncelleme: Temmuz 2026</p>
+        <p className="text-zinc-400">Last updated: July 2026</p>
       </main>
     </div>
   );

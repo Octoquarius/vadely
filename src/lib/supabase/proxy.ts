@@ -10,7 +10,7 @@ const KORUMASIZ_YOLLAR = [
   "/pilot",
   "/gizlilik",
   "/kullanim-kosullari",
-  // Oturumla değil svix imzasıyla doğrulanır; /api/veri-indir korumalı kalır.
+  // Verified via svix signature, not session; /api/veri-indir stays protected.
   "/api/webhooks",
 ];
 
@@ -38,11 +38,12 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // ÖNEMLİ: createServerClient ile getUser arasına kod koyma. getUser()
-  // her istekte oturumu sunucuda doğrular ve süresi dolan access token'ı
-  // refresh token'la yeniler; yenilenen çerezler supabaseResponse'a yazılır.
-  // (getClaims yalnızca JWT'yi yerel doğrular; süresi dolduğunda yenilemez —
-  // kullanıcı bir süre sonra "yeniden giriş" yapmak zorunda kalırdı.)
+  // IMPORTANT: don't put code between createServerClient and getUser.
+  // getUser() validates the session server-side on every request and
+  // refreshes an expired access token using the refresh token; the
+  // refreshed cookies are written to supabaseResponse.
+  // (getClaims only validates the JWT locally and doesn't refresh it when
+  // expired — the user would eventually be forced to sign in again.)
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -55,7 +56,7 @@ export async function updateSession(request: NextRequest) {
   if (!user && !korumasiz) {
     const url = request.nextUrl.clone();
     url.pathname = "/giris";
-    // Yönlendirmede de tazelenen oturum çerezlerini koru.
+    // Preserve the refreshed session cookies on the redirect too.
     const yonlendirme = NextResponse.redirect(url);
     supabaseResponse.cookies.getAll().forEach((cerez) => {
       yonlendirme.cookies.set(cerez);

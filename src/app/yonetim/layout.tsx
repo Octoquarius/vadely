@@ -4,9 +4,9 @@ import { createClient } from "@/lib/supabase/server";
 import { cikisYap } from "@/app/(auth)/actions";
 import { VadelyMark } from "@/components/marka";
 
-// Platform yönetim paneli: yalnızca platform_yoneticileri tablosundaki
-// kullanıcılara açık. Yetki kontrolü hem burada (yönlendirme) hem de veriyi
-// döndüren SECURITY DEFINER fonksiyonların içinde yapılır.
+// Platform admin panel: accessible only to users listed in the
+// platform_yoneticileri table. Authorization is checked both here
+// (redirect) and inside the SECURITY DEFINER functions that return data.
 export default async function YonetimYerlesimi({
   children,
 }: {
@@ -32,28 +32,28 @@ export default async function YonetimYerlesimi({
               <VadelyMark size={22} />
               <span className="font-display text-lg font-semibold">vadely</span>
               <span className="rounded-full bg-altin-parlak/20 px-2 py-0.5 text-xs font-medium text-altin-parlak">
-                Yönetim
+                Admin
               </span>
             </Link>
             <nav className="flex gap-4 text-sm text-zinc-400">
               <Link href="/yonetim" className="hover:text-white">
-                Genel Bakış
+                Overview
               </Link>
               <Link href="/yonetim/pilot" className="hover:text-white">
-                Pilot Başvuruları
+                Pilot Applications
               </Link>
             </nav>
           </div>
           <div className="flex items-center gap-3 text-sm">
             <Link href="/panel" className="text-zinc-400 hover:text-white">
-              Panele dön
+              Back to dashboard
             </Link>
             <form action={cikisYap}>
               <button
                 type="submit"
                 className="rounded-md border border-zinc-700 px-3 py-1.5 text-zinc-200 hover:bg-zinc-800"
               >
-                Çıkış
+                Log out
               </button>
             </form>
           </div>

@@ -17,10 +17,10 @@ type Fatura = {
 };
 
 const DURUM: Record<string, { etiket: string; sinif: string }> = {
-  acik: { etiket: "Açık", sinif: "bg-amber-50 text-amber-700" },
-  kismi: { etiket: "Kısmi", sinif: "bg-altin/10 text-altin" },
-  kapali: { etiket: "Kapalı", sinif: "bg-green-50 text-green-700" },
-  itilafli: { etiket: "İtilaflı", sinif: "bg-red-50 text-red-700" },
+  acik: { etiket: "Open", sinif: "bg-amber-50 text-amber-700" },
+  kismi: { etiket: "Partial", sinif: "bg-altin/10 text-altin" },
+  kapali: { etiket: "Closed", sinif: "bg-green-50 text-green-700" },
+  itilafli: { etiket: "Disputed", sinif: "bg-red-50 text-red-700" },
 };
 
 const girdiSinif =
@@ -46,7 +46,7 @@ export function FaturaSatiri({ fatura }: { fatura: Fatura }) {
   );
   const [silDurum, silEylem, siliniyor] = useActionState(faturaSil, bos);
 
-  // Başarılı güncellemede düzenleme modundan çık (render sırasında türetme).
+  // Exit edit mode on a successful update (derived during render).
   const [sonMesaj, setSonMesaj] = useState<string | undefined>(undefined);
   if (guncelleDurum.mesaj !== sonMesaj) {
     setSonMesaj(guncelleDurum.mesaj);
@@ -66,7 +66,7 @@ export function FaturaSatiri({ fatura }: { fatura: Fatura }) {
               name="fatura_no"
               required
               defaultValue={fatura.fatura_no}
-              placeholder="Fatura no *"
+              placeholder="Invoice no *"
               className={girdiSinif}
             />
             <input
@@ -74,7 +74,7 @@ export function FaturaSatiri({ fatura }: { fatura: Fatura }) {
               type="date"
               required
               defaultValue={fatura.fatura_tarihi}
-              title="Fatura tarihi"
+              title="Invoice date"
               className={girdiSinif}
             />
             <input
@@ -82,7 +82,7 @@ export function FaturaSatiri({ fatura }: { fatura: Fatura }) {
               type="date"
               required
               defaultValue={fatura.vade_tarihi}
-              title="Vade tarihi"
+              title="Due date"
               className={girdiSinif}
             />
             <input
@@ -92,7 +92,7 @@ export function FaturaSatiri({ fatura }: { fatura: Fatura }) {
               min="0.01"
               required
               defaultValue={fatura.tutar}
-              placeholder="Tutar *"
+              placeholder="Amount *"
               className={`${girdiSinif} w-32`}
             />
             <button
@@ -100,14 +100,14 @@ export function FaturaSatiri({ fatura }: { fatura: Fatura }) {
               disabled={guncelleniyor}
               className="rounded-md bg-murekkep px-3 py-1.5 text-sm font-medium text-kagit hover:bg-[#123a33] disabled:opacity-50"
             >
-              {guncelleniyor ? "Kaydediliyor…" : "Kaydet"}
+              {guncelleniyor ? "Saving…" : "Save"}
             </button>
             <button
               type="button"
               onClick={() => setDuzenle(false)}
               className="px-2 py-1.5 text-sm text-murekkep-2 hover:text-murekkep"
             >
-              Vazgeç
+              Cancel
             </button>
             {guncelleDurum.hata && (
               <span className="w-full text-sm text-gecikme">
@@ -153,20 +153,20 @@ export function FaturaSatiri({ fatura }: { fatura: Fatura }) {
         {silOnay ? (
           <form action={silEylem} className="inline-flex items-center gap-2">
             <input type="hidden" name="id" value={fatura.id} />
-            <span className="text-xs text-murekkep-2">Emin misiniz?</span>
+            <span className="text-xs text-murekkep-2">Are you sure?</span>
             <button
               type="submit"
               disabled={siliniyor}
               className="text-sm font-medium text-gecikme hover:underline disabled:opacity-50"
             >
-              {siliniyor ? "Siliniyor…" : "Evet, sil"}
+              {siliniyor ? "Deleting…" : "Yes, delete"}
             </button>
             <button
               type="button"
               onClick={() => setSilOnay(false)}
               className="text-sm text-murekkep-2 hover:text-murekkep"
             >
-              Vazgeç
+              Cancel
             </button>
           </form>
         ) : (
@@ -176,14 +176,14 @@ export function FaturaSatiri({ fatura }: { fatura: Fatura }) {
               onClick={() => setDuzenle(true)}
               className="text-sm text-murekkep-2 hover:text-murekkep hover:underline"
             >
-              Düzenle
+              Edit
             </button>
             <button
               type="button"
               onClick={() => setSilOnay(true)}
               className="text-sm text-gecikme hover:underline"
             >
-              Sil
+              Delete
             </button>
           </div>
         )}

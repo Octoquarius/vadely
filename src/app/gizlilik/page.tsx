@@ -1,11 +1,11 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "KVKK Aydınlatma Metni — Vadely",
+  title: "Privacy Notice (KVKK) — Vadely",
 };
 
-// NOT (kurucuya): Bu metin genel bir şablondur; yayına almadan önce
-// KVKK uzmanı bir hukukçuya inceletin. (plan.md Bölüm 10 ve 16)
+// NOTE (to founder): This text is a general template; have it reviewed by a
+// lawyer specializing in KVKK before publishing. (plan.md Section 10 and 16)
 
 export default function GizlilikSayfasi() {
   return (
@@ -16,88 +16,93 @@ export default function GizlilikSayfasi() {
             Vadely
           </Link>
           <Link href="/kayit" className="text-sm text-zinc-600 hover:text-zinc-900">
-            Kayıt ol
+            Sign up
           </Link>
         </div>
       </header>
       <main className="mx-auto max-w-3xl space-y-6 px-4 py-10 text-sm leading-6 text-zinc-700">
         <h1 className="text-2xl font-semibold text-zinc-900">
-          Kişisel Verilerin Korunması Aydınlatma Metni
+          Personal Data Protection Notice
         </h1>
         <p>
-          Bu metin, 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK)
-          uyarınca, Vadely hizmetinin (&quot;Hizmet&quot;) kullanımı
-          kapsamında işlenen kişisel verilere ilişkin aydınlatma
-          yükümlülüğünün yerine getirilmesi amacıyla hazırlanmıştır.
+          This notice has been prepared in order to fulfill the disclosure
+          obligation under Law No. 6698 on the Protection of Personal Data
+          (&quot;KVKK&quot;, Turkey&apos;s Personal Data Protection Law) with
+          respect to personal data processed in connection with the use of
+          the Vadely service (the &quot;Service&quot;).
         </p>
 
         <h2 className="text-lg font-semibold text-zinc-900">
-          1. Veri sorumlusu
+          1. Data controller
         </h2>
         <p>
-          Hizmet, Vadely (&quot;Şirket&quot;) tarafından sunulmaktadır.
-          Hizmete kaydolan işletmenin (abone) kendi müşterilerine ait veriler
-          bakımından veri sorumlusu abonenin kendisi, Vadely ise KVKK
-          kapsamında <strong>veri işleyen</strong> sıfatıyla hareket eder.
+          The Service is provided by Vadely (the &quot;Company&quot;). With
+          respect to data belonging to the customers of the business
+          (subscriber) that has signed up for the Service, the subscriber
+          itself is the data controller, while Vadely acts as a{" "}
+          <strong>data processor</strong> under KVKK.
         </p>
 
         <h2 className="text-lg font-semibold text-zinc-900">
-          2. İşlenen veriler
+          2. Data processed
         </h2>
         <ul className="list-disc space-y-1 pl-6">
           <li>
-            <strong>Abone kullanıcıları:</strong> ad soyad, e-posta, şifre
-            (şifrelenmiş), şirket unvanı, kullanım kayıtları.
+            <strong>Subscriber users:</strong> full name, email address,
+            password (encrypted), company name, and usage records.
           </li>
           <li>
-            <strong>Abonenin müşterileri (cariler):</strong> unvan, vergi
-            kimlik numarası, iletişim bilgileri (e-posta, telefon), fatura ve
-            ödeme kayıtları.
+            <strong>Subscriber&apos;s customers (accounts):</strong> company
+            name, tax identification number, contact details (email, phone),
+            and invoice and payment records.
           </li>
         </ul>
         <p>
-          Veri minimizasyonu ilkesi gereği fatura kalem detayları gibi
-          tahsilat takibi için gerekli olmayan veriler işlenmez.
+          In line with the principle of data minimization, data that is not
+          necessary for collections tracking — such as invoice line-item
+          detail — is not processed.
         </p>
 
         <h2 className="text-lg font-semibold text-zinc-900">
-          3. İşleme amaçları ve hukuki sebep
+          3. Purposes of processing and legal basis
         </h2>
         <p>
-          Veriler; alacak takibi, ödeme hatırlatmalarının iletilmesi, nakit
-          akışı raporlaması ve hizmetin sunulması amaçlarıyla, KVKK m.5/2(c)
-          (sözleşmenin ifası) ve m.5/2(f) (meşru menfaat — ticari alacağın
-          takibi) hukuki sebeplerine dayanılarak işlenir.
+          Data is processed for the purposes of receivables tracking,
+          delivering payment reminders, cash-flow reporting, and providing
+          the Service, relying on the legal bases set out in KVKK Article
+          5/2(c) (performance of a contract) and Article 5/2(f) (legitimate
+          interest — pursuit of a commercial receivable).
         </p>
 
-        <h2 className="text-lg font-semibold text-zinc-900">4. Aktarım</h2>
+        <h2 className="text-lg font-semibold text-zinc-900">4. Transfer</h2>
         <p>
-          Veriler, hizmetin sunulması için gerekli teknik altyapı
-          sağlayıcılarına (barındırma, veritabanı, e-posta iletimi) sözleşme
-          çerçevesinde aktarılabilir. Verileriniz reklam amaçlı üçüncü
-          taraflarla paylaşılmaz.
+          Data may be transferred, under contract, to technical
+          infrastructure providers necessary to deliver the Service
+          (hosting, database, email delivery). Your data is not shared with
+          third parties for advertising purposes.
         </p>
 
         <h2 className="text-lg font-semibold text-zinc-900">
-          5. Saklama ve silme
+          5. Retention and deletion
         </h2>
         <p>
-          Veriler abonelik süresince saklanır. Hesap silindiğinde tüm tenant
-          verisi geri döndürülemez biçimde silinir; yasal saklama
-          yükümlülükleri (ör. VUK) saklıdır.
+          Data is retained for the duration of the subscription. When an
+          account is deleted, all tenant data is irreversibly deleted;
+          statutory retention obligations (e.g., under the Turkish Tax
+          Procedure Law) remain reserved.
         </p>
 
         <h2 className="text-lg font-semibold text-zinc-900">
-          6. KVKK m.11 kapsamındaki haklarınız
+          6. Your rights under KVKK Article 11
         </h2>
         <p>
-          Verilerinize erişme, düzeltme, silme, işlemeye itiraz etme ve
-          taşınabilirlik haklarınızı panel içindeki &quot;Verilerimi
-          indir&quot; ve &quot;Hesabı sil&quot; araçlarıyla ya da bize
-          e-postayla başvurarak kullanabilirsiniz.
+          You may exercise your rights to access, correct, and delete your
+          data, to object to its processing, and to data portability, using
+          the &quot;Download my data&quot; and &quot;Delete account&quot;
+          tools within the dashboard, or by contacting us by email.
         </p>
 
-        <p className="text-zinc-400">Son güncelleme: Temmuz 2026</p>
+        <p className="text-zinc-400">Last updated: July 2026</p>
       </main>
     </div>
   );

@@ -6,8 +6,8 @@ import { createClient } from "@/lib/supabase/server";
 export type IceAktarSatir = {
   musteri_unvan: string;
   fatura_no: string;
-  fatura_tarihi: string; // ISO yyyy-aa-gg
-  vade_tarihi: string; // ISO yyyy-aa-gg
+  fatura_tarihi: string; // ISO yyyy-mm-dd
+  vade_tarihi: string; // ISO yyyy-mm-dd
   tutar: number;
   vkn?: string | null;
   eposta?: string | null;
@@ -29,14 +29,14 @@ function unvanAnahtari(unvan: string): string {
   return unvan.trim().toLocaleLowerCase("tr-TR");
 }
 
-/** CSV sihirbazından gelen satırları aktarır. */
+/** Imports rows coming from the CSV wizard. */
 export async function faturalariIceAktar(
   satirlar: IceAktarSatir[]
 ): Promise<IceAktarSonuc> {
   return cekirdekIceAktar(satirlar, "csv");
 }
 
-/** UBL XML (e-Fatura/e-Arşiv) dosyalarından gelen satırları aktarır. */
+/** Imports rows coming from UBL XML (e-Fatura/e-Arşiv) files. */
 export async function gibFaturalariIceAktar(
   satirlar: IceAktarSatir[]
 ): Promise<IceAktarSonuc> {
@@ -50,16 +50,16 @@ async function cekirdekIceAktar(
   const bos: IceAktarSonuc = { eklenen: 0, mukerrer: 0, yeniMusteri: 0 };
 
   if (!Array.isArray(satirlar) || satirlar.length === 0) {
-    return { ...bos, hata: "Aktarılacak satır bulunamadı." };
+    return { ...bos, hata: "No rows found to import." };
   }
   if (satirlar.length > AZAMI_SATIR) {
     return {
       ...bos,
-      hata: `Tek seferde en fazla ${AZAMI_SATIR} satır aktarılabilir.`,
+      hata: `A maximum of ${AZAMI_SATIR} rows can be imported at once.`,
     };
   }
 
-  // Sunucu tarafı yeniden doğrulama: istemciden gelen veriye güvenme
+  // Server-side re-validation: don't trust data coming from the client
   for (const satir of satirlar) {
     const gecerli =
       typeof satir.musteri_unvan === "string" &&
@@ -79,14 +79,14 @@ async function cekirdekIceAktar(
     if (!gecerli) {
       return {
         ...bos,
-        hata: `Geçersiz satır: "${String(satir.fatura_no ?? "?")}". Sayfayı yenileyip tekrar deneyin.`,
+        hata: `Invalid row: "${String(satir.fatura_no ?? "?")}". Refresh the page and try again.`,
       };
     }
   }
 
   const supabase = await createClient();
 
-  // Dosya içi mükerrerleri ele (fatura no veya GİB UUID; ilki kalır)
+  // Handle duplicates within the file (invoice no or GİB UUID; the first one wins)
   const gorulenNolar = new Set<string>();
   const gorulenUuidler = new Set<string>();
   const tekilSatirlar: IceAktarSatir[] = [];
@@ -103,12 +103,12 @@ async function cekirdekIceAktar(
     }
   }
 
-  // Mevcut cariler: unvana göre eşle (RLS yalnızca kendi tenant'ını döndürür)
+  // Existing customers: match by name (RLS only returns the current tenant's own rows)
   const { data: mevcutMusteriler, error: musteriHata } = await supabase
     .from("musteriler")
     .select("id, unvan");
   if (musteriHata) {
-    return { ...bos, hata: "Müşteri listesi okunamadı. Tekrar deneyin." };
+    return { ...bos, hata: "Could not read the customer list. Try again." };
   }
 
   const musteriHaritasi = new Map<string, string>();
@@ -116,7 +116,7 @@ async function cekirdekIceAktar(
     musteriHaritasi.set(unvanAnahtari(musteri.unvan), musteri.id);
   }
 
-  // Eksik carileri oluştur (dosya içinde tekilleştirilmiş)
+  // Create missing customers (deduplicated within the file)
   const yeniMusteriKayitlari = new Map<
     string,
     { unvan: string; vkn: string | null; eposta: string | null }
@@ -140,7 +140,7 @@ async function cekirdekIceAktar(
     if (ekleHata) {
       return {
         ...bos,
-        hata: "Yeni müşteriler oluşturulamadı. Yetkinizi kontrol edin (salt-okur rol içe aktaramaz).",
+        hata: "Could not create new customers. Check your permissions (a read-only role cannot import).",
       };
     }
     for (const musteri of eklenenMusteriler ?? []) {
@@ -148,7 +148,7 @@ async function cekirdekIceAktar(
     }
   }
 
-  // Veritabanında zaten var olanları bul: fatura no + GİB UUID
+  // Find records that already exist in the database: invoice no + GİB UUID
   const tumNolar = tekilSatirlar.map((s) => s.fatura_no.trim());
   const mevcutNolar = new Set<string>();
   for (let i = 0; i < tumNolar.length; i += 500) {
@@ -157,7 +157,7 @@ async function cekirdekIceAktar(
       .select("fatura_no")
       .in("fatura_no", tumNolar.slice(i, i + 500));
     if (parcaHata) {
-      return { ...bos, hata: "Mevcut faturalar kontrol edilemedi. Tekrar deneyin." };
+      return { ...bos, hata: "Could not check existing invoices. Try again." };
     }
     for (const fatura of parcaVeri ?? []) mevcutNolar.add(fatura.fatura_no);
   }
@@ -170,7 +170,7 @@ async function cekirdekIceAktar(
       .select("gib_uuid")
       .in("gib_uuid", tumUuidler.slice(i, i + 500));
     if (parcaHata) {
-      return { ...bos, hata: "Mevcut faturalar kontrol edilemedi. Tekrar deneyin." };
+      return { ...bos, hata: "Could not check existing invoices. Try again." };
     }
     for (const fatura of parcaVeri ?? []) {
       if (fatura.gib_uuid) mevcutUuidler.add(fatura.gib_uuid);
@@ -206,7 +206,7 @@ async function cekirdekIceAktar(
         eklenen,
         mukerrer: dosyaIciMukerrer + veritabaniMukerrer,
         yeniMusteri: yeniMusteriKayitlari.size,
-        hata: `Faturaların bir kısmı eklenemedi (${eklenen}/${eklenecekler.length} eklendi). Tekrar deneyin.`,
+        hata: `Some invoices could not be added (${eklenen}/${eklenecekler.length} added). Try again.`,
       };
     }
     eklenen += parca.length;

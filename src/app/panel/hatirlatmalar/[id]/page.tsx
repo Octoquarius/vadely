@@ -61,7 +61,7 @@ export default async function HatirlatmaOnizleme({
   if (!fatura || !musteri) notFound();
 
   const sablonGirdisi = {
-    gonderenUnvan: hesap?.ad ?? "Şirketimiz",
+    gonderenUnvan: hesap?.ad ?? "Our company",
     musteriUnvan: musteri.unvan,
     faturaNo: fatura.fatura_no,
     faturaTarihi: fatura.fatura_tarihi,
@@ -96,15 +96,15 @@ export default async function HatirlatmaOnizleme({
             href="/panel/hatirlatmalar"
             className="text-sm text-zinc-500 hover:text-zinc-900"
           >
-            ← Hatırlatmalar
+            ← Reminders
           </Link>
           <h1 className="mt-1 text-2xl font-semibold text-zinc-900">
-            E-posta önizlemesi
+            Email preview
           </h1>
           <p className="mt-1 text-sm text-zinc-500">
             {SABLON_ETIKETLERI[hatirlatma.sablon_kodu ?? ""] ??
               hatirlatma.sablon_kodu}{" "}
-            · Alıcı: {musteri.eposta ?? "e-posta yok!"} ·{" "}
+            · Recipient: {musteri.eposta ?? "no email!"} ·{" "}
             <span
               className={`rounded-full px-2 py-0.5 text-xs font-medium ${durumBilgi.sinif}`}
             >
@@ -119,13 +119,13 @@ export default async function HatirlatmaOnizleme({
 
       {hatirlatma.hata && (
         <p className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">
-          Son gönderim hatası: {hatirlatma.hata}
+          Last send error: {hatirlatma.hata}
         </p>
       )}
 
       <div className="rounded-xl border border-zinc-200 bg-white p-4">
         <p className="text-sm text-zinc-500">
-          Konu:{" "}
+          Subject:{" "}
           <span className="font-medium text-zinc-900">{icerik.konu}</span>
         </p>
       </div>
@@ -133,7 +133,7 @@ export default async function HatirlatmaOnizleme({
       <iframe
         srcDoc={icerik.html}
         sandbox=""
-        title="E-posta önizlemesi"
+        title="Email preview"
         className="h-[560px] w-full rounded-xl border border-zinc-200 bg-white"
       />
 
@@ -148,15 +148,16 @@ export default async function HatirlatmaOnizleme({
       ) : (
         <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-4">
           <h2 className="text-sm font-semibold text-zinc-900">
-            💬 WhatsApp ile gönder
+            💬 Send via WhatsApp
           </h2>
           <p className="mt-1 text-sm text-zinc-500">
-            WhatsApp hatırlatmaları <strong>Profesyonel</strong> pakette.{" "}
+            WhatsApp reminders are part of the <strong>Professional</strong>{" "}
+            plan.{" "}
             <Link
               href="/panel/paket"
               className="font-medium text-zinc-900 underline"
             >
-              Paketleri görün
+              View plans
             </Link>
           </p>
         </div>

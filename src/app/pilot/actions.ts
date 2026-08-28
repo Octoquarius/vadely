@@ -18,7 +18,7 @@ export async function pilotBasvur(
   const araligi = String(formData.get("aylik_fatura_adedi") ?? "");
 
   if (!sirketAdi || !adSoyad || !eposta.includes("@")) {
-    return { hata: "Şirket adı, ad soyad ve geçerli bir e-posta zorunludur." };
+    return { hata: "Company name, full name, and a valid email are required." };
   }
 
   const { error } = await supabase.from("pilot_basvurulari").insert({
@@ -34,11 +34,11 @@ export async function pilotBasvur(
   });
 
   if (error) {
-    return { hata: "Başvuru kaydedilemedi. Lütfen tekrar deneyin." };
+    return { hata: "The application could not be saved. Please try again." };
   }
 
   return {
     mesaj:
-      "Başvurunuz alındı! 2 iş günü içinde e-posta ile dönüş yapacağız.",
+      "Your application has been received! We'll follow up by email within 2 business days.",
   };
 }

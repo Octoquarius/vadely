@@ -23,15 +23,14 @@ export default async function KadansSayfasi() {
           href="/panel/hatirlatmalar"
           className="text-sm text-zinc-500 hover:text-zinc-900"
         >
-          ← Hatırlatmalar
+          ← Reminders
         </Link>
         <h1 className="mt-1 text-2xl font-semibold text-zinc-900">
-          Kadans ayarları
+          Cadence settings
         </h1>
         <p className="mt-1 text-sm text-zinc-500">
-          Açık faturalar için hatırlatmaların ne zaman ve hangi tonda
-          planlanacağını belirler. Değişiklik yeni planlanan hatırlatmalara
-          uygulanır.
+          Determines when and in what tone reminders for open invoices are
+          scheduled. Changes apply to newly scheduled reminders.
         </p>
       </div>
 
@@ -41,10 +40,10 @@ export default async function KadansSayfasi() {
         <table className="w-full text-left text-sm">
           <thead className="border-b border-zinc-200 text-zinc-500">
             <tr>
-              <th className="px-4 py-3 font-medium">Zamanlama</th>
-              <th className="px-4 py-3 font-medium">Şablon</th>
-              <th className="px-4 py-3 font-medium">Kanal</th>
-              <th className="px-4 py-3 font-medium">Durum</th>
+              <th className="px-4 py-3 font-medium">Timing</th>
+              <th className="px-4 py-3 font-medium">Template</th>
+              <th className="px-4 py-3 font-medium">Channel</th>
+              <th className="px-4 py-3 font-medium">Status</th>
               <th className="px-4 py-3" />
             </tr>
           </thead>
@@ -73,7 +72,7 @@ export default async function KadansSayfasi() {
                         : "bg-zinc-100 text-zinc-500"
                     }`}
                   >
-                    {adim.aktif ? "Aktif" : "Pasif"}
+                    {adim.aktif ? "Active" : "Inactive"}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right">
@@ -89,7 +88,7 @@ export default async function KadansSayfasi() {
                         type="submit"
                         className="text-sm text-zinc-700 hover:underline"
                       >
-                        {adim.aktif ? "Duraklat" : "Aktifleştir"}
+                        {adim.aktif ? "Pause" : "Activate"}
                       </button>
                     </form>
                     <form action={kadansSil}>
@@ -98,7 +97,7 @@ export default async function KadansSayfasi() {
                         type="submit"
                         className="text-sm text-red-600 hover:underline"
                       >
-                        Sil
+                        Delete
                       </button>
                     </form>
                   </div>
@@ -108,7 +107,7 @@ export default async function KadansSayfasi() {
             {(adimlar ?? []).length === 0 && (
               <tr>
                 <td colSpan={5} className="px-4 py-8 text-center text-zinc-500">
-                  Kadans adımı yok. Yukarıdaki formdan ekleyin.
+                  No cadence steps yet. Add one using the form above.
                 </td>
               </tr>
             )}

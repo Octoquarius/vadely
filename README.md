@@ -1,203 +1,218 @@
 # Vadely
 
-**Türk KOBİ'leri için alacak tahsilatı SaaS'ı.** Vadely, vadesi geçen faturalarınızı
-ilişkiyi bozmadan, otomatik ve nazik hatırlatmalarla tahsil etmenize yardım eder;
-tahsilat süresini (DSO) kısaltır ve nakdinizi öne çeker.
+**Accounts-receivable collection SaaS for Turkish SMEs.** Vadely helps you collect
+overdue invoices with automatic, gentle reminders — without damaging the
+relationship; it shortens days sales outstanding (DSO) and accelerates your cash.
 
-🌐 Canlı: **https://vadely.vercel.app**
-
----
-
-## İçindekiler
-
-- [Vadely nedir?](#vadely-nedir)
-- [Öne çıkan özellikler](#öne-çıkan-özellikler)
-- [Kullanım kılavuzu](#kullanım-kılavuzu)
-- [Paketler](#paketler)
-- [Teknoloji yığını](#teknoloji-yığını)
-- [Yerel geliştirme](#yerel-geliştirme)
-- [Mimari notları](#mimari-notları)
-- [Dağıtım (Vercel)](#dağıtım-vercel)
-- [Operasyon / kurulum adımları](#operasyon--kurulum-adımları)
+🌐 Live: **https://vadely.vercel.app**
 
 ---
 
-## Vadely nedir?
+## Table of Contents
 
-Küçük ve orta ölçekli işletmelerde nakit akışının en büyük düşmanı, **vadesi geçmiş
-ama tahsil edilememiş faturalardır**. Muhasebe ekibi ya hatırlatma yapmaya vakit
-bulamaz ya da "müşteriyi kırmaktan" çekinir. Vadely bu boşluğu doldurur:
-
-- Faturalarınızı **e-Fatura/e-Arşiv XML** veya **CSV** ile saniyeler içinde içeri alır.
-- Vade tarihine göre **otomatik, kademeli ve nazik** hatırlatma planı üretir
-  (ön hatırlatma → vade günü → nazik gecikme → kararlı gecikme).
-- Hatırlatmaları **e-posta** (ve Profesyonel pakette **WhatsApp**) ile gönderir.
-- Ödemeleri **banka ekstresiyle eşleştirir**, fatura bakiyelerini otomatik kapatır.
-- **DSO panosu** ile tahsilat performansınızı ve "öne çekilen nakdi" ölçer.
-
-Vaadin özü: **ilişkiyi bozmadan tahsilat.** Şablonların tonu bilinçli olarak
-tehditkâr değil, çözüm odaklıdır.
+- [What is Vadely?](#what-is-vadely)
+- [Key features](#key-features)
+- [User guide](#user-guide)
+- [Plans](#plans)
+- [Tech stack](#tech-stack)
+- [Local development](#local-development)
+- [Architecture notes](#architecture-notes)
+- [Deployment (Vercel)](#deployment-vercel)
+- [Operations / setup steps](#operations--setup-steps)
 
 ---
 
-## Öne çıkan özellikler
+## What is Vadely?
 
-| Alan | Ne yapar |
+For small and medium-sized businesses, the biggest enemy of cash flow is
+**overdue, uncollected invoices**. The accounting team either never finds time
+to send reminders, or is reluctant to "upset the customer." Vadely fills that
+gap:
+
+- Imports your invoices in seconds via **e-Invoice/e-Archive XML** or **CSV**.
+- Generates an **automatic, staged, and gentle** reminder plan based on the due
+  date (pre-reminder → due date → gentle overdue → firm overdue).
+- Sends reminders by **email** (and **WhatsApp** on the Professional plan).
+- **Matches payments against bank statements**, automatically closing invoice
+  balances.
+- Measures your collection performance and "cash pulled forward" with the
+  **DSO dashboard**.
+
+The core promise: **collection without damaging the relationship.** The tone
+of the templates is deliberately non-threatening and solution-oriented.
+
+---
+
+## Key features
+
+| Area | What it does |
 | --- | --- |
-| **Müşteriler** | Cari kart yönetimi; e-posta/telefon/WhatsApp ve kanal izinleri (KVKK uyumu). |
-| **Faturalar** | Manuel giriş, CSV içe aktarma (Türkçe Excel biçimleri: `;` ayraç, `1.234,56`, `gg.aa.yyyy`, Windows-1254), GİB e-Fatura/e-Arşiv **UBL-TR XML** içe aktarma. |
-| **Ödemeler** | Manuel ödeme girişi, banka ekstresi içe aktarma, faturayla **eşleştirme** (kısmi ödeme desteği; bakiye ve durum otomatik güncellenir). |
-| **Hatırlatma kadansı** | Vade gününe göre gün farkı bazlı kural motoru; her adım için şablon seçimi. |
-| **Gönderim** | "Onaylı" (önce siz onaylayın) veya "otomatik" mod; değişmez **olay günlüğü**. |
-| **Takip** | Resend webhook'u ile açılma/tıklanma/bounce durumları hatırlatmalara işlenir. |
-| **DSO panosu** | Ortalama tahsilat süresi, yaşlandırma, öne çekilen nakit göstergesi. |
-| **Onboarding** | Veri durumundan hesaplanan 4 adımlı kurulum kontrol listesi + tek tık örnek veri. |
-| **KVKK** | Aydınlatma metni, kayıtta açık rıza (sunucuda zorunlu + zaman damgası), verilerimi indir (JSON), hesabı kalıcı silme. |
-| **Yönetim paneli** | Platform yöneticisi için kiracılar-üstü gözetim (hesaplar, metrikler, pilot başvuruları). |
+| **Customers** | Customer record management; email/phone/WhatsApp and channel consent (compliant with Turkish data-protection law, KVKK). |
+| **Invoices** | Manual entry, CSV import (Turkish Excel formats: `;` delimiter, `1.234,56`, `dd.mm.yyyy`, Windows-1254), **UBL-TR XML** import for GİB (Turkish Revenue Administration) e-Invoice/e-Archive. |
+| **Payments** | Manual payment entry, bank statement import, invoice **matching** (partial-payment support; balance and status update automatically). |
+| **Reminder cadence** | Rule engine based on day offsets from the due date; template selection for each step. |
+| **Sending** | "Approval" mode (you approve before sending) or "automatic" mode; an immutable **event log**. |
+| **Tracking** | Open/click/bounce status from the Resend webhook is recorded against reminders. |
+| **DSO dashboard** | Average collection time, aging, and cash-pulled-forward indicator. |
+| **Onboarding** | A 4-step setup checklist computed from data status, plus one-click sample data. |
+| **Data protection (KVKK)** | Privacy notice, explicit consent at signup (enforced server-side + timestamped), download-my-data (JSON), permanent account deletion. |
+| **Admin panel** | Cross-tenant oversight for the platform administrator (accounts, metrics, pilot applications). |
 
 ---
 
-## Kullanım kılavuzu
+## User guide
 
-### 1. Hesap oluşturma
-`/kayit` → şirket adı, ad soyad, e-posta, şifre (en az 8 karakter) ve KVKK onayı.
-Şifrenizi unutursanız `/sifremi-unuttum` üzerinden sıfırlama bağlantısı isteyin.
+### 1. Create an account
+`/kayit` (sign up) → company name, full name, email, password (at least 8
+characters), and consent to the data-protection notice. If you forget your
+password, request a reset link via `/sifremi-unuttum` (forgot password).
 
-### 2. Müşterileri ekleyin
-**Panel → Müşteriler.** Tek tek ekleyebilir ya da fatura içe aktarırken müşteriler
-otomatik oluşturulur. Her müşteri için **e-posta izni** (`izin_eposta`) işaretli
-olmalıdır — izinsiz müşteriye hatırlatma gönderilmez.
+### 2. Add customers
+**Panel → Customers.** Add them one by one, or let customers be created
+automatically while importing invoices. Each customer must have **email
+consent** (`izin_eposta`) checked — reminders are never sent to a customer
+without consent.
 
-### 3. Faturaları içeri alın
-**Panel → Faturalar → İçe Aktar.** İki sekme:
-- **CSV:** Dosyayı yükleyin; kolonlar (müşteri, fatura no, tarih, vade, tutar…)
-  başlıklardan otomatik tahmin edilir, onaylayıp aktarırsınız.
-- **e-Fatura/e-Arşiv XML:** GİB UBL-TR faturalarını doğrudan yükleyin; fatura no,
-  tarih, vade, tutar, müşteri unvanı ve VKN otomatik okunur.
+### 3. Import invoices
+**Panel → Invoices → Import.** Two tabs:
+- **CSV:** Upload the file; columns (customer, invoice no, date, due date,
+  amount…) are auto-detected from the headers, and you confirm before
+  importing.
+- **e-Invoice/e-Archive XML:** Upload GİB UBL-TR invoices directly; invoice
+  number, date, due date, amount, customer name, and tax ID are read
+  automatically.
 
-### 4. Hatırlatma kadansını ayarlayın
-**Panel → Hatırlatmalar → Kadans.** Örn. `-3 gün` (ön hatırlatma), `0 gün`
-(vade günü), `+7 gün` (nazik gecikme), `+21 gün` (kararlı gecikme). Her adıma bir
-şablon atarsınız. **"Plan üret"** dediğinizde açık faturalarınız için zamanı gelen
-hatırlatmalar planlanır.
+### 4. Configure the reminder cadence
+**Panel → Reminders → Cadence.** E.g. `-3 days` (pre-reminder), `0 days` (due
+date), `+7 days` (gentle overdue), `+21 days` (firm overdue). You assign a
+template to each step. Clicking **"Generate plan"** schedules the due
+reminders for your open invoices.
 
-### 5. Hatırlatmaları gönderin
-**Panel → Hatırlatmalar.** "Onaylı" modda bekleyenleri gözden geçirip
-**Bekleyenleri gönder** ile toplu ya da tek tek gönderirsiniz. WhatsApp için
-kopyala-gönder yöntemi kullanılır. Gönderilen her şey **Günlük**'te kayıt altındadır.
+### 5. Send reminders
+**Panel → Reminders.** In "approval" mode, review the pending ones and send
+them in bulk or one by one with **Send pending**. WhatsApp uses a
+copy-and-send workflow. Everything sent is recorded in the **Log**.
 
-### 6. Ödemeleri işleyin ve eşleştirin
-**Panel → Ödemeler.** Ödemeyi manuel girin veya **banka ekstresi** yükleyin
-(mükerrer satırlar otomatik atlanır). Ödemeyi ilgili faturayla **eşleştirin** —
-fatura bakiyesi ve durumu (açık/kısmi/kapalı) otomatik güncellenir.
+### 6. Process and match payments
+**Panel → Payments.** Enter a payment manually or upload a **bank
+statement** (duplicate rows are skipped automatically). **Match** the
+payment to the relevant invoice — the invoice balance and status
+(open/partial/closed) update automatically.
 
-### 7. Performansı izleyin
-**Panel → Genel Bakış.** DSO (ortalama tahsilat süresi), açık alacak, yaşlandırma
-ve hatırlatmalar sayesinde öne çekilen nakit.
+### 7. Monitor performance
+**Panel → Overview.** DSO (average collection time), open receivables,
+aging, and cash pulled forward thanks to reminders.
 
-### 8. Yönetim paneli (yalnızca platform yöneticisi)
-Yöneticiyseniz panel sağ üstünde **Yönetim** rozeti görünür. `/yonetim` tüm
-kiracılar genelinde hesap/alacak/tahsilat metriklerini ve hesap listesini,
-`/yonetim/pilot` ise pilot başvurularını gösterir.
+### 8. Admin panel (platform administrators only)
+If you're an administrator, an **Admin** badge appears in the top-right of
+the panel. `/yonetim` shows account/receivables/collection metrics and the
+account list across all tenants; `/yonetim/pilot` shows pilot applications.
 
 ---
 
-## Paketler
+## Plans
 
-14 gün deneme (her şey açık). Fiyatlar USD; yıllıkta ~2 ay bedava.
+14-day trial (everything unlocked). Prices in USD; annual billing gets you
+~2 months free.
 
-| Paket | Aylık | Öne çıkanlar |
+| Plan | Monthly | Highlights |
 | --- | --- | --- |
-| **Başlangıç** | $12 | Otomatik e-posta hatırlatmaları, kadans motoru, DSO panosu, CSV/e-Fatura içe aktarma |
-| **Profesyonel** ⭐ | $24 | Başlangıç + WhatsApp, banka ekstresi eşleştirme, ödeme linki (yakında) |
-| **İşletme** | $48 | Profesyonel + risk skoru (yakında), 30/60/90 gün nakit tahmini (yakında), öncelikli destek |
+| **Starter** | $12 | Automatic email reminders, cadence engine, DSO dashboard, CSV/e-Invoice import |
+| **Professional** ⭐ | $24 | Starter + WhatsApp, bank statement matching, payment link (coming soon) |
+| **Business** | $48 | Professional + risk score (coming soon), 30/60/90-day cash forecast (coming soon), priority support |
 
 ---
 
-## Teknoloji yığını
+## Tech stack
 
 - **Next.js 16** (App Router, Server Components, Server Actions) + **React 19**
-- **Supabase** (Postgres + Auth + RLS); şema `ozel`/`public`, çok kiracılılık `hesap_id`
+- **Supabase** (Postgres + Auth + RLS); `ozel`/`public` schemas, multi-tenancy via `hesap_id`
 - **Tailwind CSS 4**
-- **Resend** (transactional e-posta + webhook ile durum takibi)
-- **Vercel** (dağıtım)
+- **Resend** (transactional email + status tracking via webhook)
+- **Vercel** (deployment)
 
 ---
 
-## Yerel geliştirme
+## Local development
 
 ```bash
 npm install
-cp .env.example .env.local   # değerleri doldurun
+cp .env.example .env.local   # fill in the values
 npm run dev                  # http://localhost:3000
 ```
 
-Gerekli ortam değişkenleri (`.env.example`):
+Required environment variables (`.env.example`):
 
-| Değişken | Açıklama |
+| Variable | Description |
 | --- | --- |
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase proje URL'i |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase publishable (anon) anahtarı |
-| `RESEND_API_KEY` | E-posta gönderimi (yoksa gönderim düğmeleri anlaşılır hata verir) |
-| `MAIL_FROM` | Gönderen adresi (örn. `Vadely <onboarding@resend.dev>`) |
-| `RESEND_WEBHOOK_SECRET` | Resend webhook imza doğrulaması (açılma/tıklanma takibi) |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase publishable (anon) key |
+| `RESEND_API_KEY` | Email sending (without it, send buttons show a clear error) |
+| `MAIL_FROM` | Sender address (e.g. `Vadely <onboarding@resend.dev>`) |
+| `RESEND_WEBHOOK_SECRET` | Resend webhook signature verification (open/click tracking) |
 
-Faydalı komutlar: `npm run build`, `npm run lint`.
-
----
-
-## Mimari notları
-
-- **Çok kiracılılık:** Her tabloda `hesap_id` vardır; varsayılanı
-  `ozel.aktif_hesap_id()`, erişim **RLS** ile kısıtlanır. Bir kiracı yalnızca kendi
-  verisini görür.
-- **Ödeme-fatura eşleştirme** her zaman `odeme_eslestir` / `eslesme_kaldir` RPC'leri
-  ile yapılır (bakiye + durum güncellemesini bunlar yürütür).
-- **Migration'lar** Supabase üzerinde yönetilir (MCP `apply_migration`); repoda
-  ayrı migration klasörü tutulmaz.
-- **Güvenlik:** Webhook svix imzası + ±5 dk replay penceresiyle doğrulanır; e-posta
-  şablonlarında kullanıcı verisi HTML'e kaçırılarak gömülür; yönetim fonksiyonları
-  SECURITY DEFINER olup içeride yetki denetler.
+Useful commands: `npm run build`, `npm run lint`.
 
 ---
 
-## Dağıtım (Vercel)
+## Architecture notes
 
-Üretime dağıtım **CLI** ile yapılır:
+- **Multi-tenancy:** Every table has a `hesap_id` column; it defaults to
+  `ozel.aktif_hesap_id()`, and access is restricted via **RLS**. A tenant can
+  only ever see its own data.
+- **Payment-invoice matching** is always done through the `odeme_eslestir` /
+  `eslesme_kaldir` RPCs (these carry out the balance and status updates).
+- **Migrations** are managed directly on Supabase (via the MCP
+  `apply_migration` tool); the repo does not keep a separate migrations
+  folder.
+- **Security:** Webhooks are verified with an svix signature plus a ±5-minute
+  replay window; user data in email templates is HTML-escaped before being
+  embedded; admin functions are `SECURITY DEFINER` and check authorization
+  internally.
+
+---
+
+## Deployment (Vercel)
+
+Production deploys are done via the **CLI**:
 
 ```bash
 vercel deploy --prod
 ```
 
-> ⚠️ Bayraksız `vercel deploy` yalnızca **preview** üretir ve canlı alias'ı
-> güncellemez. Üretim için `--prod` şarttır.
+> ⚠️ Running `vercel deploy` without flags only produces a **preview** and does
+> not update the live alias. `--prod` is required for production.
 
 ---
 
-## Operasyon / kurulum adımları
+## Operations / setup steps
 
-Kod dışında, Supabase panelinden yapılması gereken birkaç ayar:
+A few settings outside the code need to be configured from the Supabase
+dashboard:
 
-### E-posta onayını açmak
-Şu an kayıtta onay e-postası gönderilmiyor; hesap doğrudan açılıyor. Onay akışını
-etkinleştirmek için: **Supabase → Authentication → Sign In / Providers → Email →
-"Confirm email" ON.** (Uygulama kodu onay akışını zaten destekler: kayıt sonrası
-"onay bağlantısına tıklayın" mesajı, `email_not_confirmed` hatası ve
-`/auth/callback` kod değişimi hazırdır.)
+### Enabling email confirmation
+Right now, no confirmation email is sent at signup — the account is
+activated immediately. To enable the confirmation flow: **Supabase →
+Authentication → Sign In / Providers → Email → "Confirm email" ON.** (The
+application code already supports the confirmation flow: the post-signup
+"click the confirmation link" message, the `email_not_confirmed` error, and
+the `/auth/callback` code exchange are all in place.)
 
-> Not: Supabase CLI `config push` **kullanmayın** — bildirilmeyen `[auth]`
-> alanlarına CLI varsayılanlarını dayatıp onayları kapatabilir.
+> Note: **do not** use the Supabase CLI's `config push` — it can push CLI
+> defaults onto unspecified `[auth]` fields and turn confirmations back off.
 
-### Platform yöneticisi eklemek
-Yönetim paneline erişim `public.platform_yoneticileri` tablosundaki kullanıcılara
-açıktır. Yeni bir yönetici eklemek için (Supabase SQL editöründe):
+### Adding a platform administrator
+Access to the admin panel is granted to users listed in the
+`public.platform_yoneticileri` table. To add a new administrator (in the
+Supabase SQL editor):
 
 ```sql
 insert into public.platform_yoneticileri (user_id)
-select id from auth.users where email = 'ornek@sirket.com'
+select id from auth.users where email = 'example@company.com'
 on conflict (user_id) do nothing;
 ```
 
-### Resend webhook'u
-`https://vadely.vercel.app/api/webhooks/resend` adresine `opened`/`clicked`/`bounced`
-olayları gönderilir; `RESEND_WEBHOOK_SECRET` ile imza doğrulanır.
+### Resend webhook
+`opened`/`clicked`/`bounced` events are sent to
+`https://vadely.vercel.app/api/webhooks/resend`; signatures are verified
+using `RESEND_WEBHOOK_SECRET`.

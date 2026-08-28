@@ -1,14 +1,14 @@
-// Kadans/hatırlatma alanlarının kullanıcıya dönük etiketleri
+// User-facing labels for cadence/reminder fields
 
 export const SABLON_ETIKETLERI: Record<string, string> = {
-  on_hatirlatma: "Ön hatırlatma (nazik)",
-  vade_gunu: "Vade günü bildirimi",
-  nazik_gecikme: "Nazik gecikme hatırlatması",
-  kararli_gecikme: "Kararlı gecikme hatırlatması",
+  on_hatirlatma: "Pre-reminder (gentle)",
+  vade_gunu: "Due date notice",
+  nazik_gecikme: "Gentle overdue reminder",
+  kararli_gecikme: "Firm overdue reminder",
 };
 
 export const KANAL_ETIKETLERI: Record<string, string> = {
-  eposta: "E-posta",
+  eposta: "Email",
   sms: "SMS",
   whatsapp: "WhatsApp",
 };
@@ -17,28 +17,28 @@ export const HATIRLATMA_DURUMLARI: Record<
   string,
   { etiket: string; sinif: string }
 > = {
-  planlandi: { etiket: "Planlandı", sinif: "bg-blue-50 text-blue-700" },
-  gonderildi: { etiket: "Gönderildi", sinif: "bg-green-50 text-green-700" },
-  acildi: { etiket: "Açıldı", sinif: "bg-emerald-50 text-emerald-700" },
-  tiklandi: { etiket: "Tıklandı", sinif: "bg-emerald-50 text-emerald-800" },
-  yanitlandi: { etiket: "Yanıtlandı", sinif: "bg-purple-50 text-purple-700" },
-  iptal: { etiket: "İptal", sinif: "bg-zinc-100 text-zinc-500" },
+  planlandi: { etiket: "Scheduled", sinif: "bg-blue-50 text-blue-700" },
+  gonderildi: { etiket: "Sent", sinif: "bg-green-50 text-green-700" },
+  acildi: { etiket: "Opened", sinif: "bg-emerald-50 text-emerald-700" },
+  tiklandi: { etiket: "Clicked", sinif: "bg-emerald-50 text-emerald-800" },
+  yanitlandi: { etiket: "Replied", sinif: "bg-purple-50 text-purple-700" },
+  iptal: { etiket: "Canceled", sinif: "bg-zinc-100 text-zinc-500" },
 };
 
 export const OLAY_ETIKETLERI: Record<string, string> = {
-  hatirlatma_planlandi: "Hatırlatma planlandı",
-  hatirlatma_gonderildi: "Hatırlatma gönderildi",
-  hatirlatma_acildi: "E-posta açıldı",
-  hatirlatma_tiklandi: "E-postadaki bağlantı tıklandı",
-  hatirlatma_yanitlandi: "Müşteri yanıtladı",
-  hatirlatma_iptal: "Hatırlatma iptal edildi",
-  eslesme_eklendi: "Ödeme faturayla eşleştirildi",
-  eslesme_kaldirildi: "Ödeme eşleşmesi kaldırıldı",
+  hatirlatma_planlandi: "Reminder scheduled",
+  hatirlatma_gonderildi: "Reminder sent",
+  hatirlatma_acildi: "Email opened",
+  hatirlatma_tiklandi: "Link in email clicked",
+  hatirlatma_yanitlandi: "Customer replied",
+  hatirlatma_iptal: "Reminder canceled",
+  eslesme_eklendi: "Payment matched to invoice",
+  eslesme_kaldirildi: "Payment match removed",
 };
 
-/** Gün farkını insan diline çevirir: -3 -> "vadeden 3 gün önce" */
+/** Converts a day offset into human-readable text: -3 -> "3 days before due date" */
 export function gunFarkiEtiketi(gunFarki: number): string {
-  if (gunFarki < 0) return `Vadeden ${-gunFarki} gün önce`;
-  if (gunFarki === 0) return "Vade günü";
-  return `Vadeden ${gunFarki} gün sonra`;
+  if (gunFarki < 0) return `${-gunFarki} days before due date`;
+  if (gunFarki === 0) return "Due date";
+  return `${gunFarki} days after due date`;
 }
