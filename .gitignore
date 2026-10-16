@@ -42,3 +42,10 @@ next-env.d.ts
 
 !.env.example
 .vercel
+
+# brag launch video output
+/brag-output/
+/brag-output-*/
+
+# Supabase CLI local state
+/supabase/.temp/

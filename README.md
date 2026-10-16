@@ -162,9 +162,9 @@ Useful commands: `npm run build`, `npm run lint`.
   only ever see its own data.
 - **Payment-invoice matching** is always done through the `odeme_eslestir` /
   `eslesme_kaldir` RPCs (these carry out the balance and status updates).
-- **Migrations** are managed directly on Supabase (via the MCP
-  `apply_migration` tool); the repo does not keep a separate migrations
-  folder.
+- **Migrations** live in `supabase/migrations/` and are the source of truth
+  for the schema (tables, RLS, RPCs, signup trigger, daily `pg_cron` planning
+  job). Apply them in filename order to rebuild the database from scratch.
 - **Security:** Webhooks are verified with an svix signature plus a ±5-minute
   replay window; user data in email templates is HTML-escaped before being
   embedded; admin functions are `SECURITY DEFINER` and check authorization
